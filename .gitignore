@@ -15,5 +15,5 @@
 # vendor/
 
 .idea/
-
+.DS_Store
 log/
