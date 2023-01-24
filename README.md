@@ -7,8 +7,7 @@
 ### 目录结构
 
 暂时如下：
-```go
-
+```go,
 .
 |__idl
 | |__relation.thrift
@@ -27,8 +26,6 @@
 | | |__database.sql
 
 ```
-
-
 
 ### 说明
 
