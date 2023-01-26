@@ -15,6 +15,7 @@ type Client interface {
 	GetFollowList(ctx context.Context, req *relation.GetFollowListRequest, callOptions ...callopt.Option) (r *relation.GetFollowListResponse, err error)
 	GetFollowerList(ctx context.Context, req *relation.GetFollowerListRequest, callOptions ...callopt.Option) (r *relation.GetFollowerListResponse, err error)
 	GetFriendList(ctx context.Context, req *relation.GetFriendListRequest, callOptions ...callopt.Option) (r *relation.GetFriendListResponse, err error)
+	GetMessageChat(ctx context.Context, req *relation.GetMessageChatRequest, callOptions ...callopt.Option) (r *relation.GetMessageChatResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -64,4 +65,9 @@ func (p *kRelationServiceClient) GetFollowerList(ctx context.Context, req *relat
 func (p *kRelationServiceClient) GetFriendList(ctx context.Context, req *relation.GetFriendListRequest, callOptions ...callopt.Option) (r *relation.GetFriendListResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetFriendList(ctx, req)
+}
+
+func (p *kRelationServiceClient) GetMessageChat(ctx context.Context, req *relation.GetMessageChatRequest, callOptions ...callopt.Option) (r *relation.GetMessageChatResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetMessageChat(ctx, req)
 }
