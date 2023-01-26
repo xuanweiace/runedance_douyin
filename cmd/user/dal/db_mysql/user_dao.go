@@ -19,8 +19,8 @@ var (
 )
 
 type UserDao interface {
-	AddUser(user *Usermess) error
-	FindByName(name string) (*Usermess, error)
+	AddUser(user *User) error
+	FindByName(name string) (*User, error)
 	LastId() int64
 }
 type UserDaoImpl struct {
@@ -40,8 +40,8 @@ func GetUserDao() UserDao {
 
 // AddUser 添加用户
 // 参数 user User结构体指针
-func (u *UserDaoImpl) AddUser(user *Usermess) error {
-	if err := u.db.Create(user).Error; err != nil {
+func (u *UserDaoImpl) AddUser(user *User) error {
+	if err := u.db.Table(TableNameUser).Create(user).Error; err != nil {
 		return err
 	}
 	return nil
@@ -49,9 +49,9 @@ func (u *UserDaoImpl) AddUser(user *Usermess) error {
 
 // FindByName 根据用户名查找用户
 // 参数 name string类型 用户名
-func (u *UserDaoImpl) FindByName(name string) (*Usermess, error) {
-	var user Usermess
-	if err := u.db.Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+func (u *UserDaoImpl) FindByName(name string) (*User, error) {
+	var user User
+	if err := u.db.Table(TableNameUser).Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	return &user, nil
@@ -59,9 +59,10 @@ func (u *UserDaoImpl) FindByName(name string) (*Usermess, error) {
 
 // 通过主键查询最后一条记录
 // 返回当前表内的最大ID
+
 func (u *UserDaoImpl) LastId() int64 {
-	var user Usermess
-	if err := u.db.Last(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	var user User
+	if err := u.db.Table(TableNameUser).Last(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		//表内没有数据默认为1
 		return 1
 	}

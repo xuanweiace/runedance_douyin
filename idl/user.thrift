@@ -1,4 +1,4 @@
-namespace go usermess
+namespace go user
 
 //用户注册接口
 struct douyin_user_register_request {
@@ -48,8 +48,8 @@ struct User{
     5:required bool is_follow;
 }
 
-service UsermessService {
+service UserService {
      douyin_user_register_response UserRegister (1:douyin_user_register_request req)
      douyin_user_login_response UserLogin (1: douyin_user_login_request req)
-     douyin_user_response GetUserMess (1: douyin_user_request req)
+     douyin_user_response GetUser (1: douyin_user_request req)
 }

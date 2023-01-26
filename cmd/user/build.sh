@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-RUN_NAME="usermess"
+RUN_NAME="user"
 
 mkdir -p output/bin
 cp script/* output/

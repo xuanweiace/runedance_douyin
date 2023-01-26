@@ -1,4 +1,4 @@
-CREATE TABLE `douyin`.`usermess`
+CREATE TABLE `douyin`.`user`
 (
     `user_id` bigint AUTO_INCREMENT,
     `username` VARCHAR(18) UNIQUE,

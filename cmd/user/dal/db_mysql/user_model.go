@@ -1,8 +1,8 @@
 package db_mysql
 
-const TableNameUser string = "usermess"
+const TableNameUser string = "user"
 
-type Usermess struct {
+type User struct {
 	UserId        int64
 	Username      string
 	Password      string
@@ -12,6 +12,6 @@ type Usermess struct {
 	FollowerCount int64
 }
 
-func (*Usermess) TableName() string {
+func (u *User) TableName() string {
 	return TableNameUser
 }
