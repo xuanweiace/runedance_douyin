@@ -11,5 +11,5 @@ struct VideoURLRequest {
 }
 
 service VideoService {
-    VideoURLRequest queryVideoURL(1: VideoURLRequest req)
+    VideoURLResponse queryVideoURL(1: VideoURLRequest req)
 }
