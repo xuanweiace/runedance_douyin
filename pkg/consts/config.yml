@@ -1,0 +1,18 @@
+DSN:
+  account:
+      root
+  password:
+      123456
+  DbName:
+      douyin
+  host:
+    3306
+Table:
+    realation:
+      relation
+    #这里自己加表名吧
+ServiceName:
+  relation_service
+etcd:
+    address:
+        127.0.0.1:2379

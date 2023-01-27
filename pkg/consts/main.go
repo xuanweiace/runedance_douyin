@@ -1,4 +1,4 @@
-package main
+package consts
 
 func main() {
 	readInfo()
