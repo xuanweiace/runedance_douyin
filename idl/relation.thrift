@@ -4,17 +4,15 @@ struct BaseResponse {
     1: required i32 status_code;
     2: optional string status_msg;
 }
-
 struct RelationActionRequest {
     1: required string token;
     2: required i64 to_user_id;
     3: required i32 action_type;
-    4: optional string content; 
 }
-
 struct RelationActionResponse {
     1: required BaseResponse base_resp
 }
+
 
 struct User{
     1:required  i64     id
@@ -54,29 +52,11 @@ struct GetFriendListResponse{
     2:list<User> user_list
 }
 
-struct GetMessageChatRequest {
-    1: required string token;
-    2: required i64 to_user_id;
-}
-
-struct Message {
-    1: required i64 id;
-    2: required string content;
-    3: optional string create_time;
-}
-
-struct GetMessageChatResponse {
-    1: required i32 status_code;
-    2: optional string status_msg; 
-    3: required list<Message> msg_list;
-}
-
 service RelationService{
-    RelationActionResponse   RelationAction(1:RelationActionRequest  req)
+    RelationActionResponse   RelationAction(1:RelationActionRequest    req)
     GetFollowListResponse  GetFollowList(1:GetFollowListRequest  req)
     GetFollowerListResponse  GetFollowerList(1:GetFollowerListRequest  req)
     GetFriendListResponse    GetFriendList(1:GetFriendListRequest req)
-    GetMessageChatResponse  GetMessageChat(1: GetMessageChatRequest req)
 }
 
 

@@ -31,11 +31,3 @@ func (s *RelationServiceImpl) GetFriendList(ctx context.Context, req *relation.G
 	// TODO: Your code here...
 	return
 }
-
-// GetMessageChat implements the RelationServiceImpl interface.
-func (s *RelationServiceImpl) GetMessageChat(ctx context.Context, req *relation.GetMessageChatRequest) (resp *relation.GetMessageChatResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-
