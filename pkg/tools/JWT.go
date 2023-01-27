@@ -13,6 +13,7 @@ import (
 type CustomClaims struct {
 	// 可根据需要自行添加字段
 	Username string `json:"username"`
+	User_id  int64  `json:"user_id"`
 
 	jwt.RegisteredClaims // 内嵌标准的声明
 }
@@ -23,10 +24,11 @@ const TokenExpireDuration = time.Hour * 24
 var CustomSecret = []byte("runedance")
 
 // GenToken 生成JWT
-func GenToken(username string) (string, error) {
+func GenToken(username string, userid int64) (string, error) {
 	// 创建一个我们自己的声明
 	claims := CustomClaims{
-		username, // 自定义字段
+		username,
+		userid, // 自定义字段
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpireDuration)),
 			Issuer:    "wechan", // 签发人

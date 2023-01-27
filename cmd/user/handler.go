@@ -19,19 +19,20 @@ var userIdSequence int64
 type UserServiceImpl struct{}
 
 // UserRegister implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUserRegisterRequest) (resp *user.DouyinUserRegisterResponse, err error) {
-	// TODO: Your code here...
+func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUserRegisterRequest) (*user.DouyinUserRegisterResponse, error) {
+	//todo 账户密码校验
+	var msg string
+	resp := user.NewDouyinUserRegisterResponse()
 	//随机生成salt
 	salt := tools.RandomStringUtil()
 	username := req.Username
 	//密码MD5加密
 	password := tools.Md5Util(req.Password, salt)
-	token := username + password
 	//更新用户ID
 	userIdSequence = db_mysql.GetUserService().FindLastUserId()
 	//注册用户
-	var msg string
-	if err := db_mysql.GetUserService().Register(username, password, userIdSequence, salt); err != nil {
+	err := db_mysql.GetUserService().UserRegister(username, password, salt)
+	if err != nil {
 		//注册失败返回错误信息
 		resp.UserId = 0
 		resp.StatusCode = Failed
@@ -39,27 +40,34 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 		resp.StatusMsg = &msg
 	} else {
 		//成功注册
+		msg = "UserRegister successfully"
 		atomic.AddInt64(&userIdSequence, 1)
+		token, err := tools.GenToken(username, userIdSequence)
+		if err != nil {
+			msg = "token generation failed" + err.Error()
+			resp.StatusMsg = &msg
+			resp.StatusCode = Failed
+			return resp, err
+		}
 		resp.StatusCode = success
 		resp.UserId = userIdSequence
 		resp.Token = token
-		msg = "Register successfully"
 		resp.StatusMsg = &msg
 	}
-	return
+	return resp, err
 }
 
 // UserLogin implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UserLogin(ctx context.Context, req *user.DouyinUserLoginRequest) (resp *user.DouyinUserLoginResponse, err error) {
-	// TODO: Your code here...
+func (s *UserServiceImpl) UserLogin(ctx context.Context, req *user.DouyinUserLoginRequest) (*user.DouyinUserLoginResponse, error) {
+	// todo 账户密码校验
 	username := req.Username
 	password := req.Password
-	// todo token部分暂时未完成
-	token := username + password
 	//登录验证失败
 	//返回：msg:user does not exist | password error
 	var msg string
-	if userResp, err := db_mysql.GetUserService().UserLogin(username, password); err != nil {
+	var resp = user.NewDouyinUserLoginResponse()
+	userResp, err := db_mysql.GetUserService().UserLogin(username, password)
+	if err != nil {
 		resp.StatusCode = Failed
 		msg = err.Error()
 		resp.StatusMsg = &msg
@@ -69,13 +77,32 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *user.DouyinUserLog
 		msg = "Successful login"
 		resp.StatusMsg = &msg
 		resp.UserId = userResp.UserId
+		token, _ := tools.GenToken(username, resp.UserId)
+		//todo 错误处理
 		resp.Token = token
 	}
-	return
+	return resp, err
 }
 
 // GetUser implements the UserServiceImpl interface.
-func (s *UserServiceImpl) GetUser(ctx context.Context, req *user.DouyinUserRequest) (resp *user.DouyinUserResponse, err error) {
-	// TODO: Your code here...
-	return
+func (s *UserServiceImpl) GetUser(ctx context.Context, req *user.DouyinUserRequest) (*user.DouyinUserResponse, error) {
+	var msg string
+	var resp = user.NewDouyinUserResponse()
+	claims, err := tools.ParseToken(req.Token)
+	if err == nil { //鉴权是否登录
+		resp.User, err = db_mysql.GetUserService().GetUserById(req.UserId, claims.User_id)
+		if err == nil {
+			resp.StatusCode = success
+			msg = "GetUser success"
+			resp.StatusMsg = &msg
+		} else {
+			msg = "get user information failed"
+		}
+
+	} else {
+		msg = "login failed"
+	}
+	resp.StatusCode = Failed
+	resp.StatusMsg = &msg
+	return resp, err
 }
