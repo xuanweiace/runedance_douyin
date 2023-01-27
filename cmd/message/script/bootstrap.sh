@@ -18,4 +18,4 @@ if [ ! -d "$KITEX_LOG_DIR/rpc" ]; then
     mkdir -p "$KITEX_LOG_DIR/rpc"
 fi
 
-exec "$CURDIR/bin/usermess"
+exec "$CURDIR/bin/a.b.c"
