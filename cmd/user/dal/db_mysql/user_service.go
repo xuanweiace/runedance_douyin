@@ -2,7 +2,7 @@ package db_mysql
 
 import (
 	"errors"
-	"fmt"
+	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/tools"
 	"sync"
 )
@@ -14,8 +14,9 @@ var (
 
 type UserService interface {
 	UserLogin(username string, password string) (*User, error)
-	Register(username string, password string, userId int64, salt string) error
+	UserRegister(username string, password string, salt string) error
 	FindLastUserId() int64
+	GetUserById(userId int64, MyUserid int64) (userResp *user.User, err error)
 }
 type UserServiceImpl struct {
 	userDao UserDao
@@ -31,43 +32,35 @@ func GetUserService() UserService {
 }
 
 func (u *UserServiceImpl) UserLogin(username string, password string) (*User, error) {
-	user, err := u.userDao.FindByName(username)
+	userGet, err := u.userDao.FindByName(username)
 	if err != nil {
-		return nil, errors.New("user does not exist")
+		return nil, errors.New("userGet does not exist")
 	}
-	//校验密码
-	fmt.Println(user)
 	//MD5加密验证
-	password = tools.Md5Util(password, user.Salt)
-	if password != user.Password {
+	password = tools.Md5Util(password, userGet.Salt)
+	if password != userGet.Password {
 		return nil, errors.New("password error")
 	}
-	return user, nil
+	return userGet, nil
 }
 
-// 注册用户
-// 1.先判断表里有没有用户 如果有就提示用户存在
-// 2.判断用户名是否违法或者合规（暂未实现）
-// 3.注册用户
-
-func (u *UserServiceImpl) Register(username string, password string, userId int64, salt string) error {
+func (u *UserServiceImpl) UserRegister(username string, password string, salt string) error {
 	//判断用户是否已经注册
 	_, err := u.userDao.FindByName(username)
 	if err == nil {
-		return errors.New("user does not exist")
+		return errors.New("userAdd does not exist")
 	}
 	//添加用户
-	user := User{
-		UserId:        userId,
+	userAdd := User{
 		Username:      username,
 		Password:      password,
 		Salt:          salt,
 		FollowCount:   0,
 		FollowerCount: 0,
 	}
-	e := u.userDao.AddUser(&user)
+	e := u.userDao.AddUser(&userAdd)
 	if e != nil {
-		return errors.New("user regist failed")
+		return errors.New("userAdd register failed")
 	}
 	return nil
 }
@@ -76,4 +69,20 @@ func (u *UserServiceImpl) Register(username string, password string, userId int6
 
 func (u *UserServiceImpl) FindLastUserId() int64 {
 	return u.userDao.LastId()
+}
+
+// 查找用户信息
+
+func (u *UserServiceImpl) GetUserById(userId int64, MyUserid int64) (*user.User, error) {
+	userGet, err := u.userDao.FindById(userId)
+	var userResp = user.NewUser()
+	if err == nil {
+		userResp = user.NewUser()
+		userResp.UserId = userGet.UserId
+		userResp.Username = userGet.Username
+		userResp.FollowCount = &userGet.FollowCount
+		userResp.FollowerCount = &userGet.FollowerCount
+		userResp.IsFollow = false //TODO MyUserid 是否关注了 userId 未实现查找对应数据库
+	}
+	return userResp, err
 }

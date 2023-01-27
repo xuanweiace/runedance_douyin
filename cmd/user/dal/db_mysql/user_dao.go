@@ -21,6 +21,7 @@ var (
 type UserDao interface {
 	AddUser(user *User) error
 	FindByName(name string) (*User, error)
+	FindById(userid int64) (*User, error)
 	LastId() int64
 }
 type UserDaoImpl struct {
@@ -52,6 +53,16 @@ func (u *UserDaoImpl) AddUser(user *User) error {
 func (u *UserDaoImpl) FindByName(name string) (*User, error) {
 	var user User
 	if err := u.db.Table(TableNameUser).Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// FindById 根据用户id查找用户
+// 参数 userid int64类型 用户id
+func (u *UserDaoImpl) FindById(userid int64) (*User, error) {
+	var user User
+	if err := u.db.Table(TableNameUser).Where("user_id = ?", userid).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	return &user, nil
