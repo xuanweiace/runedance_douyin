@@ -23,7 +23,6 @@ func NewServiceInfo() *kitex.ServiceInfo {
 		"GetFollowList":   kitex.NewMethodInfo(getFollowListHandler, newRelationServiceGetFollowListArgs, newRelationServiceGetFollowListResult, false),
 		"GetFollowerList": kitex.NewMethodInfo(getFollowerListHandler, newRelationServiceGetFollowerListArgs, newRelationServiceGetFollowerListResult, false),
 		"GetFriendList":   kitex.NewMethodInfo(getFriendListHandler, newRelationServiceGetFriendListArgs, newRelationServiceGetFriendListResult, false),
-		"GetMessageChat":  kitex.NewMethodInfo(getMessageChatHandler, newRelationServiceGetMessageChatArgs, newRelationServiceGetMessageChatResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "relation",
@@ -111,24 +110,6 @@ func newRelationServiceGetFriendListResult() interface{} {
 	return relation.NewRelationServiceGetFriendListResult()
 }
 
-func getMessageChatHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*relation.RelationServiceGetMessageChatArgs)
-	realResult := result.(*relation.RelationServiceGetMessageChatResult)
-	success, err := handler.(relation.RelationService).GetMessageChat(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newRelationServiceGetMessageChatArgs() interface{} {
-	return relation.NewRelationServiceGetMessageChatArgs()
-}
-
-func newRelationServiceGetMessageChatResult() interface{} {
-	return relation.NewRelationServiceGetMessageChatResult()
-}
-
 type kClient struct {
 	c client.Client
 }
@@ -174,16 +155,6 @@ func (p *kClient) GetFriendList(ctx context.Context, req *relation.GetFriendList
 	_args.Req = req
 	var _result relation.RelationServiceGetFriendListResult
 	if err = p.c.Call(ctx, "GetFriendList", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) GetMessageChat(ctx context.Context, req *relation.GetMessageChatRequest) (r *relation.GetMessageChatResponse, err error) {
-	var _args relation.RelationServiceGetMessageChatArgs
-	_args.Req = req
-	var _result relation.RelationServiceGetMessageChatResult
-	if err = p.c.Call(ctx, "GetMessageChat", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
