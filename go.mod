@@ -1,6 +1,6 @@
 module runedance_douyin
 
-go 1.17
+go 1.18
 
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
