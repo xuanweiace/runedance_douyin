@@ -29,7 +29,19 @@ func (s *RelationServiceImpl) RelationAction(ctx context.Context, req *relation.
 
 // GetFollowList implements the RelationServiceImpl interface.
 func (s *RelationServiceImpl) GetFollowList(ctx context.Context, req *relation.GetFollowListRequest) (resp *relation.GetFollowListResponse, err error) {
-	// TODO: Your code here...
+	resp = relation.NewGetFollowListResponse()
+	userList, err := service.GetQueryServiceInstance(ctx).GetFollowList(req)
+	if err != nil {
+		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		er := err.Error() //todo 只能这样写？
+		resp.BaseResp.StatusMsg = &er
+	} else {
+		resp.BaseResp = &relation.BaseResponse{
+			StatusCode: 0,
+			StatusMsg:  nil,
+		}
+		resp.UserList = userList
+	}
 	return
 }
 

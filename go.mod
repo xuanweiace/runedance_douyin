@@ -9,6 +9,7 @@ require (
 	github.com/cloudwego/hertz v0.5.2
 	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20230129085900-a27807718aa9
 	github.com/cloudwego/kitex v0.4.4
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gomodule/redigo v1.8.9
 	github.com/hertz-contrib/jwt v1.0.2
@@ -35,7 +36,6 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/pprof v0.0.0-20220608213341-c488b8fa1db3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
