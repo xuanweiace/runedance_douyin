@@ -33,7 +33,7 @@ func (s *RelationServiceImpl) GetFollowList(ctx context.Context, req *relation.G
 	userList, err := service.GetQueryServiceInstance(ctx).GetFollowList(req)
 	if err != nil {
 		resp.BaseResp.StatusCode = errnos.CodeServiceErr
-		er := err.Error() //todo 只能这样写？
+		er := err.Error()
 		resp.BaseResp.StatusMsg = &er
 	} else {
 		resp.BaseResp = &relation.BaseResponse{
@@ -47,12 +47,36 @@ func (s *RelationServiceImpl) GetFollowList(ctx context.Context, req *relation.G
 
 // GetFollowerList implements the RelationServiceImpl interface.
 func (s *RelationServiceImpl) GetFollowerList(ctx context.Context, req *relation.GetFollowerListRequest) (resp *relation.GetFollowerListResponse, err error) {
-	// TODO: Your code here...
+	resp = relation.NewGetFollowerListResponse()
+	followerList, err := service.GetQueryServiceInstance(ctx).GetFollowerList(req)
+	if err != nil {
+		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.BaseResp.StatusMsg = &er
+	} else {
+		resp.BaseResp = &relation.BaseResponse{
+			StatusCode: 0,
+			StatusMsg:  nil,
+		}
+		resp.UserList = followerList
+	}
 	return
 }
 
 // GetFriendList implements the RelationServiceImpl interface.
 func (s *RelationServiceImpl) GetFriendList(ctx context.Context, req *relation.GetFriendListRequest) (resp *relation.GetFriendListResponse, err error) {
-	// TODO: Your code here...
+	resp = relation.NewGetFriendListResponse()
+	friendList, err := service.GetQueryServiceInstance(ctx).GetFriendList(req)
+	if err != nil {
+		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.BaseResp.StatusMsg = &er
+	} else {
+		resp.BaseResp = &relation.BaseResponse{
+			StatusCode: 0,
+			StatusMsg:  nil,
+		}
+		resp.UserList = friendList
+	}
 	return
 }

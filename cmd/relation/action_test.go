@@ -53,9 +53,9 @@ func TestQ_abc(t *testing.T) {
 
 func Test_a(t *testing.T) {
 	a := 1
-	defer func() {
+	defer func(a int) {
 		x := a
 		println(x)
-	}()
+	}(a)
 	a = 2
 }
