@@ -2,12 +2,6 @@ package db_redis
 
 import (
 	"context"
-	// "encoding/json"
-	// "math"
-	// "runedance_douyin/kitex_gen/message"
-	// "time"
-
-	// "github.com/bytedance/gopkg/lang/stringx"
 )
 
 func GetMessageChatJson(ctx context.Context, userId string, toUserId string) ([]string, error){

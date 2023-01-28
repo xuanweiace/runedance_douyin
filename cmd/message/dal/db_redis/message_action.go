@@ -4,20 +4,20 @@ import(
 	"context"
 	"time"
 	"encoding/json"
+	"runedance_douyin/kitex_gen/message"
 )
 
 
 func HandleMessageSend (ctx context.Context, userId string, toUserId string, actionType int32, content string)  error{
 	keyname := GenerateKeyname(userId, toUserId)
-	
+	cur_time := time.Now().String()
 	// store message into a map
-	m := make(map[string]string)
-	m["userId"] = userId
-	m["toUserId"] = toUserId
-	m["content"] = content
-	m["createTime"] = time.Now().String()
-
-	// convert map to json
+	m := message.Message{
+		Id: time.Now().Unix(),
+		Content: content,
+		CreateTime: &cur_time,
+	}
+	// convert m to json
 	jsonStr, err := json.Marshal(m)
 	if(err != nil){
 		return err

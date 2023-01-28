@@ -11,14 +11,7 @@ import (
 
 	"encoding/json"
 
-	"time"
 )
-type UserMessageRecord struct {
-	UserId		int64	 `redis:"userId"`
-	ToUserId    int64    `redis:"toUserId"`
-	Content     string   `redis:"content"`
-	CreateTime  string   `redis:"createTime"`
-}
 
 type GetMessageChatService struct {
 	ctx context.Context
@@ -34,42 +27,32 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	var fromResult []*message.Message
 
 	// "to" message
-	recordList1, err := db_redis.GetMessageChatJson(ctx, strconv.Itoa(int(userId)), strconv.Itoa(int(toUserId)))
+	recordList1, err := db_redis.GetMessageChatJson(ctx, strconv.FormatInt(userId, 10), strconv.FormatInt(toUserId, 10))
 	if(err != nil){
 		return result, err
 	}
 	// "from" message
-	recordList2, err2 := db_redis.GetMessageChatJson(ctx, strconv.Itoa(int(toUserId)), strconv.Itoa(int(userId)))
+	recordList2, err2 := db_redis.GetMessageChatJson(ctx, strconv.FormatInt(toUserId, 10), strconv.FormatInt(userId, 10))
 	if(err2 != nil){
 		return result, err2
 	}
 
 	// decode json into UserMessageRecord struct
 	for _, val := range recordList1 {
-		var record UserMessageRecord
 		var msg message.Message
-		err := json.Unmarshal([]byte(val), &record)
+		err := json.Unmarshal([]byte(val), &msg)
 		if(err != nil){
 			continue
 		}
-		// set msg fields
-		msg.Id = time.Now().Unix()
-		msg.Content = record.Content
-		msg.CreateTime = &record.CreateTime
 		toResult = append(toResult, &msg)
 	}
 
 	for _, val := range recordList2 {
-		var record UserMessageRecord
 		var msg message.Message
-		err := json.Unmarshal([]byte(val), &record)
+		err := json.Unmarshal([]byte(val), &msg)
 		if(err != nil){
 			continue
 		}
-		// set msg fields
-		msg.Id = time.Now().Unix()
-		msg.Content = record.Content
-		msg.CreateTime = &record.CreateTime
 		fromResult = append(fromResult, &msg)
 	}
 
