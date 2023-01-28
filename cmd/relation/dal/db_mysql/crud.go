@@ -50,3 +50,16 @@ func ListFolloweridsByUserid(userid int64) ([]int64, error) {
 	}
 	return res, nil
 }
+
+// 查看是否存在一对relation
+// 如果不存在则err=record not found（如果用Find方法则找不到也不会有err，返回零值）
+func QueryRelation(fansid, userid int64) (*Relation, error) {
+	relations := &Relation{}
+	//不加&会panic
+	if err := db.Where("fans_id = ? and user_id = ?", fansid, userid).First(relations).Error; err == nil {
+		return relations, err
+	} else {
+		return nil, err
+	}
+
+}

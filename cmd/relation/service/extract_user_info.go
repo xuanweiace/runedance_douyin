@@ -1,13 +1,16 @@
 package service
 
-import "strconv"
+import (
+	"runedance_douyin/pkg/tools"
+)
 
 // jwt_secret_key是一样的，已经写在constants里。
 func extract_user_id_from_jwt_token(token string) (int64, error) {
 	//todo 调用jwt得到用户id
-	user_id, err := strconv.ParseInt(token, 10, 64)
+	claims, err := tools.ParseToken(token)
+
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	return user_id, nil
+	return claims.User_id, nil
 }
