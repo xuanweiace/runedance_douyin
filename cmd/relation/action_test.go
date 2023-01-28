@@ -50,3 +50,12 @@ func TestQ_abc(t *testing.T) {
 	fmt.Println(intersection_of_id(a1, a2))
 
 }
+
+func Test_a(t *testing.T) {
+	a := 1
+	defer func() {
+		x := a
+		println(x)
+	}()
+	a = 2
+}

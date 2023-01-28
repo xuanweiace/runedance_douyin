@@ -109,9 +109,8 @@ func (q QueryService) existRelation(fans_id, user_id int64) bool {
 	return false
 }
 
-// todo  引入求集合交并补的第三方包 https://github.com/deckarep/golang-set
+// 求集合交并补的第三方包 https://github.com/deckarep/golang-set
 func intersection_of_id(arr1, arr2 []int64) (ret []int64) {
-
 	sets := make(map[int64]struct{})
 	for _, id := range arr1 {
 		sets[id] = struct{}{}
