@@ -6,13 +6,6 @@ import(
 	"encoding/json"
 )
 
-type UserMessageRecord struct {
-	UserId		int64	 `redis:"userId"`
-	ToUserId    int64    `redis:"toUserId"`
-	Content     string   `redis:"content"`
-	CreateTime  string   `redis:"createTime"`
-}
-
 
 func HandleMessageSend (ctx context.Context, userId string, toUserId string, actionType int32, content string)  error{
 	keyname := GenerateKeyname(userId, toUserId)

@@ -19,8 +19,5 @@ func NewMessageActionService(ctx context.Context) *MessageActionService {
 
 func (s *MessageActionService) MessageAction(ctx context.Context, userId int64, toUserId int64, actionType int32, content string) error{
 	err := db_redis.HandleMessageSend(ctx, strconv.Itoa(int(userId)),  strconv.Itoa(int(toUserId)), actionType, content)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

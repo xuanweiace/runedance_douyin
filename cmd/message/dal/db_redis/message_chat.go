@@ -1,34 +1,19 @@
 package db_redis
 
-import(
+import (
 	"context"
-	"runedance_douyin/kitex_gen/message"
-	"encoding/json"
-	"time"
+	// "encoding/json"
+	// "math"
+	// "runedance_douyin/kitex_gen/message"
+	// "time"
+
+	// "github.com/bytedance/gopkg/lang/stringx"
 )
 
-func GetMessageChat(ctx context.Context, userId string, toUserId string) ([]*message.Message, error){
-	var result []*message.Message
-	keyname := GenerateKeyname(userId, toUserId)
-	// get message record json string by keyname
-	recordList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
-	if(err != nil){
-		return result, err
-	}
-	// decode json into UserMessageRecord struct
-	for _, val := range recordList {
-		var record UserMessageRecord
-		var msg message.Message
-		err := json.Unmarshal([]byte(val), &record)
-		if(err != nil){
-			continue
-		}
-		// set msg fields
-		msg.Id = time.Now().Unix()
-		msg.Content = record.Content
-		msg.CreateTime = &record.CreateTime
-		result = append(result, &msg)
-	}
-	return result, nil
+func GetMessageChatJson(ctx context.Context, userId string, toUserId string) ([]string, error){
+	keyname1 := GenerateKeyname(userId, toUserId)
+	// get messageRecord json info by keyname
+	jsonList, err:= Rdb.LRange(ctx, keyname1, 0, Rdb.LLen(ctx, keyname1).Val()).Result()
+	return jsonList, err
 }
 
