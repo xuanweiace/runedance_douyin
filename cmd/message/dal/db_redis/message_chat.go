@@ -36,6 +36,7 @@ func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList 
 			continue
 		}
 		Err = Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
+		Rdb.Expire(ctx, keyname, 3600)     	// refresh keyname expiration 
 	}
 	return Err
 
