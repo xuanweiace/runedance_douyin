@@ -2,24 +2,46 @@ package db_redis
 
 import (
 	"context"
-	"strconv"
+	"runedance_douyin/kitex_gen/message"
+	"runedance_douyin/pkg/tools"
+	"encoding/json"
 )
 
 func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]string, error){
-	keyname1 := GenerateKeyname(userId, toUserId)
-	// get messageRecord json info by keyname
-	jsonList, err:= Rdb.LRange(ctx, keyname1, 0, Rdb.LLen(ctx, keyname1).Val()).Result()
-	return jsonList, err
-}
+	keyname := tools.GenerateKeyname(userId, toUserId)
+	// check if keyname exist in redis
+	exist := Rdb.Exists(ctx, keyname).Val()
 
+	if(exist == 2){				// get messageRecord json info by keyname in redis
+		jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
 
-// generation keyname by user_id and to_user_id
-func GenerateKeyname(userId int64, toUserId int64) (string){
-	var str string
-	if(userId < toUserId){
-		str = strconv.FormatInt(userId, 10) + "-" + strconv.FormatInt(toUserId, 10)
-		return str
+		// insert into mysqlDB and release redis memory
+
+		return jsonList, err
 	}
-	str = strconv.FormatInt(toUserId, 10) + "-" + strconv.FormatInt(userId, 10)
-	return str
+	return nil, nil    // keyname does not exist or stores nothing
 }
+
+
+
+// insert message chat into redis
+func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList []*message.Message) error{
+	keyname := tools.GenerateKeyname(userId, toUserId)
+	var Err error
+	for _, val := range msgList {
+		// encode message into json
+		jsonStr, err := json.Marshal(val)
+		if(err != nil){
+			Err = err
+			continue
+		}
+		Err = Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
+	}
+	return Err
+
+}
+
+
+
+
+
