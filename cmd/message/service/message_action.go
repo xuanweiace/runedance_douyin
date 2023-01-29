@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 
-	"strconv"
-
 	"runedance_douyin/cmd/message/dal/db_redis"
 
 )
@@ -18,6 +16,7 @@ func NewMessageActionService(ctx context.Context) *MessageActionService {
 }
 
 func (s *MessageActionService) MessageAction(ctx context.Context, userId int64, toUserId int64, actionType int32, content string) error{
-	err := db_redis.HandleMessageSend(ctx, strconv.Itoa(int(userId)),  strconv.Itoa(int(toUserId)), actionType, content)
+	err := db_redis.HandleMessageSend(ctx, userId,  toUserId, actionType, content)
 	return err
 }
+

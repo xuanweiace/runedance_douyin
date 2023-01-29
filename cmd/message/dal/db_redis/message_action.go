@@ -8,7 +8,7 @@ import(
 )
 
 
-func HandleMessageSend (ctx context.Context, userId string, toUserId string, actionType int32, content string)  error{
+func HandleMessageSend (ctx context.Context, userId int64, toUserId int64, actionType int32, content string)  error{
 	keyname := GenerateKeyname(userId, toUserId)
 	cur_time := time.Now().String()
 	// store message into a map
@@ -27,8 +27,3 @@ func HandleMessageSend (ctx context.Context, userId string, toUserId string, act
 	return error
 }
 
-// generation keyname by user_id and to_user_id
-func GenerateKeyname(userId string, toUserId string) (string){
-	str := userId + "-" + toUserId
-	return str
-}
