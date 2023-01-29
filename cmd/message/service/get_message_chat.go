@@ -72,9 +72,11 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	}
 	for(i < l1){
 		result = append(result, toResult[j])
+		i++
 	}
 	for(j < l2){
 		result = append(result, fromResult[j])
+		j++
 	}
 
 	return result, nil
