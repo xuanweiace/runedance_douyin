@@ -11,21 +11,82 @@ import (
 	"testing"
 )
 
-func TestRelationServiceImpl_ExecuteAction(t *testing.T) {
+var token_1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NTI0NTk0OH0.FE8HtdX4IekS0R89_hV5K5a-7k8-f9F7TfKebMIHiN0"
+
+func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	dal.Init()
 	/*	test_token
 		"username": "zxz",
 		"user_id": 1,
 	*/
-	test_token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NDkyMzc4Nn0.xNycv4CORlasadtYq0eYnczjdvcK0BrF-a9SKH-R3_g"
+	//test_token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NDkyMzc4Nn0.xNycv4CORlasadtYq0eYnczjdvcK0BrF-a9SKH-R3_g"
 	r := new(RelationServiceImpl)
 
-	resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-		Token:      test_token,
-		ToUserId:   2,
-		ActionType: 1,
-	})
-	fmt.Printf("resp:%+v, err:%+v", resp, err)
+	//插入关系(1,2)，预期插入成功且err=nil
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   2,
+			ActionType: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+	//再次插入关系(1,2)，预期插入成功且err=nil
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   2,
+			ActionType: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	// ActionType 参数错误
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   2,
+			ActionType: 0,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+		if err == nil {
+			t.Errorf("err should not be nil")
+		}
+	}
+
+	//ToUserId 参数错误 用户不存在
+	// todo 细化err
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   -1,
+			ActionType: 0,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+		if err == nil {
+			t.Errorf("err should not be nil")
+		}
+	}
+
+	//取消关系(1,2)，预期删除成功且err=nil
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   2,
+			ActionType: 2,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	//再次取消关系(1,2)，预期删除成功且err=nil
+	{
+		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
+			Token:      token_1,
+			ToUserId:   2,
+			ActionType: 2,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
 }
 
 func TestQueryService_GetFollowList(t *testing.T) {
@@ -34,11 +95,81 @@ func TestQueryService_GetFollowList(t *testing.T) {
 	fmt.Printf("relation:%+v, err=%v\n", queryRelation, err)
 }
 
+func TestRelationServiceImpl_GetFollowList(t *testing.T) {
+	dal.Init()
+	r := new(RelationServiceImpl)
+
+	//插入关系查询userid1的关注列表，预期返回数据且err=nil
+	{
+		resp, err := r.GetFollowList(context.Background(), &relation.GetFollowListRequest{
+			Token:  token_1,
+			UserId: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	//参数错误
+	{
+		resp, err := r.GetFollowList(context.Background(), &relation.GetFollowListRequest{
+			Token:  token_1,
+			UserId: 2,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+		if err == nil {
+			t.Errorf("err should not be nil")
+		}
+	}
+
+}
+
 func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
+	dal.Init()
+	r := new(RelationServiceImpl)
+
+	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
+	{
+		resp, err := r.GetFollowerList(context.Background(), &relation.GetFollowerListRequest{
+			Token:  token_1,
+			UserId: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
+	{
+		resp, err := r.GetFollowerList(context.Background(), &relation.GetFollowerListRequest{
+			Token:  token_1,
+			UserId: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+}
+
+func TestRelationServiceImpl_GetFriendList(t *testing.T) {
+	dal.Init()
+	r := new(RelationServiceImpl)
+
+	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
+	{
+		resp, err := r.GetFriendList(context.Background(), &relation.GetFriendListRequest{
+			Token:  token_1,
+			UserId: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
+	{
+		resp, err := r.GetFriendList(context.Background(), &relation.GetFriendListRequest{
+			Token:  token_1,
+			UserId: 1,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
 
 }
 func intersection_of_id(arr1, arr2 []int64) (ret []int64) {
-
 	sets := make(map[int64]struct{})
 	for _, id := range arr1 {
 		sets[id] = struct{}{}

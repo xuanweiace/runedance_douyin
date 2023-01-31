@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
 	"runedance_douyin/kitex_gen/relation"
 	"sync"
@@ -29,6 +30,10 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 	if err != nil {
 		return nil, err
 	}
+	if user_id != req.UserId {
+		return nil, errors.New("param UserId error")
+	}
+
 	// todo 是否需要 去user服务验证user是否存在？
 	userids, err := db_mysql.ListFollowidsByUserid(user_id)
 	if err != nil {
@@ -53,6 +58,9 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	user_id, err := extract_user_id_from_jwt_token(req.Token)
 	if err != nil {
 		return nil, err
+	}
+	if user_id != req.UserId {
+		return nil, errors.New("param UserId error")
 	}
 	// todo 是否需要 去user服务验证user是否存在？
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
@@ -80,6 +88,9 @@ func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*rela
 	user_id, err := extract_user_id_from_jwt_token(req.Token)
 	if err != nil {
 		return nil, err
+	}
+	if user_id != req.UserId {
+		return nil, errors.New("param UserId error")
 	}
 	//先找到user的粉丝
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
