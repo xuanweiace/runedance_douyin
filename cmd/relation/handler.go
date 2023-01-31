@@ -15,14 +15,12 @@ func (s *RelationServiceImpl) RelationAction(ctx context.Context, req *relation.
 	resp = relation.NewRelationActionResponse()
 	err = service.GetActionServiceInstance(ctx).ExecuteAction(req)
 	if err != nil {
-		resp.BaseResp.StatusCode = errnos.CodeServiceErr
-		er := err.Error() //todo 只能这样写？
-		resp.BaseResp.StatusMsg = &er
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
 	} else {
-		resp.BaseResp = &relation.BaseResponse{
-			StatusCode: 0,
-			StatusMsg:  nil,
-		}
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
 	}
 	return
 }
@@ -32,14 +30,12 @@ func (s *RelationServiceImpl) GetFollowList(ctx context.Context, req *relation.G
 	resp = relation.NewGetFollowListResponse()
 	userList, err := service.GetQueryServiceInstance(ctx).GetFollowList(req)
 	if err != nil {
-		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
-		resp.BaseResp.StatusMsg = &er
+		resp.StatusMsg = &er
 	} else {
-		resp.BaseResp = &relation.BaseResponse{
-			StatusCode: 0,
-			StatusMsg:  nil,
-		}
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
 		resp.UserList = userList
 	}
 	return
@@ -50,14 +46,12 @@ func (s *RelationServiceImpl) GetFollowerList(ctx context.Context, req *relation
 	resp = relation.NewGetFollowerListResponse()
 	followerList, err := service.GetQueryServiceInstance(ctx).GetFollowerList(req)
 	if err != nil {
-		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
-		resp.BaseResp.StatusMsg = &er
+		resp.StatusMsg = &er
 	} else {
-		resp.BaseResp = &relation.BaseResponse{
-			StatusCode: 0,
-			StatusMsg:  nil,
-		}
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
 		resp.UserList = followerList
 	}
 	return
@@ -68,14 +62,13 @@ func (s *RelationServiceImpl) GetFriendList(ctx context.Context, req *relation.G
 	resp = relation.NewGetFriendListResponse()
 	friendList, err := service.GetQueryServiceInstance(ctx).GetFriendList(req)
 	if err != nil {
-		resp.BaseResp.StatusCode = errnos.CodeServiceErr
+		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
-		resp.BaseResp.StatusMsg = &er
+		resp.StatusMsg = &er
 	} else {
-		resp.BaseResp = &relation.BaseResponse{
-			StatusCode: 0,
-			StatusMsg:  nil,
-		}
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+
 		resp.UserList = friendList
 	}
 	return

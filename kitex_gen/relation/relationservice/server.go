@@ -3,7 +3,7 @@ package relationservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	relation "runedance_douyin/cmd/relation/kitex_gen/relation"
+	relation "runedance_douyin/kitex_gen/relation"
 )
 
 // NewServer creates a server.Server with the given handler and options.
