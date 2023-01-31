@@ -12,7 +12,4 @@ ServiceName:
 etcd_address:
     127.0.0.1:2379
 RabiitMQ:
-    host: 127.0.0.1
-    port: 5672
-    username: guest
-    password: guest
+    url: amqp://guest:guest@localhost:5672/

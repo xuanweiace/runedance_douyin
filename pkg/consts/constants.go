@@ -20,6 +20,7 @@ var (
 	UserTableName string
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
+	//RabbitMQ
 )
 
 func InitRealation() {
@@ -61,7 +62,4 @@ func InitVideo() {
 	viper.AddConfigPath(work)
 	MySQLDefaultDSN = viper.GetString("DSN")
 	VideoTableName = viper.GetString("Table.Videos")
-}
-func InitRabbiltMQ() {
-
 }
