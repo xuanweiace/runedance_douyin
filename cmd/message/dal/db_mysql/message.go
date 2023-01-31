@@ -5,6 +5,7 @@ import (
 	"runedance_douyin/pkg/tools"
 )
 
+
 func InsertMessage(ctx context.Context, msgResordList []*MessageRecord) error {
 	err := db.WithContext(ctx).Create(msgResordList).Error
 	if(err != nil){
@@ -30,3 +31,5 @@ func GetMessageChat(ctx context.Context, userId int64, toUserId int64) ([]*Messa
 	}
 	return result, nil
 }
+
+

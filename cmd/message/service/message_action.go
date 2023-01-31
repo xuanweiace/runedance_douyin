@@ -5,6 +5,9 @@ import (
 
 	"runedance_douyin/cmd/message/dal/db_redis"
 
+	"runedance_douyin/cmd/message/middleware/asytask"
+
+
 )
 
 type MessageActionService struct {
@@ -17,6 +20,11 @@ func NewMessageActionService(ctx context.Context) *MessageActionService {
 
 func (s *MessageActionService) MessageAction(ctx context.Context, userId int64, toUserId int64, actionType int32, content string) error{
 	err := db_redis.HandleMessageSend(ctx, userId,  toUserId, actionType, content)
-	return err
+	if(err != nil){
+		return err
+	}
+	// set timed task to update mysql which will implement after 300s
+	err2 := asytask.AddNewTask(ctx, asytask.NewSyncTask(userId, toUserId), 300)
+	return err2
 }
 

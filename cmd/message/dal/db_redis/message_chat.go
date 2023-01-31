@@ -14,11 +14,9 @@ func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]st
 
 	if(exist == 2){				// get messageRecord json info by keyname in redis
 		jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
-
-		// insert into mysqlDB and release redis memory
-
 		return jsonList, err
 	}
+	
 	return nil, nil    // keyname does not exist or stores nothing
 }
 
