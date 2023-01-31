@@ -4,7 +4,6 @@ import (
 	"context"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
 	"runedance_douyin/kitex_gen/relation"
-	"runedance_douyin/pkg/tools"
 	"sync"
 )
 
@@ -24,12 +23,12 @@ func GetQueryServiceInstance(ctx context.Context) *QueryService {
 
 // todo 确定这里的返回值是relation.User还是db的user
 func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*relation.User, error) {
-	claims, err := tools.ParseToken(req.Token)
+
+	// check param
+	user_id, err := extract_user_id_from_jwt_token(req.Token)
 	if err != nil {
 		return nil, err
 	}
-
-	user_id := claims.User_id
 	// todo 是否需要 去user服务验证user是否存在？
 	userids, err := db_mysql.ListFollowidsByUserid(user_id)
 	if err != nil {
@@ -50,12 +49,11 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 }
 
 func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*relation.User, error) {
-	claims, err := tools.ParseToken(req.Token)
+	// check param
+	user_id, err := extract_user_id_from_jwt_token(req.Token)
 	if err != nil {
 		return nil, err
 	}
-
-	user_id := claims.User_id
 	// todo 是否需要 去user服务验证user是否存在？
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	if err != nil {
@@ -78,11 +76,11 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 }
 
 func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*relation.User, error) {
-	claims, err := tools.ParseToken(req.Token)
+	// check param
+	user_id, err := extract_user_id_from_jwt_token(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	user_id := claims.User_id
 	//先找到user的粉丝
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	followids, err := db_mysql.ListFollowidsByUserid(user_id)

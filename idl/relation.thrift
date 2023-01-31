@@ -1,16 +1,13 @@
 namespace go relation
 
-struct BaseResponse {
-    1: required i32 status_code;
-    2: optional string status_msg;
-}
 struct RelationActionRequest {
-    1: required string token (api.token="token")
+    1: required string token (api.query="token")
     2: required i64 to_user_id (api.query="to_user_id")
     3: required i32 action_type (api.query="action_type")
 }
 struct RelationActionResponse {
-    1: required BaseResponse base_resp
+    1: required i32 status_code;
+    2: optional string status_msg;
 }
 
 
@@ -24,32 +21,35 @@ struct User{
 
 struct GetFollowListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.token="token")
+    2:required  string token (api.query="token")
 }
 
 struct GetFollowListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 struct GetFollowerListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.token="token")
+    2:required  string token (api.query="token")
 }
 
 struct GetFollowerListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 struct GetFriendListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.token="token")
+    2:required  string token (api.query="token")
 }
 
 struct GetFriendListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 service RelationService{

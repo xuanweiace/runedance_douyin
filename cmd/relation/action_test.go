@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"runedance_douyin/cmd/relation/dal"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/pkg/tools"
 
 	"runedance_douyin/kitex_gen/relation"
 	"testing"
 )
 
-func TestActionService_ExecuteAction(t *testing.T) {
+func TestRelationServiceImpl_ExecuteAction(t *testing.T) {
+	dal.Init()
 	/*	test_token
 		"username": "zxz",
 		"user_id": 1,
@@ -30,6 +32,10 @@ func TestQueryService_GetFollowList(t *testing.T) {
 	dal.Init()
 	queryRelation, err := db_mysql.QueryRelation(1, 3)
 	fmt.Printf("relation:%+v, err=%v\n", queryRelation, err)
+}
+
+func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
+
 }
 func intersection_of_id(arr1, arr2 []int64) (ret []int64) {
 
@@ -58,4 +64,17 @@ func Test_a(t *testing.T) {
 		println(x)
 	}(a)
 	a = 2
+}
+
+func Test_jwt(t *testing.T) {
+	token, _ := tools.GenToken("zxz", 1)
+	println(token)
+	//过期时间一秒，则 err=token is expired by 3m8.0721174s
+	s := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NDkxMjg2MH0.vpY2d_pt3hDJs2erO42z94DrizoswhotjWpwE0xk81c"
+	//s2 := token
+	parseToken, err := tools.ParseToken(s)
+	fmt.Println(parseToken)
+
+	fmt.Println(err)
+
 }
