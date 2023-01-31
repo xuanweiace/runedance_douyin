@@ -62,3 +62,6 @@ func InitVideo() {
 	MySQLDefaultDSN = viper.GetString("DSN")
 	VideoTableName = viper.GetString("Table.Videos")
 }
+func InitRabbiltMQ() {
+
+}
