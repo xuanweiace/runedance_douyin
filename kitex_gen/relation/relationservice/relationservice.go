@@ -6,7 +6,7 @@ import (
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
-	relation "runedance_douyin/cmd/relation/kitex_gen/relation"
+	relation "runedance_douyin/kitex_gen/relation"
 )
 
 func serviceInfo() *kitex.ServiceInfo {

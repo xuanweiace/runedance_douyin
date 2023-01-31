@@ -4,7 +4,7 @@ package relationservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	relation "runedance_douyin/cmd/relation/kitex_gen/relation"
+	relation "runedance_douyin/kitex_gen/relation"
 )
 
 // NewInvoker creates a server.Invoker with the given handler and options.
