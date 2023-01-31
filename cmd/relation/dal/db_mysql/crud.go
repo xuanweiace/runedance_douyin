@@ -28,7 +28,7 @@ func DeleteRelation(relation *Relation) error {
 // 获取一个用户的关注id列表
 func ListFollowidsByUserid(userid int64) ([]int64, error) {
 	follows := make([]*Relation, 0)
-	if err := db.Where("fans_id = ?", userid).Find(follows).Error; err != nil {
+	if err := db.Where("fans_id = ?", userid).Find(&follows).Error; err != nil {
 		return nil, err
 	}
 	res := make([]int64, 0)
@@ -41,7 +41,7 @@ func ListFollowidsByUserid(userid int64) ([]int64, error) {
 // 获取一个用户的粉丝id列表
 func ListFolloweridsByUserid(userid int64) ([]int64, error) {
 	followers := make([]*Relation, 0)
-	if err := db.Where("user_id = ?", userid).Find(followers).Error; err != nil {
+	if err := db.Where("user_id = ?", userid).Find(&followers).Error; err != nil {
 		return nil, err
 	}
 	res := make([]int64, 0)

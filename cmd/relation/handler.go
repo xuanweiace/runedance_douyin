@@ -12,6 +12,7 @@ type RelationServiceImpl struct{}
 
 // RelationAction implements the RelationServiceImpl interface.
 func (s *RelationServiceImpl) RelationAction(ctx context.Context, req *relation.RelationActionRequest) (resp *relation.RelationActionResponse, err error) {
+	//幂等接口
 	resp = relation.NewRelationActionResponse()
 	err = service.GetActionServiceInstance(ctx).ExecuteAction(req)
 	if err != nil {
