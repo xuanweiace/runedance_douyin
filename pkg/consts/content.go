@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	MySQLDefaultDSN string = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+	MySQLDefaultDSN string
 	//relation
 	RelationTableName   string = "relation"
 	RelationServiceName string = "relation_service"
@@ -31,12 +31,8 @@ func readInfo() {
 	if err != nil {
 		errnos.Wrap(err, "读取配置文件问题")
 	}
-	account := viper.GetString("DSN.account")
-	password := viper.GetString("DSN.password")
-	dbname := viper.GetString("DSN.Dbname")
-	host := viper.GetString("DSN.host")
 	//读取正式内容
-	MySQLDefaultDSN = account + ":" + password + "@tcp(localhost:" + host + ")/" + dbname + "?charset=utf8&parseTime=True&loc=Local"
+	MySQLDefaultDSN = viper.GetString("DSN.")
 	RelationTableName = viper.GetString("Table.relation")
 	RelationServiceName = viper.GetString("ServiceName")
 	EtcdAddress = viper.GetString("etcd.address")
