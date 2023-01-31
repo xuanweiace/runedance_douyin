@@ -1,11 +1,13 @@
-DSN:
-  root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local
+DSN: "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 Table:
-    realation:
-      relation
-    #这里自己加表名吧
+  realation:
+    relation
+  user:
+    uesr
+  videos:
+    videos
+  #这里自己加表名吧
 ServiceName:
   relation_service
-etcd:
-    address:
-        127.0.0.1:2379
+etcd_address:
+    127.0.0.1:2379
