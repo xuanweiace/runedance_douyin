@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
+	"runedance_douyin/kitex_gen/user"
 	"sync"
 )
 
@@ -34,21 +36,21 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 		return nil, errors.New("param UserId error")
 	}
 
-	// todo 是否需要 去user服务验证user是否存在？
+	// 去user服务验证user是否存在
+	if _, err := rpc.GetUser(user_id); err != nil {
+		return nil, err
+	}
+
 	userids, err := db_mysql.ListFollowidsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
-	// todo 调用rpc-user去查询用户信息并构造relation.User
+	//调用rpc-user去查询用户信息并构造relation.User
 	userList := []*relation.User{}
 	for _, userid := range userids {
-		userList = append(userList, &relation.User{
-			Id:            userid,
-			Name:          "todo",
-			FollowCount:   nil,
-			FollowerCount: nil,
-			IsFollow:      true,
-		})
+		usr := fill_user_info(userid)
+		usr.IsFollow = true
+		userList = append(userList, usr)
 	}
 	return userList, nil
 }
@@ -62,23 +64,23 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	if user_id != req.UserId {
 		return nil, errors.New("param UserId error")
 	}
-	// todo 是否需要 去user服务验证user是否存在？
+
+	// 去user服务验证user是否存在
+	if _, err := rpc.GetUser(user_id); err != nil {
+		return nil, err
+	}
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
-	// todo 调用rpc-user去查询用户信息并构造relation.User
+	// 调用rpc-user去查询用户信息并构造relation.User
 	fansList := []*relation.User{}
 	for _, fansid := range fansids {
+		fans := fill_user_info(fansid)
 		//查看user是否关注了他的fans
 		existRelation := q.existRelation(fansid, user_id)
-		fansList = append(fansList, &relation.User{
-			Id:            fansid,
-			Name:          "todo",
-			FollowCount:   nil,
-			FollowerCount: nil,
-			IsFollow:      existRelation,
-		})
+		fans.IsFollow = existRelation
+		fansList = append(fansList, fans)
 	}
 	return fansList, nil
 }
@@ -92,19 +94,19 @@ func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*rela
 	if user_id != req.UserId {
 		return nil, errors.New("param UserId error")
 	}
+
+	// 去user服务验证user是否存在
+	if _, err := rpc.GetUser(user_id); err != nil {
+		return nil, err
+	}
+
 	//先找到user的粉丝
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	followids, err := db_mysql.ListFollowidsByUserid(user_id)
 	friendids := intersection_of_id(fansids, followids)
 	friendList := []*relation.User{}
 	for _, id := range friendids {
-		friendList = append(friendList, &relation.User{
-			Id:            id,
-			Name:          "todo",
-			FollowCount:   nil,
-			FollowerCount: nil,
-			IsFollow:      true,
-		})
+		friendList = append(friendList, fill_user_info(id))
 	}
 	return friendList, nil
 }
@@ -130,4 +132,24 @@ func intersection_of_id(arr1, arr2 []int64) (ret []int64) {
 		}
 	}
 	return ret
+}
+
+func fill_user_info(id int64) *relation.User {
+	usr, err := rpc.GetUser(id)
+	if err != nil {
+		usr = &user.User{
+			UserId:        id,
+			Username:      "user not exist",
+			FollowCount:   nil,
+			FollowerCount: nil,
+			IsFollow:      false,
+		}
+	}
+	return &relation.User{
+		Id:            id,
+		Name:          usr.Username,
+		FollowCount:   usr.FollowCount,
+		FollowerCount: usr.FollowerCount,
+		IsFollow:      true,
+	}
 }
