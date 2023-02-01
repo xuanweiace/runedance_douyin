@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"runedance_douyin/cmd/relation/dal"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/pkg/tools"
 
 	"runedance_douyin/kitex_gen/relation"
@@ -13,8 +14,12 @@ import (
 
 var token_1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NTI0NTk0OH0.FE8HtdX4IekS0R89_hV5K5a-7k8-f9F7TfKebMIHiN0"
 
-func TestRelationServiceImpl_RelationAction(t *testing.T) {
+func InitEnv() {
 	dal.Init()
+	rpc.Init()
+}
+func TestRelationServiceImpl_RelationAction(t *testing.T) {
+	InitEnv()
 	/*	test_token
 		"username": "zxz",
 		"user_id": 1,
@@ -90,13 +95,13 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 }
 
 func TestQueryService_GetFollowList(t *testing.T) {
-	dal.Init()
+	InitEnv()
 	queryRelation, err := db_mysql.QueryRelation(1, 3)
 	fmt.Printf("relation:%+v, err=%v\n", queryRelation, err)
 }
 
 func TestRelationServiceImpl_GetFollowList(t *testing.T) {
-	dal.Init()
+	InitEnv()
 	r := new(RelationServiceImpl)
 
 	//插入关系查询userid1的关注列表，预期返回数据且err=nil
@@ -123,7 +128,7 @@ func TestRelationServiceImpl_GetFollowList(t *testing.T) {
 }
 
 func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
-	dal.Init()
+	InitEnv()
 	r := new(RelationServiceImpl)
 
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
@@ -147,7 +152,7 @@ func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
 }
 
 func TestRelationServiceImpl_GetFriendList(t *testing.T) {
-	dal.Init()
+	InitEnv()
 	r := new(RelationServiceImpl)
 
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil

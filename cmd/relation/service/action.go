@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
 	constants "runedance_douyin/pkg/consts"
 	"sync"
@@ -35,11 +36,15 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 	if req.ActionType != constants.ActionType_AddRelation && req.ActionType != constants.ActionType_RemoveRelation {
 		return errors.New("[action] req param err: ActionType must be 1 or 2")
 	}
-
+	// todo 这个逻辑？
 	if user_id == to_user_id {
 		return errors.New("[action] req param err: user_id can not be same")
 	}
-	//todo 校验用户是否存在
+
+	// 校验用户是否存在
+	if _, err := rpc.GetUser(user_id); err != nil {
+		return err
+	}
 	if req.ActionType == constants.ActionType_AddRelation {
 		if err := a.follow(user_id, to_user_id); err != nil {
 			return err

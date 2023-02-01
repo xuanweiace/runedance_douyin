@@ -5,7 +5,8 @@ const (
 	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 	//user
-	JWTSecketKey = "runedance"
+	JWTSecketKey    = "runedance"
+	UserServiceName = "user_service"
 
 	//relation
 	RelationTableName         = "relation"
