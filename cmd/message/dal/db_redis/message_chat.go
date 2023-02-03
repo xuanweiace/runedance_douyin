@@ -7,19 +7,12 @@ import (
 	"encoding/json"
 )
 
+// get messageRecord json info by keyname in redis
 func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]string, error){
 	keyname := tools.GenerateKeyname(userId, toUserId)
-	// check if keyname exist in redis
-	exist := Rdb.Exists(ctx, keyname).Val()
-
-	if(exist == 2){				// get messageRecord json info by keyname in redis
-		jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
-		return jsonList, err
-	}
-	
-	return nil, nil    // keyname does not exist or stores nothing
+	jsonList, err:= Rdb.LRange(ctx, keyname, 0, 10).Result()
+	return jsonList, err
 }
-
 
 
 // insert message chat into redis
@@ -37,10 +30,11 @@ func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList 
 		Rdb.Expire(ctx, keyname, 3600)     	// refresh keyname expiration 
 	}
 	return Err
-
 }
 
 
 
+// key userId - toUserid : [taskIda, ]
+// a. Taska (t1 + 5min)  b. taskb (t2 + 5min)
 
 

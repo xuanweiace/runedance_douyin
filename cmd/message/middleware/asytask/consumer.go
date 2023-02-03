@@ -1,13 +1,26 @@
 package asytask
 
 import (
-	"runedance_douyin/cmd/message/dal/db_redis"
-	"runedance_douyin/cmd/message/dal/db_mysql"
-	"runedance_douyin/kitex_gen/message"
 	"context"
 	"encoding/json"
+	"errors"
+	"runedance_douyin/cmd/message/dal/db_mysql"
+	"runedance_douyin/cmd/message/dal/db_redis"
+	"runedance_douyin/kitex_gen/message"
 	"runedance_douyin/pkg/tools"
+
+	"github.com/hibiken/asynq"
 )
+
+// method to handle task
+func SyncTaskHandler(ctx context.Context, task *asynq.Task) error {
+	var m TaskPlayload
+	err := json.Unmarshal(task.Payload(), &m)
+	if(err != nil){
+		return err
+	}
+	return TransMsgFromRedisToDB(ctx, m.UserId, m.ToUserId)	
+}
 
 
 // sync DB with redis
@@ -18,8 +31,8 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 	}
 	var messageRecordList []*db_mysql.MessageRecord
 
-	if(redis_msg == nil){								
-		return nil
+	if(len(redis_msg) == 0){								
+		return errors.New("no new message chat")
 	}
 
 	// get latest sync timestamp 
@@ -39,10 +52,9 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 			continue
 		}
 		msgRecord := db_mysql.MessageRecord{
-			ID : msg.Id,
 			UserToUser: tools.GenerateKeyname(userId, toUserId),
 			Content : msg.Content,
-			CreateTime : *msg.CreateTime, 
+			CreateTime : msg.CreateTime, 
 		}
 		messageRecordList = append(messageRecordList, &msgRecord)
 		newLatest = msg.Id

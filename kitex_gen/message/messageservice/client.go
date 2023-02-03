@@ -53,5 +53,3 @@ func (p *kMessageServiceClient) GetMessageChat(ctx context.Context, req *message
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetMessageChat(ctx, req)
 }
-
-

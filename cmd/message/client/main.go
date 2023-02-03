@@ -22,14 +22,14 @@ func main() {
 	}
 
 	for{
-		token, _ := tools.GenToken("test_user", 100)
-		token2, _ := tools.GenToken("test_toUser", 101)
+		token, _ := tools.GenToken("test_user", 102)
+		token2, _ := tools.GenToken("test_toUser", 103)
 		// test MessageAction
 		// send message
 		log.Println("user100 send message to user101")
 		msgActionReq := &message.MessageActionRequest{
 			Token: token,
-			ToUserId: 101,
+			ToUserId: 103,
 			ActionType: 1,
 			Content: "send test message",
 		}
@@ -45,7 +45,7 @@ func main() {
 		log.Println("user101 reply to user100")
 		msgActionReq2 := &message.MessageActionRequest{
 			Token: token2,
-			ToUserId: 100,
+			ToUserId: 102,
 			ActionType: 1,
 			Content: "reply test message",
 		}
@@ -62,7 +62,7 @@ func main() {
 		log.Println("get message chat between user100 and user101")
 		msgChatReq := &message.GetMessageChatRequest{
 			Token: token,
-			ToUserId: 101,
+			ToUserId: 103,
 		}
 		// log.Println(msgChatReq)
 		resp2, err2 := client.GetMessageChat(context.Background(), msgChatReq)

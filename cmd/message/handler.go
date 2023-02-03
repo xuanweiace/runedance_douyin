@@ -21,21 +21,22 @@ func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.Mes
 	claims, err := tools.ParseToken(req.Token)	
 	if(err != nil) {
 		msg = err.Error()
-		resp.StatusMsg = &msg
+		resp.StatusMsg = msg
 		return resp, err
 	}
 	err2 := service.NewMessageActionService(ctx).MessageAction(ctx, claims.User_id, req.ToUserId, req.ActionType, req.Content)
 	
 	if(err2 != nil){
 		msg = err2.Error()
-		resp.StatusMsg = &msg
+		resp.StatusMsg = msg
 		return resp, err2
 	}
 	msg = "success"
-	resp.StatusMsg = &msg
+	resp.StatusMsg = msg
 	resp.StatusCode = 0
 	return resp, nil
 }
+
 
 // GetMessageChat implements the MessageServiceImpl interface.
 func (s *MessageServiceImpl) GetMessageChat(ctx context.Context, req *message.GetMessageChatRequest) (*message.GetMessageChatResponse, error) {
@@ -48,19 +49,23 @@ func (s *MessageServiceImpl) GetMessageChat(ctx context.Context, req *message.Ge
 	claims, err := tools.ParseToken(req.Token)	
 	if(err != nil) {
 		msg = err.Error()
-		resp.StatusMsg = &msg
+		resp.StatusMsg = msg
 		return resp, err
 	}
 
 	messageList, err2 := service.NewGetMessageChatService(ctx).GetMessageChat(ctx, claims.User_id, req.ToUserId)
 	if(err2 != nil){
 		msg = err2.Error()
-		resp.StatusMsg = &msg
+		resp.StatusMsg = msg
 		return resp, err2
 	}
 	msg = "success"
 	resp.StatusCode = 0
-	resp.StatusMsg = &msg
+	resp.StatusMsg = msg
 	resp.MsgList = messageList
 	return resp, nil
 }
+
+
+
+

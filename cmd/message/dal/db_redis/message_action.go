@@ -11,23 +11,20 @@ import(
 
 func HandleMessageSend (ctx context.Context, userId int64, toUserId int64, actionType int32, content string)  error{
 	keyname := tools.GenerateKeyname(userId, toUserId)
-	cur_time := time.Now().String()
 	// store message into a map
 	m := message.Message{
 		Id: time.Now().Unix(),
 		Content: content,
-		CreateTime: &cur_time,
+		CreateTime: time.Now().String(),
 	}
 	// encode m to json
 	jsonStr, err := json.Marshal(m)
 	if(err != nil){
 		return err
 	}
-
 	// store json string in redis with key being the keyname generated based on userId and toUserId
 	error := Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
-	Rdb.Expire(ctx, keyname, 3600)       		// refreshing exprie time to 1h
-	
+	Rdb.ExpireAt(ctx, keyname, time.Now().Add(time.Hour))       		// refreshing exprie time to 1h
 	return error
 }
 
@@ -47,4 +44,9 @@ func SetTimestampOfLatestMysql(ctx context.Context, userId int64, toUserId int64
 	key := tools.GenerateKeyname(userId, toUserId) + "-latest"
 	return Rdb.Set(ctx, key, strconv.FormatInt(timestamp, 10), 3600).Err()
 }
+
+
+
+// userId-toUserId: [] 
+
 

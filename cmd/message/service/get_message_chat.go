@@ -22,13 +22,13 @@ func NewGetMessageChatService(ctx context.Context) *GetMessageChatService {
 
 func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64, toUserId int64) ([]*message.Message, error){
 	var result []*message.Message
-
 	recordList, err := db_redis.GetMessageChatJson(ctx, userId, toUserId)
 	if(err != nil){
 		return result, err
 	}
-	if(recordList != nil){									// keyname stores values in redis
-		// decode json into Message struct
+
+	if(len(recordList) != 0){													// keyname stores values in redis
+	// 	decode json into Message struct
 		for _, val := range recordList {
 			var msg message.Message
 			err := json.Unmarshal([]byte(val), &msg)
@@ -47,9 +47,9 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	}
 	for _, val := range recordListSQL {
 		msg := message.Message{
-			Id : val.ID,
+			Id : val.Timestamp,
 			Content : val.Content,
-			CreateTime : &val.CreateTime, 
+			CreateTime : val.CreateTime, 
 		}
 		result = append(result, &msg)
 	}
@@ -60,5 +60,4 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 		return result, err3
 	}
 	return result, nil
-
 }

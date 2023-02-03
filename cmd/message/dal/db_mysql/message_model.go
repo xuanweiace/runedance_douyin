@@ -8,7 +8,7 @@ const TableNameMessage string = "message"
 
 type MessageRecord struct {
 	gorm.Model
-	ID      	  int64        `json:"id"`
+	Timestamp     int64		   `json:"timestamp"`
 	UserToUser    string	   `json:"user_to_user"`
 	Content       string	   `json:"content"`
 	CreateTime    string	   `json:"create_time"`
@@ -17,3 +17,6 @@ type MessageRecord struct {
 func (u *MessageRecord) TableName() string {
 	return TableNameMessage
 }
+
+
+// mod(hash) 分表 

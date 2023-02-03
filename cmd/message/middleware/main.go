@@ -1,10 +1,10 @@
-package middleware
+package main
 
 import (
 	"runedance_douyin/cmd/message/middleware/asytask"
 
 )
 
-func Init(){
+func main(){
 	asytask.Init()
 }

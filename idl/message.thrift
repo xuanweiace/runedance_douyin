@@ -8,12 +8,12 @@ struct GetMessageChatRequest {
 struct Message {
     1: required i64 id;
     2: required string content;
-    3: optional string create_time;
+    3: required string create_time;
 }
 
 struct GetMessageChatResponse {
     1: required i32 status_code;
-    2: optional string status_msg; 
+    2: required string status_msg; 
     3: required list<Message> msg_list;
 }
 
@@ -26,7 +26,7 @@ struct MessageActionRequest {
 
 struct MessageActionResponse {
     1: required i32 status_code;
-    2: optional string status_msg;
+    2: required string status_msg;
 }
 
 
