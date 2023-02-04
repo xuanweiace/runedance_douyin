@@ -16,36 +16,4 @@ import (
 // Register register routes based on the IDL 'api.${HTTP Method}' annotation.
 func Register(r *server.Hertz) {
 
-	root := r.Group("/", rootMw()...)
-	{
-		_douyin := root.Group("/douyin", _douyinMw()...)
-		{
-			_relation := _douyin.Group("/relation", _relationMw()...)
-			{
-				_action := _relation.Group("/action", _actionMw()...)
-				_action.POST("/", append(_relation_ctionMw(), relation.RelationAction)...)
-			}
-			{
-				_follow := _relation.Group("/follow", _followMw()...)
-				{
-					_list := _follow.Group("/list", _listMw()...)
-					_list.GET("/", append(_getfollowlistMw(), relation.GetFollowList)...)
-				}
-			}
-			{
-				_follower := _relation.Group("/follower", _followerMw()...)
-				{
-					_list0 := _follower.Group("/list", _list0Mw()...)
-					_list0.GET("/", append(_getfollowerlistMw(), relation.GetFollowerList)...)
-				}
-			}
-			{
-				_friend := _relation.Group("/friend", _friendMw()...)
-				{
-					_list1 := _friend.Group("/list", _list1Mw()...)
-					_list1.GET("/", append(_getfriendlistMw(), relation.GetFriendList)...)
-				}
-			}
-		}
-	}
 }
