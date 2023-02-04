@@ -23,6 +23,7 @@ func NewServiceInfo() *kitex.ServiceInfo {
 		"GetFollowList":   kitex.NewMethodInfo(getFollowListHandler, newRelationServiceGetFollowListArgs, newRelationServiceGetFollowListResult, false),
 		"GetFollowerList": kitex.NewMethodInfo(getFollowerListHandler, newRelationServiceGetFollowerListArgs, newRelationServiceGetFollowerListResult, false),
 		"GetFriendList":   kitex.NewMethodInfo(getFriendListHandler, newRelationServiceGetFriendListArgs, newRelationServiceGetFriendListResult, false),
+		"ExistRelation":   kitex.NewMethodInfo(existRelationHandler, newRelationServiceExistRelationArgs, newRelationServiceExistRelationResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "relation",
@@ -110,6 +111,24 @@ func newRelationServiceGetFriendListResult() interface{} {
 	return relation.NewRelationServiceGetFriendListResult()
 }
 
+func existRelationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*relation.RelationServiceExistRelationArgs)
+	realResult := result.(*relation.RelationServiceExistRelationResult)
+	success, err := handler.(relation.RelationService).ExistRelation(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newRelationServiceExistRelationArgs() interface{} {
+	return relation.NewRelationServiceExistRelationArgs()
+}
+
+func newRelationServiceExistRelationResult() interface{} {
+	return relation.NewRelationServiceExistRelationResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -155,6 +174,16 @@ func (p *kClient) GetFriendList(ctx context.Context, req *relation.GetFriendList
 	_args.Req = req
 	var _result relation.RelationServiceGetFriendListResult
 	if err = p.c.Call(ctx, "GetFriendList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ExistRelation(ctx context.Context, req *relation.ExistRelationRequest) (r *relation.ExistRelationResponse, err error) {
+	var _args relation.RelationServiceExistRelationArgs
+	_args.Req = req
+	var _result relation.RelationServiceExistRelationResult
+	if err = p.c.Call(ctx, "ExistRelation", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

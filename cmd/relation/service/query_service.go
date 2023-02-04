@@ -28,13 +28,7 @@ func GetQueryServiceInstance(ctx context.Context) *QueryService {
 func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*relation.User, error) {
 
 	// check param
-	user_id, err := extract_user_id_from_jwt_token(req.Token)
-	if err != nil {
-		return nil, err
-	}
-	if user_id != req.UserId {
-		return nil, errors.New("param UserId error")
-	}
+	user_id := req.UserId
 
 	// 去user服务验证user是否存在
 	if _, err := rpc.GetUser(user_id); err != nil {
@@ -57,10 +51,8 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 
 func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*relation.User, error) {
 	// check param
-	user_id, err := extract_user_id_from_jwt_token(req.Token)
-	if err != nil {
-		return nil, err
-	}
+	user_id := req.UserId
+
 	if user_id != req.UserId {
 		return nil, errors.New("param UserId error")
 	}
@@ -87,13 +79,7 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 
 func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*relation.User, error) {
 	// check param
-	user_id, err := extract_user_id_from_jwt_token(req.Token)
-	if err != nil {
-		return nil, err
-	}
-	if user_id != req.UserId {
-		return nil, errors.New("param UserId error")
-	}
+	user_id := req.UserId
 
 	// 去user服务验证user是否存在
 	if _, err := rpc.GetUser(user_id); err != nil {
@@ -102,13 +88,24 @@ func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*rela
 
 	//先找到user的粉丝
 	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
+	if err != nil {
+		return nil, err
+	}
 	followids, err := db_mysql.ListFollowidsByUserid(user_id)
+	if err != nil {
+		return nil, err
+	}
 	friendids := intersection_of_id(fansids, followids)
 	friendList := []*relation.User{}
 	for _, id := range friendids {
 		friendList = append(friendList, fill_user_info(id))
 	}
 	return friendList, nil
+}
+
+func (q QueryService) ExistRelation(req *relation.ExistRelationRequest) (bool, error) {
+	b := q.existRelation(req.FromUserId, req.ToUserId)
+	return b, nil
 }
 
 // todo 需要绑定在QueryService吗？

@@ -102,7 +102,9 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, req *user.DouyinUserReque
 	} else {
 		msg = "login failed"
 	}
-	resp.StatusCode = Failed
+	if err != nil {
+		resp.StatusCode = Failed
+	}
 	resp.StatusMsg = &msg
 	return resp, err
 }

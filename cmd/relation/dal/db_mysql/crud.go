@@ -1,8 +1,9 @@
 package db_mysql
 
 import (
-	"github.com/go-sql-driver/mysql"
 	"log"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func CreateRelation(relation *Relation) error {
