@@ -27,10 +27,7 @@ func GetActionServiceInstance(ctx context.Context) *ActionService {
 // todo 方法名要改
 func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error {
 	// check param
-	user_id, err := extract_user_id_from_jwt_token(req.Token)
-	if err != nil {
-		return err
-	}
+	user_id := req.FromUserId
 	to_user_id := req.ToUserId
 
 	if req.ActionType != constants.ActionType_AddRelation && req.ActionType != constants.ActionType_RemoveRelation {

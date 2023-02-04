@@ -30,7 +30,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	//插入关系(1,2)，预期插入成功且err=nil
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   2,
 			ActionType: 1,
 		})
@@ -39,7 +39,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	//再次插入关系(1,2)，预期插入成功且err=nil
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   2,
 			ActionType: 1,
 		})
@@ -49,7 +49,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	// ActionType 参数错误
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   2,
 			ActionType: 0,
 		})
@@ -63,7 +63,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	// todo 细化err
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   -1,
 			ActionType: 0,
 		})
@@ -76,7 +76,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	//取消关系(1,2)，预期删除成功且err=nil
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   2,
 			ActionType: 2,
 		})
@@ -86,7 +86,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	//再次取消关系(1,2)，预期删除成功且err=nil
 	{
 		resp, err := r.RelationAction(context.Background(), &relation.RelationActionRequest{
-			Token:      token_1,
+			FromUserId: 1,
 			ToUserId:   2,
 			ActionType: 2,
 		})
@@ -107,7 +107,6 @@ func TestRelationServiceImpl_GetFollowList(t *testing.T) {
 	//插入关系查询userid1的关注列表，预期返回数据且err=nil
 	{
 		resp, err := r.GetFollowList(context.Background(), &relation.GetFollowListRequest{
-			Token:  token_1,
 			UserId: 1,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -116,7 +115,6 @@ func TestRelationServiceImpl_GetFollowList(t *testing.T) {
 	//参数错误
 	{
 		resp, err := r.GetFollowList(context.Background(), &relation.GetFollowListRequest{
-			Token:  token_1,
 			UserId: 2,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -134,7 +132,6 @@ func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
 	{
 		resp, err := r.GetFollowerList(context.Background(), &relation.GetFollowerListRequest{
-			Token:  token_1,
 			UserId: 1,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -143,7 +140,6 @@ func TestRelationServiceImpl_GetFollowerList(t *testing.T) {
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
 	{
 		resp, err := r.GetFollowerList(context.Background(), &relation.GetFollowerListRequest{
-			Token:  token_1,
 			UserId: 1,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -158,7 +154,6 @@ func TestRelationServiceImpl_GetFriendList(t *testing.T) {
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
 	{
 		resp, err := r.GetFriendList(context.Background(), &relation.GetFriendListRequest{
-			Token:  token_1,
 			UserId: 1,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -167,7 +162,6 @@ func TestRelationServiceImpl_GetFriendList(t *testing.T) {
 	//插入关系查询userid1的粉丝列表，预期返回数据且err=nil
 	{
 		resp, err := r.GetFriendList(context.Background(), &relation.GetFriendListRequest{
-			Token:  token_1,
 			UserId: 1,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
@@ -213,4 +207,27 @@ func Test_jwt(t *testing.T) {
 
 	fmt.Println(err)
 
+}
+
+func Test_ExistRelation(t *testing.T) {
+	InitEnv()
+	r := new(RelationServiceImpl)
+
+	//查询已存在数据，预期返回True且err=nil
+	{
+		resp, err := r.ExistRelation(context.Background(), &relation.ExistRelationRequest{
+			FromUserId: 1,
+			ToUserId:   2,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+
+	//查询不存在数据，预期返回False且err=nil
+	{
+		resp, err := r.ExistRelation(context.Background(), &relation.ExistRelationRequest{
+			FromUserId: 1,
+			ToUserId:   2000,
+		})
+		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
 }
