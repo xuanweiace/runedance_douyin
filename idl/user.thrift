@@ -31,7 +31,7 @@ struct douyin_user_login_response {
 //用户信息接口
 struct douyin_user_request{
     1: required i64 user_id;
-    2: required string token;
+    2: required i64 my_user_id;
 }
 
 struct douyin_user_response{
@@ -53,3 +53,4 @@ service UserService {
      douyin_user_login_response UserLogin (1: douyin_user_login_request req)
      douyin_user_response GetUser (1: douyin_user_request req)
 }
+
