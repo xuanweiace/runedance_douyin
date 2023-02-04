@@ -98,7 +98,9 @@ func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest
 	} else {
 		msg = "get user information failed"
 	}
-	resp.StatusCode = Failed
+	if err != nil {
+		resp.StatusCode = Failed
+	}
 	resp.StatusMsg = &msg
 	return resp, err
 }
