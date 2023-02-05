@@ -25,6 +25,7 @@ var (
 
 func InitRealation() {
 	work, err := os.Getwd()
+
 	if err != nil {
 		str := "获取错误路径出现问题"
 		errnos.Wrap(err, str)
