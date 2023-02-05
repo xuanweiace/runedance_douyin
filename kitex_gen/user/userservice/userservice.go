@@ -22,6 +22,7 @@ func NewServiceInfo() *kitex.ServiceInfo {
 		"UserRegister": kitex.NewMethodInfo(userRegisterHandler, newUserServiceUserRegisterArgs, newUserServiceUserRegisterResult, false),
 		"UserLogin":    kitex.NewMethodInfo(userLoginHandler, newUserServiceUserLoginArgs, newUserServiceUserLoginResult, false),
 		"GetUser":      kitex.NewMethodInfo(getUserHandler, newUserServiceGetUserArgs, newUserServiceGetUserResult, false),
+		"UpdateUser":   kitex.NewMethodInfo(updateUserHandler, newUserServiceUpdateUserArgs, newUserServiceUpdateUserResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "user",
@@ -91,6 +92,24 @@ func newUserServiceGetUserResult() interface{} {
 	return user.NewUserServiceGetUserResult()
 }
 
+func updateUserHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*user.UserServiceUpdateUserArgs)
+	realResult := result.(*user.UserServiceUpdateUserResult)
+	success, err := handler.(user.UserService).UpdateUser(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newUserServiceUpdateUserArgs() interface{} {
+	return user.NewUserServiceUpdateUserArgs()
+}
+
+func newUserServiceUpdateUserResult() interface{} {
+	return user.NewUserServiceUpdateUserResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -126,6 +145,16 @@ func (p *kClient) GetUser(ctx context.Context, req *user.DouyinUserRequest) (r *
 	_args.Req = req
 	var _result user.UserServiceGetUserResult
 	if err = p.c.Call(ctx, "GetUser", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) UpdateUser(ctx context.Context, req *user.DouyinUserUpdateRequest) (r *user.DouyinUserUpdateResponse, err error) {
+	var _args user.UserServiceUpdateUserArgs
+	_args.Req = req
+	var _result user.UserServiceUpdateUserResult
+	if err = p.c.Call(ctx, "UpdateUser", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
