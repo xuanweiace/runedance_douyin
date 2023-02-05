@@ -1,4 +1,4 @@
-package consts
+package tools
 
 import (
 	"github.com/importcjj/sensitive"

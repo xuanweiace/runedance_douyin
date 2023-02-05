@@ -7,9 +7,15 @@ replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 require (
 	github.com/apache/thrift v0.17.0
 	github.com/cloudwego/hertz v0.5.2
+	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20230204112917-78c8960383b4
 	github.com/cloudwego/kitex v0.4.4
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gomodule/redigo v1.8.9
+	github.com/hertz-contrib/jwt v1.0.2
+	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b
+	github.com/pkg/errors v0.9.1
+	github.com/streadway/amqp v1.0.0
 	gorm.io/driver/mysql v1.4.4
 	gorm.io/gorm v1.24.3
 	gorm.io/plugin/opentelemetry v0.1.0
@@ -29,7 +35,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/pprof v0.0.0-20220608213341-c488b8fa1db3 // indirect
 	github.com/henrylee2cn/ameda v1.4.10 // indirect
@@ -44,7 +49,7 @@ require (
 	github.com/nyaruka/phonenumbers v1.0.55 // indirect
 	github.com/oleiade/lane v1.0.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/tidwall/gjson v1.13.0 // indirect
+	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
