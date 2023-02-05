@@ -2,11 +2,12 @@ package db_mysql
 
 import (
 	"errors"
-	"github.com/gomodule/redigo/redis"
-	"gorm.io/gorm"
 	"runedance_douyin/pkg"
 	constants "runedance_douyin/pkg/consts"
 	"sync"
+
+	"github.com/gomodule/redigo/redis"
+	"gorm.io/gorm"
 )
 
 func MySQLInit() {
@@ -84,18 +85,19 @@ func (u *UserDaoImpl) LastId() int64 {
 
 func (u *UserDaoImpl) UpdateFollow(userid int64, followDiff int64) error {
 	var getUser = &User{}
-	err := u.db.Model(&User{}).Where("user_id=?", userid).First(getUser)
+	err := u.db.Model(&User{}).Where("user_id = ?", userid).First(getUser).Error
 	if err != nil {
-		return err.Error
+		return err
 	}
-	return u.db.Model(&User{}).Where("user_id=?", userid).Update("follow_count=?", followDiff+getUser.FollowCount).Error
+	res := u.db.Model(&User{}).Where("user_id = ?", userid).Update("follow_count", followDiff+getUser.FollowCount)
+	return res.Error
 }
 
 func (u *UserDaoImpl) UpdateFollower(userid int64, followerDiff int64) error {
 	var getUser = &User{}
-	err := u.db.Model(&User{}).Where("user_id=?", userid).First(getUser)
+	err := u.db.Model(&User{}).Where("user_id = ?", userid).First(getUser).Error
 	if err != nil {
-		return err.Error
+		return err
 	}
-	return u.db.Model(&User{}).Where("user_id=?", userid).Update("follower_count=?", followerDiff+getUser.FollowerCount).Error
+	return u.db.Model(&User{}).Where("user_id = ?", userid).Update("follower_count", followerDiff+getUser.FollowerCount).Error
 }
