@@ -1,0 +1,44 @@
+package rpc
+
+import (
+	"context"
+	"errors"
+	"runedance_douyin/kitex_gen/user"
+	"runedance_douyin/kitex_gen/user/userservice"
+	constants "runedance_douyin/pkg/consts"
+	"runedance_douyin/pkg/errnos"
+	"runedance_douyin/pkg/tools"
+	"time"
+
+	"github.com/cloudwego/kitex/client"
+	"github.com/cloudwego/kitex/client/callopt"
+)
+
+var userClient userservice.Client
+
+func initUser() {
+	// 好像0.0.0.0不行？在mac上
+	c, err := userservice.NewClient(constants.UserServiceName, client.WithHostPorts("127.0.0.1:8888"))
+
+	if err != nil {
+		panic(err)
+	}
+	userClient = c
+}
+
+func GetUser(user_id int64) (*user.User, error) {
+	token, _ := tools.GenToken("todo", user_id)
+
+	request := user.DouyinUserRequest{
+		UserId: user_id,
+		Token:  token,
+	}
+	response, err := userClient.GetUser(context.Background(), &request, callopt.WithRPCTimeout(10*time.Second))
+	if err != nil {
+		return nil, err
+	}
+	if response.StatusCode != errnos.CodeSuccess {
+		return nil, errors.New(*response.StatusMsg)
+	}
+	return response.GetUser(), nil
+}
