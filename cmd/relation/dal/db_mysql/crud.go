@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/go-sql-driver/mysql"
+	"gorm.io/gorm"
 )
 
 func CreateRelation(relation *Relation) error {
@@ -63,4 +64,10 @@ func QueryRelation(fansid, userid int64) (*Relation, error) {
 		return nil, err
 	}
 
+}
+
+func ExecFuncInTransaction(f func(tx *gorm.DB) error) error {
+	// err := f
+	err := db.Transaction(f)
+	return err
 }

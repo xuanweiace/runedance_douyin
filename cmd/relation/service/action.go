@@ -8,6 +8,8 @@ import (
 	"runedance_douyin/kitex_gen/relation"
 	constants "runedance_douyin/pkg/consts"
 	"sync"
+
+	"gorm.io/gorm"
 )
 
 type ActionService struct {
@@ -42,14 +44,31 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 	if _, err := rpc.GetUser(user_id); err != nil {
 		return err
 	}
-	if req.ActionType == constants.ActionType_AddRelation {
-		if err := a.follow(user_id, to_user_id); err != nil {
-			return err
+	if err := db_mysql.ExecFuncInTransaction(func(tx *gorm.DB) error {
+		if req.ActionType == constants.ActionType_AddRelation {
+			if err := a.follow(user_id, to_user_id); err != nil {
+				return err
+			}
+			if _, err := rpc.UpdateUser(user_id, 1, 0); err != nil {
+				return err
+			}
+			if _, err := rpc.UpdateUser(to_user_id, 0, 1); err != nil {
+				return err
+			}
+		} else if req.ActionType == constants.ActionType_RemoveRelation {
+			if err := a.unfollow(user_id, to_user_id); err != nil {
+				return err
+			}
+			if _, err := rpc.UpdateUser(user_id, -1, 0); err != nil {
+				return err
+			}
+			if _, err := rpc.UpdateUser(to_user_id, 0, -1); err != nil {
+				return err
+			}
 		}
-	} else if req.ActionType == constants.ActionType_RemoveRelation {
-		if err := a.unfollow(user_id, to_user_id); err != nil {
-			return err
-		}
+		return nil
+	}); err != nil {
+		return err
 	}
 	return nil
 }
