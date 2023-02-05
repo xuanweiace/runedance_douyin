@@ -3,13 +3,13 @@ package db_mysql
 const TableNameUser string = "user"
 
 type User struct {
-	UserId        int64
-	Username      string
-	Password      string
-	Avatar        string
-	Salt          string
-	FollowCount   int64
-	FollowerCount int64
+	UserId        int64  `gorm:"column:id;PRIMARY_KEY"`
+	Username      string `gorm:"column:username;UNIQUE"`
+	Password      string `gorm:"column:password;NOT NULL"`
+	Avatar        string `gorm:"column:avatar"`
+	Salt          string `gorm:"column:Salt"`
+	FollowCount   int64  `gorm:"column:follow_count"`
+	FollowerCount int64  `gorm:"column:follower_count"`
 }
 
 func (u *User) TableName() string {
