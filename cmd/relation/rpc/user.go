@@ -7,7 +7,6 @@ import (
 	"runedance_douyin/kitex_gen/user/userservice"
 	constants "runedance_douyin/pkg/consts"
 	"runedance_douyin/pkg/errnos"
-	"runedance_douyin/pkg/tools"
 	"time"
 
 	"github.com/cloudwego/kitex/client"
@@ -27,11 +26,10 @@ func initUser() {
 }
 
 func GetUser(user_id int64) (*user.User, error) {
-	token, _ := tools.GenToken("todo", user_id)
 
 	request := user.DouyinUserRequest{
-		UserId: user_id,
-		Token:  token,
+		UserId:   user_id,
+		MyUserId: user_id,
 	}
 	response, err := userClient.GetUser(context.Background(), &request, callopt.WithRPCTimeout(10*time.Second))
 	if err != nil {

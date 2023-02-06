@@ -9,7 +9,9 @@ import (
 func main() {
 	dal.Init()
 	svr := user.NewServer(new(UserServiceImpl))
+
 	err := svr.Run()
+
 	if err != nil {
 		log.Println(err.Error())
 	}

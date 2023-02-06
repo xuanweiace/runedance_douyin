@@ -104,3 +104,28 @@ func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest
 	resp.StatusMsg = &msg
 	return resp, err
 }
+
+// UpdateUser implements the UserServiceImpl interface.
+func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpdateRequest) (*user.DouyinUserUpdateResponse, error) {
+	resp := user.NewDouyinUserUpdateResponse()
+	var err error
+	if req.Followdiff != 0 {
+		err = db_mysql.GetUserService().UpdateUserFollow(req.UserId, req.Followdiff)
+		if err != nil {
+			resp.StatusCode = Failed
+			*resp.StatusMsg = "UpdateUserFollow failed"
+			return resp, err
+		}
+	}
+	if req.Followerdiff != 0 {
+		err = db_mysql.GetUserService().UpdateUserFollower(req.UserId, req.Followerdiff)
+		if err != nil {
+			resp.StatusCode = Failed
+			*resp.StatusMsg = "UpdateUserFollower failed"
+			return resp, err
+		}
+	}
+	resp.StatusCode = success
+	*resp.StatusMsg = "update done"
+	return resp, nil
+}

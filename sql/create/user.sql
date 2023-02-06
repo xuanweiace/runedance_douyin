@@ -1,4 +1,3 @@
--- Active: 1675424026470@@127.0.0.1@3306@douyin
 CREATE TABLE `douyin`.`user`
 (
     `user_id` bigint AUTO_INCREMENT,

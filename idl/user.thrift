@@ -48,9 +48,21 @@ struct User{
     5:required bool is_follow;
 }
 
+struct douyin_user_update_request{
+   1: required i64 user_id;
+   2: required i64 followdiff;
+   3: required i64 followerdiff;
+}
+
+struct douyin_user_update_response{
+    1: required i32 status_code;
+    2: optional string status_msg;
+}
+
 service UserService {
      douyin_user_register_response UserRegister (1:douyin_user_register_request req)
      douyin_user_login_response UserLogin (1: douyin_user_login_request req)
      douyin_user_response GetUser (1: douyin_user_request req)
+     douyin_user_update_response UpdateUser (1: douyin_user_update_request req)
 }
 
