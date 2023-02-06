@@ -18,3 +18,5 @@ pkg/consts/main.go
 .idea/
 .DS_Store
 log/
+go.mod
+go.sum
