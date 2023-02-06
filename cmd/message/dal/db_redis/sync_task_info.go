@@ -1,19 +1,16 @@
 package db_redis
 
-import(
+import (
 	"context"
 	"runedance_douyin/pkg/tools"
+	"time"
 )
 
 func GetPendingTaskIDs(ctx context.Context, userId int64, toUserId int64) ([]string, error){
 	keyname := tools.GenerateKeyname(userId, toUserId) + "-task"
 	// check if keyname exist in redis
-	exist := Rdb.Exists(ctx, keyname).Val()
-	if(exist == 2){				// get pending task id json info by keyname in redis
-		jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
-		return jsonList, err
-	}
-	return nil, nil    // keyname does not exist or stores nothing
+	jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
+	return jsonList, err
 }
 
 func ClearTaskList(ctx context.Context, userId int64, toUserId int64) error {
@@ -25,7 +22,7 @@ func ClearTaskList(ctx context.Context, userId int64, toUserId int64) error {
 func AddNewTask(ctx context.Context, userId int64, toUserId int64, taskId string) error {
 	keyname := tools.GenerateKeyname(userId, toUserId) + "-task"
 	err := Rdb.LPush(ctx, keyname, taskId).Err()
-	Rdb.Expire(ctx, keyname, 3600) 
+	Rdb.ExpireAt(ctx, keyname, time.Now().Add(time.Hour))    // set expire time 
 	return err
 }
 

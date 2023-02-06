@@ -21,8 +21,9 @@ func (s *MessageActionService) MessageAction(ctx context.Context, userId int64, 
 	if(err != nil){
 		return err
 	}
+
 	// set timed task to update mysql which will implement after 300s
-	err2 := asytask.AddNewTask(ctx, userId, toUserId , 300)
+	err2 := asytask.AddNewTask(ctx, userId, toUserId)
 	return err2
 }
 

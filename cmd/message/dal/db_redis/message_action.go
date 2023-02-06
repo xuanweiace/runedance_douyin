@@ -17,11 +17,13 @@ func HandleMessageSend (ctx context.Context, userId int64, toUserId int64, actio
 		Content: content,
 		CreateTime: time.Now().String(),
 	}
+
 	// encode m to json
 	jsonStr, err := json.Marshal(m)
 	if(err != nil){
 		return err
 	}
+	
 	// store json string in redis with key being the keyname generated based on userId and toUserId
 	error := Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
 	Rdb.ExpireAt(ctx, keyname, time.Now().Add(time.Hour))       		// refreshing exprie time to 1h

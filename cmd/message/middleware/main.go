@@ -6,5 +6,5 @@ import (
 )
 
 func main(){
-	asytask.Init()
+	asytask.InitServer()
 }

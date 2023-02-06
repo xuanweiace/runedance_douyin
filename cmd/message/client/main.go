@@ -64,7 +64,7 @@ func main() {
 			Token: token,
 			ToUserId: 103,
 		}
-		// log.Println(msgChatReq)
+		log.Println(msgChatReq)
 		resp2, err2 := client.GetMessageChat(context.Background(), msgChatReq)
 		if(err2 != nil){
 			log.Fatal(err2)
