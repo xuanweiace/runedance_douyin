@@ -5,11 +5,14 @@ package main
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	mw "runedance_douyin/middleware/jwt"
+
 )
 
 func main() {
 	h := server.Default()
+
 	h.Use(mw.MyJWT())
+
 	register(h)
 	h.Spin()
 }
