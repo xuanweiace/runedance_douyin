@@ -1,14 +1,15 @@
 package db_mysql
 
 import (
+	"log"
+	constants "runedance_douyin/pkg/consts"
+	"time"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/plugin/opentelemetry/logging/logrus"
 	"gorm.io/plugin/opentelemetry/tracing"
-	"log"
-	constants "runedance_douyin/pkg/consts"
-	"time"
 )
 
 // 小写即可，因为外部不需要持有db对象。所有db相关操作均在包内完成，对外只提供操作接口。
