@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/kitex_gen/user/userservice"
 	constants "runedance_douyin/pkg/consts"
@@ -16,7 +17,6 @@ import (
 var userClient userservice.Client
 
 func initUser() {
-	// 好像0.0.0.0不行？在mac上
 	c, err := userservice.NewClient(constants.UserServiceName, client.WithHostPorts("127.0.0.1:8888"))
 
 	if err != nil {
@@ -31,7 +31,8 @@ func GetUser(user_id int64) (*user.User, error) {
 		UserId:   user_id,
 		MyUserId: user_id,
 	}
-	response, err := userClient.GetUser(context.Background(), &request, callopt.WithRPCTimeout(10*time.Second))
+	response, err := userClient.GetUser(context.Background(), &request, callopt.WithRPCTimeout(3*time.Second))
+
 	if err != nil {
 		return nil, err
 	}
@@ -39,4 +40,21 @@ func GetUser(user_id int64) (*user.User, error) {
 		return nil, errors.New(*response.StatusMsg)
 	}
 	return response.GetUser(), nil
+}
+
+func UpdateUser(user_id, follow_diff, follower_diff int64) (bool, error) {
+	request := user.DouyinUserUpdateRequest{
+		UserId:       user_id,
+		Followdiff:   follow_diff,
+		Followerdiff: follower_diff,
+	}
+	response, err := userClient.UpdateUser(context.Background(), &request, callopt.WithRPCTimeout(3*time.Second))
+	if err != nil {
+		return false, err
+	}
+	if response.StatusCode != errnos.CodeSuccess {
+		err = fmt.Errorf("[Update User] update failed, StatusCode=%d", response.StatusCode)
+		return false, err
+	}
+	return true, nil
 }
