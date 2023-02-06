@@ -39,11 +39,13 @@ func MyJWT() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		auth := c.Query("token")
 		if len(auth) == 0 {
-			c.Abort()
+			/*c.Abort()
 			c.JSON(http.StatusUnauthorized, Response{
 				StatusCode: -1,
 				StatusMsg:  "Unauthorized",
-			})
+			})*/
+			//如果没有token字段，不附加userID和USERNAME
+			c.Next(ctx)
 		}
 		token, err := ParseToken(auth)
 		if err != nil {
@@ -55,6 +57,8 @@ func MyJWT() app.HandlerFunc {
 		} else {
 			println("token 正确")
 		}
+		//不知道后续怎么用加了个tokenflag
+		c.Set("token_f", 1)
 		c.Set("username", token.Username)
 		c.Set("user_id", token.User_id)
 		c.JSON(http.StatusOK, Response{
