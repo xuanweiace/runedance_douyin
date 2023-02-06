@@ -13,7 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-
+pkg/consts/main
+pkg/consts/main.go
 .idea/
 .DS_Store
 log/
+go.mod
+go.sum
