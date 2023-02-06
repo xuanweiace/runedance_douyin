@@ -37,17 +37,8 @@ cmd里放不同的微服务，kitex生成的代码都集中放到kitex_gen目录
 
 > 从编写idl到启动微服务
 
-*kitex生成代码命令*
-```bash
-kitex -module example -service example echo.thrift
-```
-
 1. 编写idl（参考relation.idl)
 2. 假设服务是xx，则新建cmd/xx目录，并在目录下调用kitex代码生成工具。（注意版本需要为v0.4.4.）
 3. 把生成的kitex_gen目录里的内容**移动**到最外层的kitex_gen目录中，其他内容保留在当前目录中即可。
 4. cmd/xx目录中的main.go就是我们的服务端启动的入口。(如果是goland编译器，可以直接点三角号)
 5. 在handler.go中实现业务逻辑即可。
->安装 RabbitMQ 链接  
-> https://blog.csdn.net/m0_37355951/article/details/117485528  
->https://developer.aliyun.com/article/769883
-1. 评论，关注 点赞 考虑做消息队列

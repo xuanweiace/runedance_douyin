@@ -1,10 +1,8 @@
 package errnos
 
 import (
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
-	"runtime"
-	"strconv"
 )
 
 const (
@@ -51,16 +49,4 @@ func ConvertErr(err error) ErrNo {
 	s := ServiceErr
 	s.ErrMsg = err.Error()
 	return s
-}
-func Wrap(err error, message string) error {
-	return errors.Wrap(err, "==> "+printCallerNameAndLine()+message)
-}
-
-func WithMessage(err error, message string) error {
-	return errors.WithMessage(err, "==> "+printCallerNameAndLine()+message)
-}
-
-func printCallerNameAndLine() string {
-	pc, _, line, _ := runtime.Caller(2)
-	return runtime.FuncForPC(pc).Name() + "()@" + strconv.Itoa(line) + ": "
 }

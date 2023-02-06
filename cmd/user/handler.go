@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"runedance_douyin/cmd/user/dal/db_mysql"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/tools"
@@ -20,7 +19,7 @@ var userIdSequence int64
 type UserServiceImpl struct{}
 
 // UserRegister implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UserRegister(_ context.Context, req *user.DouyinUserRegisterRequest) (*user.DouyinUserRegisterResponse, error) {
+func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUserRegisterRequest) (*user.DouyinUserRegisterResponse, error) {
 	//todo 账户密码校验
 	var msg string
 	resp := user.NewDouyinUserRegisterResponse()
@@ -59,7 +58,7 @@ func (s *UserServiceImpl) UserRegister(_ context.Context, req *user.DouyinUserRe
 }
 
 // UserLogin implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UserLogin(_ context.Context, req *user.DouyinUserLoginRequest) (*user.DouyinUserLoginResponse, error) {
+func (s *UserServiceImpl) UserLogin(ctx context.Context, req *user.DouyinUserLoginRequest) (*user.DouyinUserLoginResponse, error) {
 	// todo 账户密码校验
 	username := req.Username
 	password := req.Password
@@ -86,51 +85,24 @@ func (s *UserServiceImpl) UserLogin(_ context.Context, req *user.DouyinUserLogin
 }
 
 // GetUser implements the UserServiceImpl interface.
-func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest) (*user.DouyinUserResponse, error) {
+func (s *UserServiceImpl) GetUser(ctx context.Context, req *user.DouyinUserRequest) (*user.DouyinUserResponse, error) {
 	var msg string
 	var resp = user.NewDouyinUserResponse()
-	var err error
-	resp.User, err = db_mysql.GetUserService().GetUserById(req.UserId, req.MyUserId)
-	if err == nil {
-		resp.StatusCode = success
-		msg = "GetUser success"
-		resp.StatusMsg = &msg
-		return resp, nil
+	claims, err := tools.ParseToken(req.Token)
+	if err == nil { //鉴权是否登录
+		resp.User, err = db_mysql.GetUserService().GetUserById(req.UserId, claims.User_id)
+		if err == nil {
+			resp.StatusCode = success
+			msg = "GetUser success"
+			resp.StatusMsg = &msg
+		} else {
+			msg = "get user information failed"
+		}
+
 	} else {
-		msg = "get user information failed"
+		msg = "login failed"
 	}
-	if err != nil {
-		resp.StatusCode = Failed
-	}
+	resp.StatusCode = Failed
 	resp.StatusMsg = &msg
 	return resp, err
-}
-
-// UpdateUser implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpdateRequest) (*user.DouyinUserUpdateResponse, error) {
-	resp := user.NewDouyinUserUpdateResponse()
-	var err error
-	fmt.Println("req.Fo:", req.Followdiff, req.Followerdiff)
-	if req.Followdiff != 0 {
-		err = db_mysql.GetUserService().UpdateUserFollow(req.UserId, req.Followdiff)
-		if err != nil {
-			resp.StatusCode = Failed
-			msg := "UpdateUserFollow failed"
-			resp.StatusMsg = &msg
-			return resp, err
-		}
-	}
-	if req.Followerdiff != 0 {
-		err = db_mysql.GetUserService().UpdateUserFollower(req.UserId, req.Followerdiff)
-		if err != nil {
-			resp.StatusCode = Failed
-			msg := "UpdateUserFollower failed"
-			resp.StatusMsg = &msg
-			return resp, err
-		}
-	}
-	resp.StatusCode = success
-	msg := "update done"
-	resp.StatusMsg = &msg
-	return resp, nil
 }

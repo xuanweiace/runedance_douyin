@@ -17,8 +17,6 @@ type UserService interface {
 	UserRegister(username string, password string, salt string) error
 	FindLastUserId() int64
 	GetUserById(userId int64, MyUserid int64) (userResp *user.User, err error)
-	UpdateUserFollow(userId int64, followDiff int64) error
-	UpdateUserFollower(userId int64, followDiff int64) error
 }
 type UserServiceImpl struct {
 	userDao UserDao
@@ -87,11 +85,4 @@ func (u *UserServiceImpl) GetUserById(userId int64, MyUserid int64) (*user.User,
 		userResp.IsFollow = false //TODO MyUserid 是否关注了 userId 未实现查找对应数据库
 	}
 	return userResp, err
-}
-
-func (u *UserServiceImpl) UpdateUserFollow(userId int64, followDiff int64) error {
-	return u.userDao.UpdateFollow(userId, followDiff)
-}
-func (u *UserServiceImpl) UpdateUserFollower(userId int64, followerDiff int64) error {
-	return u.userDao.UpdateFollower(userId, followerDiff)
 }

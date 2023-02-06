@@ -31,20 +31,3 @@ func (s *RelationServiceImpl) GetFriendList(ctx context.Context, req *relation.G
 	// TODO: Your code here...
 	return
 }
-
-// ExistRelation implements the RelationServiceImpl interface.
-func (s *RelationServiceImpl) ExistRelation(ctx context.Context, req *relation.ExistRelationRequest) (resp *relation.ExistRelationResponse, err error) {
-	resp = relation.NewExistRelationResponse()
-	existed, err := service.GetQueryServiceInstance(ctx).ExistRelation(req)
-	if err != nil {
-		resp.StatusCode = errnos.CodeServiceErr
-		er := err.Error()
-		resp.StatusMsg = &er
-	} else {
-		resp.StatusCode = 0
-		resp.StatusMsg = nil
-		resp.Existed = existed
-	}
-
-	return
-}

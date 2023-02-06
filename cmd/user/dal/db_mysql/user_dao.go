@@ -2,12 +2,11 @@ package db_mysql
 
 import (
 	"errors"
+	"github.com/gomodule/redigo/redis"
+	"gorm.io/gorm"
 	"runedance_douyin/pkg"
 	constants "runedance_douyin/pkg/consts"
 	"sync"
-
-	"github.com/gomodule/redigo/redis"
-	"gorm.io/gorm"
 )
 
 func MySQLInit() {
@@ -24,8 +23,6 @@ type UserDao interface {
 	FindByName(name string) (*User, error)
 	FindById(userid int64) (*User, error)
 	LastId() int64
-	UpdateFollow(userid int64, followDiff int64) error
-	UpdateFollower(userid int64, followerDiff int64) error
 }
 type UserDaoImpl struct {
 	db  *gorm.DB
@@ -45,7 +42,7 @@ func GetUserDao() UserDao {
 // AddUser 添加用户
 // 参数 user User结构体指针
 func (u *UserDaoImpl) AddUser(user *User) error {
-	if err := u.db.Model(&User{}).Create(user).Error; err != nil {
+	if err := u.db.Table(TableNameUser).Create(user).Error; err != nil {
 		return err
 	}
 	return nil
@@ -55,7 +52,7 @@ func (u *UserDaoImpl) AddUser(user *User) error {
 // 参数 name string类型 用户名
 func (u *UserDaoImpl) FindByName(name string) (*User, error) {
 	var user User
-	if err := u.db.Model(&User{}).Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := u.db.Table(TableNameUser).Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	return &user, nil
@@ -65,7 +62,7 @@ func (u *UserDaoImpl) FindByName(name string) (*User, error) {
 // 参数 userid int64类型 用户id
 func (u *UserDaoImpl) FindById(userid int64) (*User, error) {
 	var user User
-	if err := u.db.Model(&User{}).Where("user_id = ?", userid).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := u.db.Table(TableNameUser).Where("user_id = ?", userid).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	return &user, nil
@@ -76,28 +73,9 @@ func (u *UserDaoImpl) FindById(userid int64) (*User, error) {
 
 func (u *UserDaoImpl) LastId() int64 {
 	var user User
-	if err := u.db.Model(&User{}).Last(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := u.db.Table(TableNameUser).Last(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		//表内没有数据默认为1
 		return 1
 	}
 	return user.UserId
-}
-
-func (u *UserDaoImpl) UpdateFollow(userid int64, followDiff int64) error {
-	var getUser = &User{}
-	err := u.db.Model(&User{}).Where("user_id = ?", userid).First(getUser).Error
-	if err != nil {
-		return err
-	}
-	res := u.db.Model(&User{}).Where("user_id = ?", userid).Update("follow_count", followDiff+getUser.FollowCount)
-	return res.Error
-}
-
-func (u *UserDaoImpl) UpdateFollower(userid int64, followerDiff int64) error {
-	var getUser = &User{}
-	err := u.db.Model(&User{}).Where("user_id = ?", userid).First(getUser).Error
-	if err != nil {
-		return err
-	}
-	return u.db.Model(&User{}).Where("user_id = ?", userid).Update("follower_count", followerDiff+getUser.FollowerCount).Error
 }
