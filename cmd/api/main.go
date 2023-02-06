@@ -3,13 +3,18 @@
 package main
 
 import (
-	"github.com/cloudwego/hertz/pkg/app/server"
+	"runedance_douyin/cmd/api/biz/rpc"
 	mw "runedance_douyin/middleware/jwt"
 
+	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
+func Init() {
+	rpc.Init()
+}
 func main() {
-	h := server.Default()
+	Init()
+	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
 
 	h.Use(mw.MyJWT())
 
