@@ -3,10 +3,8 @@
 package main
 
 import (
-	"runedance_douyin/cmd/api/biz/rpc"
-	mw "runedance_douyin/middleware/jwt"
-
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"runedance_douyin/cmd/api/biz/rpc"
 )
 
 func Init() {
@@ -15,8 +13,7 @@ func Init() {
 func main() {
 	Init()
 	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
-
-	h.Use(mw.MyJWT())
+	//h.Use(mw.MyJWT())
 
 	register(h)
 	h.Spin()
