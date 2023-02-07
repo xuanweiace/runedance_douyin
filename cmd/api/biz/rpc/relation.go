@@ -3,23 +3,38 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"log"
 	"runedance_douyin/kitex_gen/relation"
 	"runedance_douyin/kitex_gen/relation/relationservice"
 	constants "runedance_douyin/pkg/consts"
 	"runedance_douyin/pkg/errnos"
+	"time"
 
 	"github.com/cloudwego/kitex/client"
+	"github.com/cloudwego/kitex/pkg/retry"
+	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
 var relationClient relationservice.Client
 
 func initRelation() {
-	c, err := relationservice.NewClient(constants.UserServiceName, client.WithHostPorts("127.0.0.1:9000"))
+
+	r, err := etcd.NewEtcdResolver([]string{constants.EtcdAddress})
+	if err != nil {
+		panic(err)
+	}
+	c, err := relationservice.NewClient(constants.RelationServiceName,
+		client.WithMuxConnection(1),
+		client.WithRPCTimeout(3*time.Second),
+		client.WithConnectTimeout(500*time.Microsecond),
+		client.WithFailureRetry(retry.NewFailurePolicy()),
+		client.WithResolver(r),
+	)
 
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("[api服务 initRelation] relation服务启动成功")
 	relationClient = c
 }
 

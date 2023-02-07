@@ -7,10 +7,12 @@ const (
 	//user
 	JWTSecketKey    = "runedance"
 	UserServiceName = "user_service"
+	UserServicePort = 9001
 
 	//relation
 	RelationTableName         = "relation"
 	RelationServiceName       = "relation_service"
+	RelationServicePort       = 9000
 	ActionType_AddRelation    = 1
 	ActionType_RemoveRelation = 2
 	//etcd
