@@ -47,7 +47,6 @@ func GetFollowList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.GetFollowListResponse)
-
 	if userList, err := rpc.GetFollowList(ctx, req.UserID); err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()

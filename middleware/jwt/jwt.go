@@ -63,10 +63,7 @@ func MyJWT() app.HandlerFunc {
 		c.Set("token_f", 1)
 		c.Set("username", token.Username)
 		c.Set("user_id", token.User_id)
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  token.Username,
-		})
+
 		c.Next(ctx)
 	}
 }
