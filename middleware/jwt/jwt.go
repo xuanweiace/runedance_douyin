@@ -3,10 +3,11 @@ package jwt
 import (
 	"context"
 	"errors"
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"time"
+
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type CustomClaims struct {
@@ -54,6 +55,7 @@ func MyJWT() app.HandlerFunc {
 				StatusCode: -1,
 				StatusMsg:  "Token Error",
 			})
+			return
 		} else {
 			println("token 正确")
 		}
@@ -61,10 +63,7 @@ func MyJWT() app.HandlerFunc {
 		c.Set("token_f", 1)
 		c.Set("username", token.Username)
 		c.Set("user_id", token.User_id)
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  token.Username,
-		})
+
 		c.Next(ctx)
 	}
 }

@@ -3,11 +3,19 @@
 package main
 
 import (
+	"runedance_douyin/cmd/api/biz/rpc"
+	mw "runedance_douyin/middleware/jwt"
+
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
+func Init() {
+	rpc.Init()
+}
 func main() {
 	h := server.Default()
+
+	h.Use(mw.MyJWT())
 
 	register(h)
 	h.Spin()
