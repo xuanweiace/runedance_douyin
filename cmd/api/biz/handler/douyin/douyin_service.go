@@ -5,9 +5,13 @@ package douyin
 import (
 	"context"
 
+	douyin "runedance_douyin/cmd/api/biz/model/douyin"
+	"runedance_douyin/cmd/api/rpc"
+	"runedance_douyin/pkg/errnos"
+	"runedance_douyin/pkg/tools"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 )
 
 // RelationAction .
@@ -87,6 +91,19 @@ func MessageAction(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(douyin.MessageActionResponse)
 
+	// parse token
+	claims, err := tools.ParseToken(req.Token)	
+	if(err != nil) {
+		msg := err.Error()
+		resp.StatusMsg = &msg
+	}
+
+	if err := rpc.MessageAction(ctx, claims.User_id, req.ToUserID, req.Content); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	}
+
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -103,6 +120,32 @@ func GetMessageChat(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(douyin.GetMessageChatResponse)
 
+	// parse token
+	claims, err := tools.ParseToken(req.Token)	
+
+	if(err != nil) {
+		msg := err.Error()
+		resp.StatusMsg = &msg
+	}
+	msgList, err := rpc.GetMessageChat(ctx, claims.User_id, req.ToUserID)
+	if(err != nil){
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	}
+
+	var result []*douyin.Message
+	if msgList != nil{
+		for _, val:= range msgList {
+			msg := douyin.Message{
+				ID: val.Id,
+				Content: val.Content,
+				CreateTime: &val.CreateTime,
+			}
+			result = append(result, &msg)
+		} 
+	}
+	resp.MsgList = result
 	c.JSON(consts.StatusOK, resp)
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	message "runedance_douyin/kitex_gen/message"
 	service "runedance_douyin/cmd/message/service"
-	"runedance_douyin/pkg/tools"
 )
 
 // MessageServiceImpl implements the last service interface defined in the IDL.
@@ -18,13 +17,7 @@ func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.Mes
 	var msg string
 
 	// parse token
-	claims, err := tools.ParseToken(req.Token)	
-	if(err != nil) {
-		msg = err.Error()
-		resp.StatusMsg = msg
-		return resp, err
-	}
-	err2 := service.NewMessageActionService(ctx).MessageAction(ctx, claims.User_id, req.ToUserId, req.ActionType, req.Content)
+	err2 := service.NewMessageActionService(ctx).MessageAction(ctx, req.UserId, req.ToUserId, req.ActionType, req.Content)
 	
 	if(err2 != nil){
 		msg = err2.Error()
@@ -45,15 +38,8 @@ func (s *MessageServiceImpl) GetMessageChat(ctx context.Context, req *message.Ge
 	resp.StatusCode = 1
 	var msg string
 
-	// parse token
-	claims, err := tools.ParseToken(req.Token)	
-	if(err != nil) {
-		msg = err.Error()
-		resp.StatusMsg = msg
-		return resp, err
-	}
 
-	messageList, err2 := service.NewGetMessageChatService(ctx).GetMessageChat(ctx, claims.User_id, req.ToUserId)
+	messageList, err2 := service.NewGetMessageChatService(ctx).GetMessageChat(ctx, req.UserId, req.ToUserId)
 	if(err2 != nil){
 		msg = err2.Error()
 		resp.StatusMsg = msg

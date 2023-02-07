@@ -8,6 +8,10 @@ const (
 	RelationTableName   = "relation"
 	RelationServiceName = "relation_service"
 
+	//message
+	MessageTableName = "message"
+	MessageServiceName = "message_service"
+
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
 )

@@ -12,7 +12,6 @@ import (
 
 	"github.com/cloudwego/kitex/client"
 
-	"runedance_douyin/pkg/tools"
 )
 
 func main() {
@@ -22,14 +21,12 @@ func main() {
 	}
 
 	for{
-		token, _ := tools.GenToken("test_user", 102)
-		token2, _ := tools.GenToken("test_toUser", 103)
 		// test MessageAction
 		// send message
 		log.Println("user100 send message to user101")
 		msgActionReq := &message.MessageActionRequest{
-			Token: token,
-			ToUserId: 103,
+			UserId: 100,
+			ToUserId: 101,
 			ActionType: 1,
 			Content: "send test message",
 		}
@@ -44,8 +41,8 @@ func main() {
 		// reply
 		log.Println("user101 reply to user100")
 		msgActionReq2 := &message.MessageActionRequest{
-			Token: token2,
-			ToUserId: 102,
+			UserId: 101,
+			ToUserId: 100,
 			ActionType: 1,
 			Content: "reply test message",
 		}
@@ -61,8 +58,8 @@ func main() {
 		// test GetMessageChat
 		log.Println("get message chat between user100 and user101")
 		msgChatReq := &message.GetMessageChatRequest{
-			Token: token,
-			ToUserId: 103,
+			UserId: 100,
+			ToUserId: 101,
 		}
 		log.Println(msgChatReq)
 		resp2, err2 := client.GetMessageChat(context.Background(), msgChatReq)
