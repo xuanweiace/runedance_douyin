@@ -35,14 +35,15 @@ func main() {
 	var c *string
 	c = new(string)
 	*c = "123"
-	resp2, err := client.CommentAction(context.Background(), &interaction.CommentRequest{token, 3, 1, c, nil})
+	/*resp2, err := client.CommentAction(context.Background(), &interaction.CommentRequest{token, 3, 1, c, nil})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(resp2)
+	log.Println(resp2)*/
 	resp3, err := client.GetCommentList(context.Background(), &interaction.GetCommentListRequest{1, token})
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println(resp3)
+
 }

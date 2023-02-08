@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"runedance_douyin/cmd/interaction/dal/mysql"
+	"runedance_douyin/cmd/interaction/rpc"
 	"runedance_douyin/kitex_gen/interaction"
 	"runedance_douyin/pkg/tools"
 	"strconv"
@@ -14,9 +15,14 @@ import (
 type InteractionServiceImpl struct {
 }
 
+const (
+	timeLayout = "2006-01-02 15:04:05"
+)
+
 // FavoriteAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *interaction.FavoriteRequest) (resp *interaction.FavoriteResponse, err error) {
 	// TODO: Your code here...
+	//video表的FavoriteCount+1
 	//1 验证token登陆有效
 	var msg string
 	resp = interaction.NewFavoriteResponse()
@@ -82,11 +88,16 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 	//3 通过vid查出vediolist
 	//var vedioList []Ve
 	for _, vid := range vidLists {
+		//1 由vid查出video
+		//2 由AuthorId 查出user
+		userMeta, _ := rpc.GetUser(1)
 		var user *interaction.User
 		user = &interaction.User{
-			UserId:   1,
-			Username: "作者",
-			IsFollow: true,
+			UserId:        userMeta.UserId,
+			Username:      userMeta.Username,
+			FollowCount:   userMeta.FollowCount,
+			FollowerCount: userMeta.FollowerCount,
+			IsFollow:      userMeta.IsFollow,
 		}
 		//由vid得到vedio list进行append !!!!!!!!!!RPC
 		resp.VedioList = append(resp.VedioList, &interaction.Video{
@@ -107,6 +118,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 // CommentAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interaction.CommentRequest) (resp *interaction.CommentResponse, err error) {
 	// TODO: Your code here...
+	//video表的CommentCount+1
 	//1 验证token登陆有效
 	//var msg string
 	resp = interaction.NewCommentResponse()
@@ -125,15 +137,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 		resp.StatusMsg = msg
 		return resp, err
 	}
-	//2 插入 1或者删除 2评论
-	/*
-		Id           int64
-			Uid          int64
-			Vid          int64
-			Content      string
-			Content_date time.Time*/
 	now := time.Now()
-	timeLayout := "2006-01-02 15:04:05"
 	if req.ActionType == 1 {
 		comment := &mysql.Comment{
 			Id:           time.Now().UnixNano() / 1000000,
@@ -143,20 +147,19 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 			Content_date: now.Unix() / 1000,
 		}
 		mysql.GetCommentDao().AddComment(comment)
-		//!!!!!!!!!!RPC'
+		userMeta, _ := rpc.GetUser(comment.Uid)
 		resp.Comment = &interaction.Comment{
 			Id: comment.Id,
 			User: &interaction.User{
-				UserId:   1,
-				Username: "作者",
-				IsFollow: true,
+				UserId:        userMeta.UserId,
+				Username:      userMeta.Username,
+				FollowCount:   userMeta.FollowCount,
+				FollowerCount: userMeta.FollowerCount,
+				IsFollow:      userMeta.IsFollow,
 			},
 			Content:    req.GetCommentText(),
 			CreateDate: time.Unix(now.Unix(), 0).Format(timeLayout),
 		}
-		//resp.Comment.Id = comment.Id
-		//resp.Comment.Content = req.GetCommentText()
-		//resp.Comment.User = nil
 	} else if req.ActionType == 2 {
 		//注意error
 		mysql.GetCommentDao().DeleteComment(req.GetCommentId())
@@ -185,18 +188,21 @@ func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *intera
 	}
 	commentList, _ := mysql.GetCommentDao().FindCommentListByVid(req.VideoId)
 	for _, comment := range commentList {
+		userMeta, _ := rpc.GetUser(comment.Uid)
 		var user *interaction.User
 		user = &interaction.User{
-			UserId:   1,
-			Username: "作者",
-			IsFollow: true,
+			UserId:        userMeta.UserId,
+			Username:      userMeta.Username,
+			FollowCount:   userMeta.FollowCount,
+			FollowerCount: userMeta.FollowerCount,
+			IsFollow:      userMeta.IsFollow,
 		}
 		//由vid得到vedio list进行append !!!!!!!!!!RPC
 		resp.CommentList = append(resp.CommentList, &interaction.Comment{
 			Id:         comment.Id,
 			User:       user,
-			Content:    "123",
-			CreateDate: "123",
+			Content:    comment.Content,
+			CreateDate: time.Unix(comment.Content_date*1000, 0).Format(timeLayout),
 		})
 	}
 	return resp, err
