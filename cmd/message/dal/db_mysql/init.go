@@ -8,7 +8,7 @@ import (
 	"gorm.io/plugin/opentelemetry/logging/logrus"
 	"gorm.io/plugin/opentelemetry/tracing"
 	"log"
-	// constants "runedance_douyin/pkg/consts"
+	constants "runedance_douyin/pkg/consts"
 	"time"
 )
 
@@ -25,19 +25,32 @@ func Init() {
 			LogLevel:      logger.Info,
 		},
 	)
-	db, err = gorm.Open(mysql.Open("root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"),
+	db, err = gorm.Open(mysql.Open(constants.MySQLDefaultDSN),  
 		&gorm.Config{
 			PrepareStmt: true,
 			Logger:      gormlogrus,
 		},
 	)
+	if(err != nil){
+		log.Printf("fail to initialize mysql")
+		return
+	}
+
+	isExist := db.Migrator().HasTable(&MessageRecord{})
+	if(!isExist){
+		err := db.Migrator().CreateTable(&MessageRecord{})
+		if err != nil {
+			log.Printf("fail to create table :%s\n", err)
+			return
+		}
+	}
 
 	// sharding
 	db.Use(sharding.Register(sharding.Config{
 		ShardingKey: "user_to_user",
-		NumberOfShards:      64,
+		NumberOfShards: 64,
 		PrimaryKeyGenerator: sharding.PKSnowflake,
-	}))
+	}, constants.MessageTableName))
 
 	if err != nil {
 		log.Println("[gorm.Open error] err=", err)
@@ -47,4 +60,5 @@ func Init() {
 	if err := db.Use(tracing.NewPlugin()); err != nil {
 		panic(err)
 	}
+
 }

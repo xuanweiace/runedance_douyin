@@ -8,47 +8,44 @@ struct User{
     5:required  bool    is_follow
 }
 
-struct BaseResponse {
-    1: required i32 status_code;
-    2: optional string status_msg;
-}
 struct RelationActionRequest {
-    1: required string token (api.query="token")
+    1: required i64 from_user_id 
     2: required i64 to_user_id (api.query="to_user_id")
     3: required i32 action_type (api.query="action_type")
 }
 struct RelationActionResponse {
-    1: required BaseResponse base_resp
+    1: required i32 status_code;
+    2: optional string status_msg;
 }
 
 struct GetFollowListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.query="token")
 }
 
 struct GetFollowListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 struct GetFollowerListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.query="token")
 }
 
 struct GetFollowerListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 struct GetFriendListRequest{
     1:required  i64 user_id (api.query="user_id")
-    2:required  string token (api.query="token")
 }
 
 struct GetFriendListResponse{
-    1:BaseResponse base_resp
-    2:list<User> user_list
+    1: required i32 status_code;
+    2: optional string status_msg;
+    3:list<User> user_list
 }
 
 struct ExistRelationRequest {
@@ -66,6 +63,7 @@ service RelationService{
     GetFollowListResponse  GetFollowList(1:GetFollowListRequest  req) (api.get="/douyin/relation/follow/list/")
     GetFollowerListResponse  GetFollowerList(1:GetFollowerListRequest  req) (api.get="/douyin/relation/follower/list/")
     GetFriendListResponse    GetFriendList(1:GetFriendListRequest req) (api.get="/douyin/relation/friend/list/")
+    ExistRelationResponse   ExistRelation(1:ExistRelationRequest req)
 }
 
 

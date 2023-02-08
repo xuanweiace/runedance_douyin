@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	
+	"log"
+
 	"runedance_douyin/kitex_gen/message"
 
 	"runedance_douyin/cmd/message/dal/db_redis"
@@ -41,6 +42,7 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	}
 
 	// access mysql db to get message chat
+	log.Print("retrieve message chat from mysql")
 	recordListSQL, err2 := db_mysql.GetMessageChat(ctx, userId, toUserId)
 	if(err2 != nil){
 		return result, err2

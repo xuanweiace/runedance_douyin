@@ -17,7 +17,7 @@ func InsertMessage(ctx context.Context, msgResordList []*MessageRecord) error {
 func GetMessageChat(ctx context.Context, userId int64, toUserId int64) ([]*MessageRecord, error) {
 	var result []*MessageRecord
 	keyname := tools.GenerateKeyname(userId, toUserId)
-	rows, err := db.WithContext(ctx).Model(&MessageRecord{}).Where("user_to_user = ?", keyname).Rows()
+	rows, err := db.WithContext(ctx).Model(&MessageRecord{}).Where("user_to_user = ?", keyname).Limit(20).Rows()
 	if(err != nil){
 		return result, err
 	}

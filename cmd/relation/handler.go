@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	relation "runedance_douyin/kitex_gen/relation"
+	"runedance_douyin/cmd/relation/service"
+	"runedance_douyin/pkg/errnos"
 )
 
 // RelationServiceImpl implements the last service interface defined in the IDL.

@@ -2,9 +2,9 @@ package db_mysql
 
 import (
 	"gorm.io/gorm"
+	constants "runedance_douyin/pkg/consts"
 )
 
-const TableNameMessage string = "message"
 
 type MessageRecord struct {
 	gorm.Model
@@ -15,7 +15,7 @@ type MessageRecord struct {
 }
 
 func (u *MessageRecord) TableName() string {
-	return TableNameMessage
+	return constants.MessageTableName
 }
 
 

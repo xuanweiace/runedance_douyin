@@ -17,7 +17,7 @@ import (
 
 var messageClient messageservice.Client
 
-func initRelation() {
+func initMessage() {
 	c, err := messageservice.NewClient(constants.MessageServiceName, client.WithHostPorts("127.0.0.1:9000"))
 
 	if err != nil {

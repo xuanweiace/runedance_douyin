@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net"
 	"runedance_douyin/cmd/relation/dal"
 	"runedance_douyin/cmd/relation/rpc"
 	relation "runedance_douyin/kitex_gen/relation/relationservice"
@@ -31,9 +32,7 @@ func main() {
 		server.WithRegistry(r),
 	)
 
-
-
-	err := svr.Run()
+	err = svr.Run()
 
 	if err != nil {
 		log.Println(err.Error())

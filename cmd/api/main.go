@@ -13,7 +13,8 @@ func Init() {
 	rpc.Init()
 }
 func main() {
-	h := server.Default()
+	Init()
+	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
 
 	h.Use(mw.MyJWT())
 

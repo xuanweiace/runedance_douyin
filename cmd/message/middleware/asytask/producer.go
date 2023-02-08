@@ -43,7 +43,8 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 	}
 	log.Printf("add task to queue")
 	qname := taskInfo.Queue
-	log.Printf("the current queue is: " + qname)
+	// log.Printf("the current queue is: " + qname)
+	log.Printf("the current task is: " + taskInfo.ID)
 
 	// deal with repeated task 
 	inspector := asynq.NewInspector(RdbConn)
@@ -57,7 +58,7 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 	if(pendingTaskList != nil){
 		for _, val:= range pendingTaskList {
 			inspector.DeleteTask(qname, val)			// delete pending sync task
-			log.Printf("delete task:" + val)
+			log.Printf("delete repeated task: " + val)
 		}
 		db_redis.ClearTaskList(ctx, m.UserId, m.ToUserId)
 	}
