@@ -26,11 +26,11 @@ func main() {
 
 	svr := message.NewServer(new(MessageServiceImpl),
 	server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: constants.MessageServiceName}),
-	server.WithServiceAddr(&net.TCPAddr{Port: constants.RelationServicePort}),
+	server.WithServiceAddr(&net.TCPAddr{Port: constants.MessageServicePort}),
 	server.WithLimit(&limit.Option{MaxConnections: 1000, MaxQPS: 200}),
 	server.WithMuxTransport(),
 	server.WithRegistry(r),
-)
+	)
 	
 	err = svr.Run()
 	if err != nil {

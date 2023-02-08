@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	client, err := messageservice.NewClient("test_client", client.WithHostPorts("0.0.0.0:8888"))
+	client, err := messageservice.NewClient("test_client", client.WithHostPorts("0.0.0.0:9002"))
 	if err != nil {
 		log.Fatal(err)
 	}

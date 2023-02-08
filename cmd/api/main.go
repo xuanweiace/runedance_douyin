@@ -17,7 +17,6 @@ func main() {
 	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
 
 	h.Use(mw.MyJWT())
-
 	register(h)
 	h.Spin()
 }

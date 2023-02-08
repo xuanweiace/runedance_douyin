@@ -19,6 +19,8 @@ const (
 	//message
 	MessageTableName = "message"
 	MessageServiceName = "message_service"
+	MessageServicePort       = 9002
+
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
 )
