@@ -53,6 +53,7 @@ func _action0Mw() []app.HandlerFunc {
 
 func _favorite_ctionMw() []app.HandlerFunc {
 	// your code...
+
 	return nil
 }
 

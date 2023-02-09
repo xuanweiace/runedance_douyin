@@ -5,14 +5,19 @@ package douyin
 import (
 	"context"
 
+	douyin "runedance_douyin/cmd/api/biz/model/douyin"
+	pack "runedance_douyin/cmd/api/biz/pack"
+	"runedance_douyin/cmd/api/biz/rpc"
+	"runedance_douyin/pkg/errnos"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 )
 
 // RelationAction .
 // @router /douyin/relation/action/ [POST]
 func RelationAction(ctx context.Context, c *app.RequestContext) {
+
 	var err error
 	var req douyin.RelationActionRequest
 	err = c.BindAndValidate(&req)
@@ -20,8 +25,12 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.RelationActionResponse)
+	if err := rpc.RelationAction(ctx, c.GetInt64("user_id"), req.ToUserID, req.ActionType); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -38,6 +47,15 @@ func GetFollowList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.GetFollowListResponse)
+	if userList, err := rpc.GetFollowList(ctx, req.UserID); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		resp.UserList = pack.ConvertUserlist(userList)
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -55,6 +73,16 @@ func GetFollowerList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(douyin.GetFollowerListResponse)
 
+	if userList, err := rpc.GetFollowerList(ctx, req.UserID); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		resp.UserList = pack.ConvertUserlist(userList)
+	}
+
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -70,6 +98,16 @@ func GetFriendList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.GetFriendListResponse)
+
+	if userList, err := rpc.GetFriendList(ctx, req.UserID); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		resp.UserList = pack.ConvertUserlist(userList)
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }

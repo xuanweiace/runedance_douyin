@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"runedance_douyin/cmd/user/dal/db_mysql"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/tools"
@@ -109,11 +110,13 @@ func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest
 func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpdateRequest) (*user.DouyinUserUpdateResponse, error) {
 	resp := user.NewDouyinUserUpdateResponse()
 	var err error
+	fmt.Println("req.Fo:", req.Followdiff, req.Followerdiff)
 	if req.Followdiff != 0 {
 		err = db_mysql.GetUserService().UpdateUserFollow(req.UserId, req.Followdiff)
 		if err != nil {
 			resp.StatusCode = Failed
-			*resp.StatusMsg = "UpdateUserFollow failed"
+			msg := "UpdateUserFollow failed"
+			resp.StatusMsg = &msg
 			return resp, err
 		}
 	}
@@ -121,11 +124,13 @@ func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpda
 		err = db_mysql.GetUserService().UpdateUserFollower(req.UserId, req.Followerdiff)
 		if err != nil {
 			resp.StatusCode = Failed
-			*resp.StatusMsg = "UpdateUserFollower failed"
+			msg := "UpdateUserFollower failed"
+			resp.StatusMsg = &msg
 			return resp, err
 		}
 	}
 	resp.StatusCode = success
-	*resp.StatusMsg = "update done"
+	msg := "update done"
+	resp.StatusMsg = &msg
 	return resp, nil
 }

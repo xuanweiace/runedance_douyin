@@ -3,7 +3,7 @@ package db_mysql
 const TableNameUser string = "user"
 
 type User struct {
-	UserId        int64  `gorm:"column:id;PRIMARY_KEY"`
+	UserId        int64  `gorm:"column:user_id;PRIMARY_KEY"`
 	Username      string `gorm:"column:username;UNIQUE"`
 	Password      string `gorm:"column:password;NOT NULL"`
 	Avatar        string `gorm:"column:avatar"`
