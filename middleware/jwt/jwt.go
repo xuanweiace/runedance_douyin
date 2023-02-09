@@ -3,6 +3,7 @@ package jwt
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,33 +39,33 @@ type Response struct {
 
 func MyJWT() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
+		fmt.Println("进入token鉴权")
 		auth := c.Query("token")
 		if len(auth) == 0 {
-			/*c.Abort()
-			c.JSON(http.StatusUnauthorized, Response{
-				StatusCode: -1,
-				StatusMsg:  "Unauthorized",
-			})*/
-			//如果没有token字段，不附加userID和USERNAME
-			c.Next(ctx)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "无token字段")
+			return
 		}
 		token, err := ParseToken(auth)
 		if err != nil {
-			c.Abort()
-			c.JSON(http.StatusUnauthorized, Response{
-				StatusCode: -1,
-				StatusMsg:  "Token Error",
-			})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "鉴权失败")
 			return
 		} else {
 			println("token 正确")
+			//不知道后续怎么用加了个tokenflag
+			c.Set("token_f", 1)
+			c.Set("username", token.Username)
+			c.Set("user_id", token.User_id)
+			c.Next(ctx)
 		}
+<<<<<<< HEAD
+=======
 		//不知道后续怎么用加了个tokenflag
 		c.Set("token_f", 1)
 		c.Set("username", token.Username)
 		c.Set("user_id", token.User_id)
 
 		c.Next(ctx)
+>>>>>>> main
 	}
 }
 func ParseToken(tokenString string) (*CustomClaims, error) {
