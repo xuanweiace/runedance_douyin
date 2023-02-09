@@ -68,10 +68,9 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 	}
 	
 	var newLatest int64
-	for index := len(redis_msg) - 1; index >= 0; index-- {		// msg orders from old to new 
-		str := redis_msg[index]
+	for _, val := range redis_msg{		// msg orders from old to new 
 		var msg message.Message
-		err := json.Unmarshal([]byte(str), &msg)			// decode json into Message struct
+		err := json.Unmarshal([]byte(val), &msg)			// decode json into Message struct
 		if(err != nil){
 			continue
 		}
@@ -91,7 +90,6 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 	// // update latest sync timestamp 
 	db_redis.SetTimestampOfLatestMysql(ctx, userId, toUserId, newLatest)
 	log.Printf("new latest updating timestamp: " + strconv.FormatInt(newLatest, 10))
-
-	return db_mysql.InsertMessage(ctx, messageRecordList) 
+	return db_mysql.InsertMessage(ctx, messageRecordList, userId, toUserId) 
 
 }

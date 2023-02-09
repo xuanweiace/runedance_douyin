@@ -38,7 +38,6 @@ func (s *MessageServiceImpl) GetMessageChat(ctx context.Context, req *message.Ge
 	resp.StatusCode = 1
 	var msg string
 
-
 	messageList, err2 := service.NewGetMessageChatService(ctx).GetMessageChat(ctx, req.UserId, req.ToUserId)
 	if(err2 != nil){
 		msg = err2.Error()

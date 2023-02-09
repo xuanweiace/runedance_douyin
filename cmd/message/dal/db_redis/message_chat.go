@@ -12,10 +12,7 @@ func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]st
 	keyname := tools.GenerateKeyname(userId, toUserId)
 	jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
 	return jsonList, err
-	
-	
 	// log.Printf(keyname)
-	
 }
 
 
@@ -30,6 +27,7 @@ func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList 
 			Err = err
 			continue
 		}
+		// add to the head of list
 		Err = Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
 		Rdb.Expire(ctx, keyname, 3600)     	// refresh keyname expiration 
 	}

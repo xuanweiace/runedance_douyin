@@ -25,7 +25,8 @@ func HandleMessageSend (ctx context.Context, userId int64, toUserId int64, actio
 	}
 	
 	// store json string in redis with key being the keyname generated based on userId and toUserId
-	error := Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
+	// add to the tail of list
+	error := Rdb.RPush(ctx, keyname, string(jsonStr)).Err()
 	Rdb.ExpireAt(ctx, keyname, time.Now().Add(time.Hour))       		// refreshing exprie time to 1h
 	return error
 }

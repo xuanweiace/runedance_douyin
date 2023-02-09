@@ -6,22 +6,27 @@ import (
 )
 
 
-func InsertMessage(ctx context.Context, msgResordList []*MessageRecord) error {
-	err := db.WithContext(ctx).Create(msgResordList).Error
+func InsertMessage(ctx context.Context, msgResordList []*MessageRecord, userId int64, toUserId int64) error {
+	// keyname := tools.GenerateKeyname(userId, toUserId)
+	// var err error
+	// for _, odr:= range msgResordList {
+	// 	err = db.Create(odr).Error
+	// }
+	err := db.WithContext(ctx).Model(&MessageRecord{}).Create(msgResordList).Error
 	if(err != nil){
 		return err
 	}
-	return nil
+	return err
 }
 
-func GetMessageChat(ctx context.Context, userId int64, toUserId int64) ([]*MessageRecord, error) {
+func GetMessageChat(ctx context.Context, userId int64, toUserId int64, limit int) ([]*MessageRecord, error) {
 	var result []*MessageRecord
 	keyname := tools.GenerateKeyname(userId, toUserId)
-	rows, err := db.WithContext(ctx).Model(&MessageRecord{}).Where("user_to_user = ?", keyname).Limit(20).Rows()
+	rows, err := db.WithContext(ctx).Model(&MessageRecord{}).Where("user_to_user = ?", keyname).Limit(limit).Rows()
 	if(err != nil){
 		return result, err
 	}
-
+	
 	defer rows.Close()
 	// scan rows to MessageRecord struct
 	for rows.Next() {

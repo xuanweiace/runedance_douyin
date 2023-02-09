@@ -3,7 +3,7 @@ package db_mysql
 import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/sharding"
+	// "gorm.io/sharding"
 	"gorm.io/gorm/logger"
 	"gorm.io/plugin/opentelemetry/logging/logrus"
 	"gorm.io/plugin/opentelemetry/tracing"
@@ -46,11 +46,11 @@ func Init() {
 	}
 
 	// sharding
-	db.Use(sharding.Register(sharding.Config{
-		ShardingKey: "user_to_user",
-		NumberOfShards: 64,
-		PrimaryKeyGenerator: sharding.PKSnowflake,
-	}, constants.MessageTableName))
+	// db.Use(sharding.Register(sharding.Config{
+	// 	ShardingKey: "user_to_user",
+	// 	NumberOfShards: 64,
+	// 	PrimaryKeyGenerator: sharding.PKSnowflake,
+	// }, constants.MessageTableName))
 
 	if err != nil {
 		log.Println("[gorm.Open error] err=", err)

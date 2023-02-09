@@ -9,15 +9,20 @@ import (
 )
 
 func main(){
+	var userId int64
+	var toUserId int64
+	userId = 105
+	toUserId = 106
+
 	rpc.InitMessage()
-	token1, _ := tools.GenToken("test_user1", 100)
-	token2, _ := tools.GenToken("test_user2", 101)
+	token1, _ := tools.GenToken("test_user1", userId)
+	token2, _ := tools.GenToken("test_user2", toUserId)
 
 	for {
 		log.Println("user100 send message to user101")
 		
 		log.Print("token: " + token1)
-		err := rpc.MessageAction(context.Background(), 100, 101,  "send test message")
+		err := rpc.MessageAction(context.Background(), userId, toUserId,  "send test message")
 		if(err == nil){
 			log.Print("success")
 		}
@@ -27,7 +32,7 @@ func main(){
 		log.Println("user101 reply to user100")
 		
 		log.Print("token: " + token2)
-		err = rpc.MessageAction(context.Background(), 101, 100, "reply test message")
+		err = rpc.MessageAction(context.Background(), toUserId, userId, "reply test message")
 		if(err == nil){
 			log.Print("success")
 		}
@@ -36,7 +41,7 @@ func main(){
 		///////////////////////////////////////////
 
 		log.Println("get message chat between user100 and user101")
-		msgList, err2 := rpc.GetMessageChat(context.Background(), 100, 101)
+		msgList, err2 := rpc.GetMessageChat(context.Background(), userId,toUserId)
 		if(err2 != nil){
 			log.Fatal(err2)
 		}
