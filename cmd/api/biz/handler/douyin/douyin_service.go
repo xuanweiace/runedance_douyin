@@ -4,6 +4,7 @@ package douyin
 
 import (
 	"context"
+	"io"
 
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
@@ -211,17 +212,25 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 // PublishAction .
 // @router /douyin/publish/action/ [POST]
 func PublishAction(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req douyin.DouyinPublishActionRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+	//var err error
+	//var req douyin.DouyinPublishActionRequest
+	//err = c.BindAndValidate(&req)
+	// check token there?
+	var id int64
+	id = 1234567 //TODO
+	file, err1 := c.FormFile("data")
+	fileOpen, err2 := file.Open()
+	tt := c.FormValue("title")
+	if err1 != nil || len(tt) < 6 || err2 != nil || file.Size > 998244353 {
+		c.String(consts.StatusBadRequest, "bad")
 		return
 	}
-
+	fileData, _ := io.ReadAll(fileOpen)
 	resp := new(douyin.DouyinPublishActionResponse)
-
-	c.JSON(consts.StatusOK, resp)
+	var msg string
+	resp.StatusCode, msg = rpc.PublishVideo(id, string(tt), fileData)
+	resp.StatusMsg = &msg
+	c.JSON(200, resp)
 }
 
 // PublishList .
