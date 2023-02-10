@@ -4,7 +4,6 @@ package douyin
 
 import (
 	"context"
-
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
 	"runedance_douyin/cmd/api/biz/rpc"
@@ -252,6 +251,14 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.FavoriteResponse)
+	if err := rpc.FavoriteAction(ctx, c.GetInt64("user_id"), req.VideoID, req.ActionType); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -268,6 +275,18 @@ func GetFavoriteList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.GetFavoriteListResponse)
+	if videoList, err := rpc.GetFavoriteList(ctx, c.GetInt64("user_id")); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		if videoList != nil {
+			resp.VedioList = pack.ConvertVideolist(videoList)
+		}
+
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -284,8 +303,30 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.CommentResponse)
-
+	if comment, err := rpc.CommentAction(ctx, c.GetInt64("user_id"), req.VideoID, req.ActionType, *req.CommentText, *req.CommentID); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		if comment != nil {
+			user := &douyin.User{
+				ID:            comment.User.UserId,
+				Name:          comment.User.Username,
+				FollowCount:   comment.User.FollowerCount,
+				FollowerCount: comment.User.FollowerCount,
+			}
+			resp.Comment = &douyin.Comment{
+				ID:         comment.Id,
+				User:       user,
+				Content:    comment.Content,
+				CreateDate: comment.CreateDate,
+			}
+		}
+	}
 	c.JSON(consts.StatusOK, resp)
+	return
 }
 
 // GetCommentList .
@@ -301,5 +342,18 @@ func GetCommentList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(douyin.GetCommentListResponse)
 
+	if commentList, err := rpc.GetCommentList(ctx, req.VideoID); err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = errnos.CodeSuccess
+		resp.StatusMsg = nil
+		if commentList != nil {
+			resp.CommentList = pack.ConvertCommentlist(commentList)
+		}
+
+	}
 	c.JSON(consts.StatusOK, resp)
+	return
 }

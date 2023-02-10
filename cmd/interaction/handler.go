@@ -6,6 +6,7 @@ import (
 	"runedance_douyin/cmd/interaction/dal/mysql"
 	"runedance_douyin/cmd/interaction/rpc"
 	"runedance_douyin/kitex_gen/interaction"
+	"runedance_douyin/pkg/errnos"
 	"runedance_douyin/pkg/tools"
 	"strconv"
 	"time"
@@ -24,69 +25,61 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 	// TODO: Your code here...
 	//video表的FavoriteCount+1
 	//1 验证token登陆有效
-	var msg string
 	resp = interaction.NewFavoriteResponse()
-	claims, err := tools.ParseToken(req.Token)
-	//var uid=claims.User_id
-	if err == nil { //鉴权是否登录  !!!!!!!!!测试使用
-		print(err)
-		resp.StatusCode = 0 //success
-		msg = "success"
-		resp.StatusMsg = &msg
-		claims.User_id = 1
-	} else {
-		msg = "login invalid"
-		resp.StatusCode = 1 //failed
-		resp.StatusMsg = &msg
-		return resp, err
-	}
 
 	//2 查出记录 没有则插入记录
-	favorite, err := mysql.GetFavoriteDao().FindFavorite(claims.User_id, req.VideoId)
+	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
 	if err != nil {
 		//需插入数据
 		favorite = &mysql.Favorite{
 			Id:     tools.RandomStringUtil(),
-			Uid:    claims.User_id,
+			Uid:    req.UserId,
 			Vid:    req.VideoId,
 			Action: req.ActionType,
 		}
-		mysql.GetFavoriteDao().AddFavorite(favorite)
-		return resp, nil
+		err = mysql.GetFavoriteDao().AddFavorite(favorite)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
+		return resp, err
 	}
-	mysql.GetFavoriteDao().UpdateFavorite(favorite.Id, req.ActionType)
+	err = mysql.GetFavoriteDao().UpdateFavorite(favorite.Id, req.ActionType)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+	}
 	return resp, err
-
 }
 
 // GetFavoriteList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *interaction.GetFavoriteListRequest) (resp *interaction.GetFavoriteListResponse, err error) {
 	// TODO: Your code here...
 	//1 验证token登陆有效
-	var msg string
 	resp = interaction.NewGetFavoriteListResponse()
-	claims, err := tools.ParseToken(req.Token)
-	//var uid=claims.User_id
-	log.Println("列表err")
-	log.Println(err)
-	if err == nil { //鉴权是否登录  !!!!!!!!!测试使用
-		print(err)
-		resp.StatusCode = 0 //success
-		msg = "success"
-		resp.StatusMsg = &msg
-		//claims.User_id = 1
-	} else {
-		msg = "login invalid"
-		resp.StatusCode = 1 //failed
-		resp.StatusMsg = &msg
-		return resp, err
-	}
 	//2 通过uid查出vidlist
 	//var vidLists []int64
-	vidLists, err := mysql.GetFavoriteDao().GetFavoriteList(claims.User_id)
+	vidLists, err := mysql.GetFavoriteDao().GetFavoriteList(req.GetUserId())
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+	} else {
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+	}
 	log.Println(vidLists)
 	//3 通过vid查出vediolist
 	//var vedioList []Ve
+	vedioList := []*interaction.Video{}
 	for _, vid := range vidLists {
 		//1 由vid查出video
 		//2 由AuthorId 查出user
@@ -100,7 +93,8 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			IsFollow:      userMeta.IsFollow,
 		}
 		//由vid得到vedio list进行append !!!!!!!!!!RPC
-		resp.VedioList = append(resp.VedioList, &interaction.Video{
+
+		vedioList = append(vedioList, &interaction.Video{
 			Id:            vid,
 			Author:        user,
 			PlayUrl:       "url",
@@ -110,6 +104,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			IsFavorite:    true,
 			Title:         "视频" + strconv.Itoa(int(vid)),
 		})
+		resp.VedioList = vedioList
 	}
 
 	return resp, err
@@ -122,31 +117,25 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 	//1 验证token登陆有效
 	//var msg string
 	resp = interaction.NewCommentResponse()
-	claims, err := tools.ParseToken(req.Token)
-	//var uid=claims.User_id
-	if err == nil { //鉴权是否登录  !!!!!!!!!测试使用
-		print(err)
-		resp.StatusCode = 0 //success
-		resp.StatusMsg = &interaction.CommentResponse_StatusMsg_DEFAULT
-		claims.User_id = 1
-	} else {
-		var msg *string
-		msg = new(string)
-		*msg = "login invalid"
-		resp.StatusCode = 1 //failed
-		resp.StatusMsg = msg
-		return resp, err
-	}
+
 	now := time.Now()
 	if req.ActionType == 1 {
 		comment := &mysql.Comment{
 			Id:           time.Now().UnixNano() / 1000000,
-			Uid:          claims.User_id,
+			Uid:          req.UserId,
 			Vid:          req.VideoId,
 			Content:      req.GetCommentText(),
 			Content_date: now.Unix() / 1000,
 		}
-		mysql.GetCommentDao().AddComment(comment)
+		err = mysql.GetCommentDao().AddComment(comment)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
 		userMeta, _ := rpc.GetUser(comment.Uid)
 		resp.Comment = &interaction.Comment{
 			Id: comment.Id,
@@ -162,7 +151,16 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 		}
 	} else if req.ActionType == 2 {
 		//注意error
-		mysql.GetCommentDao().DeleteComment(req.GetCommentId())
+		cid, _ := strconv.ParseInt(req.GetCommentId(), 10, 64)
+		err = mysql.GetCommentDao().DeleteComment(cid)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
 	}
 	return resp, err
 }
@@ -170,23 +168,18 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 // GetCommentList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest) (resp *interaction.GetCommentListResponse, err error) {
 	// TODO: Your code here...
-	var msg string
+
 	resp = interaction.NewGetCommentListResponse()
-	claims, err := tools.ParseToken(req.Token)
-	//var uid=claims.User_id
-	if err == nil { //鉴权是否登录  !!!!!!!!!测试使用
-		print(err)
-		resp.StatusCode = 0 //success
-		msg = "success"
-		resp.StatusMsg = &msg
-		claims.User_id = 1
+
+	commentList, err := mysql.GetCommentDao().FindCommentListByVid(req.VideoId)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
 	} else {
-		msg = "login invalid"
-		resp.StatusCode = 1 //failed
-		resp.StatusMsg = &msg
-		return resp, err
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
 	}
-	commentList, _ := mysql.GetCommentDao().FindCommentListByVid(req.VideoId)
 	for _, comment := range commentList {
 		userMeta, _ := rpc.GetUser(comment.Uid)
 		var user *interaction.User

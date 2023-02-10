@@ -1,9 +1,9 @@
 namespace go interaction
 
 struct FavoriteRequest {
-    1: required string token;
-    2: required i64 video_id;
-    3: required i32 action_type;
+    1: required i64 user_id;
+    2: required i64 video_id (api.query="video_id")
+    3: required i32 action_type (api.query="action_type")
 }
 
 struct FavoriteResponse {
@@ -12,8 +12,7 @@ struct FavoriteResponse {
 }
 
 struct GetFavoriteListRequest{
-    1:required  i64 user_id
-    2:required  string token
+    1:required  i64 user_id (api.query="user_id")
 }
 
 struct GetFavoriteListResponse{
@@ -42,10 +41,11 @@ struct User{
 }
 
 struct CommentRequest {
-    1: required string token;
-    2: required i64 video_id;
-    3: required i32 action_type;
-    4: optional string comment_text;
+    1: required i64 user_id;
+    2: required i64 video_id (api.query="video_id")
+    3: required i32 action_type (api.query="action_type")
+    4: optional string comment_text (api.query="comment_text")
+    5: optional string comment_id (api.query="comment_id")
 }
 
 struct CommentResponse {
@@ -61,8 +61,7 @@ struct Comment{
 }
 
 struct GetCommentListRequest{
-    1:required  i64 video_id;
-    2:required  string token;
+    1:required  i64 video_id (api.query="video_id")
 }
 
 struct GetCommentListResponse{

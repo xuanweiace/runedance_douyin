@@ -5,6 +5,8 @@ import (
 	"errors"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/callopt"
+	"github.com/cloudwego/kitex/pkg/retry"
+	etcd "github.com/kitex-contrib/registry-etcd"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/kitex_gen/user/userservice"
 	constants "runedance_douyin/pkg/consts"
@@ -15,9 +17,18 @@ import (
 var userClient userservice.Client
 
 func initUser() {
-	// 好像0.0.0.0不行？在mac上
-	c, err := userservice.NewClient(constants.UserServiceName, client.WithHostPorts("127.0.0.1:8888"))
 
+	r, err := etcd.NewEtcdResolver([]string{constants.EtcdAddress})
+	if err != nil {
+		panic(err)
+	}
+	c, err := userservice.NewClient(constants.UserServiceName,
+		client.WithMuxConnection(1),
+		client.WithRPCTimeout(3*time.Second),
+		client.WithConnectTimeout(500*time.Microsecond), // 50ms会超时
+		client.WithFailureRetry(retry.NewFailurePolicy()),
+		client.WithResolver(r),
+	)
 	if err != nil {
 		panic(err)
 	}
