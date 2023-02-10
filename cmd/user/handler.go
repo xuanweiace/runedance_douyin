@@ -79,7 +79,6 @@ func (s *UserServiceImpl) UserLogin(_ context.Context, req *user.DouyinUserLogin
 		resp.StatusMsg = &msg
 		resp.UserId = userResp.UserId
 		token, _ := tools.GenToken(username, resp.UserId)
-		//todo 错误处理
 		resp.Token = token
 	}
 	return resp, err
