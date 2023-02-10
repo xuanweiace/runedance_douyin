@@ -9,8 +9,8 @@ const (
 	UserServiceName = "user_service"
 	UserServicePort = 9001
 
-	//relation
-	RelationTableName         = "relation"
+	//rpc
+	RelationTableName         = "rpc"
 	RelationServiceName       = "relation_service"
 	RelationServicePort       = 9000
 	ActionType_AddRelation    = 1

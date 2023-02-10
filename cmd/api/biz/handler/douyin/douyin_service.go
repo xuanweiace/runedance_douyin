@@ -16,7 +16,7 @@ import (
 )
 
 // RelationAction .
-// @router /douyin/relation/action/ [POST]
+// @router /douyin/rpc/action/ [POST]
 func RelationAction(ctx context.Context, c *app.RequestContext) {
 
 	var err error
@@ -37,7 +37,7 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFollowList .
-// @router /douyin/relation/follow/list/ [GET]
+// @router /douyin/rpc/follow/list/ [GET]
 func GetFollowList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFollowListRequest
@@ -62,7 +62,7 @@ func GetFollowList(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFollowerList .
-// @router /douyin/relation/follower/list/ [GET]
+// @router /douyin/rpc/follower/list/ [GET]
 func GetFollowerList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFollowerListRequest
@@ -88,7 +88,7 @@ func GetFollowerList(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFriendList .
-// @router /douyin/relation/friend/list/ [GET]
+// @router /douyin/rpc/friend/list/ [GET]
 func GetFriendList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFriendListRequest
