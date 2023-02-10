@@ -1,15 +1,10 @@
 namespace go videoStorage
 
-struct VideoURLResponse {
-    1: required string playURL;
-    2: required string coverURL;
-    3: required i64 authorID;
+struct VideoStorageUploadRequest {
+    1:optional binary video_data;
+    2:required i64 video_id;
+    3:optional binary cover_data;
 }
-
-struct VideoURLRequest {
-    1: required i64 videoID;
-}
-
-service VideoService {
-    VideoURLResponse queryVideoURL(1: VideoURLRequest req)
+service VideoStorageService {
+    string uploadVideoToDB(1: VideoStorageUploadRequest req)
 }
