@@ -1,56 +1,34 @@
 package TokenBucket
 
 import (
+	"github.com/juju/ratelimit"
+	"time"
+)
+
+/*
+令牌桶是没有优先级的，无法让重要的请求先通过
+OP可能因为硬件故障去调整资源, 系统负载也会随着在变化, 如果对服务限流进行缩容和扩容，需要人为手动去修改，运维成本比较大
+令牌桶只能对局部服务端的限流, 无法掌控全局资源
+*/
+import (
 	"context"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"log"
-	"sync"
-	"time"
+	"net/http"
 )
 
-type limiter struct {
-	limitspeed float64
-	burst      float64
-
-	mu       sync.Mutex
-	token    float64
-	lasttime time.Time
-}
-
-func newLimiter(limit float64, burst float64) *limiter {
-	return &limiter{limitspeed: limit, burst: burst}
-}
-func (lim *limiter) Allow() bool {
-	return lim.AllowN(time.Now(), 1)
-}
-
-func (lim *limiter) AllowN(now time.Time, n int) bool {
-	lim.mu.Lock()
-	defer lim.mu.Unlock()
-	delta := now.Sub(lim.lasttime).Seconds() * float64(lim.limitspeed)
-	lim.token += delta
-	if lim.token > lim.burst {
-		lim.token = lim.burst
-	}
-	if float64(n) > lim.token {
-		return false
-	}
-	lim.token -= float64(n)
-	lim.lasttime = now
-	return true
-}
-
-var limit = newLimiter(100, 100)
+var limiter = ratelimit.NewBucketWithQuantum(time.Second, 200, 20) //quantum 流速 capacity 容量
 
 func MyTokenBucket() app.HandlerFunc {
-	fmt.Println("token create speed rate: ", limit.limitspeed)
-	fmt.Println("token available token", limit.burst)
+	fmt.Println("token create rate:", limiter.Rate())
+	fmt.Println("available token :", limiter.Available())
 	return func(ctx context.Context, c *app.RequestContext) {
-		if !limit.Allow() {
-			log.Println("available token: %d", limit.token)
+		if limiter.TakeAvailable(1) == 0 {
+			log.Printf("available token :%d", limiter.Available())
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, "Too Many Request")
 		} else {
-			//c.Set()
+			c.Next(ctx)
 		}
 	}
 }
