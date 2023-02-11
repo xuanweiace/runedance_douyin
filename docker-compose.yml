@@ -1,14 +1,14 @@
 version: '3'
 
 services:
-  mysql:
-    image: "mysql:latest"
-    ports: 
-      - 3306:3306
-    environment:
-      - MYSQL_DATABASE=douyin
+ # mysql:
+ #   image: "mysql:latest"
+ #   ports:
+  #    - 3306:3306
+   # environment:
+    #  - MYSQL_DATABASE=douyin
       # - MYSQL_USER=root
-      - MYSQL_ROOT_PASSWORD=123456
+     # - MYSQL_ROOT_PASSWORD=123456
   etcd:
     image: "bitnami/etcd:latest"
     environment:

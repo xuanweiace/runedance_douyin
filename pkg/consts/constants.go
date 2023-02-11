@@ -2,7 +2,7 @@ package constants
 
 const (
 	//db_mysql
-	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+	MySQLDefaultDSN = "root:mysqlmm200107@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 	//user
 	JWTSecketKey    = "runedance"
@@ -23,4 +23,9 @@ const (
 
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
+
+	//interaction
+	InteractionTableName   = "interaction"
+	InteractionServiceName = "interaction_service"
+	InteractionServicePort = 9006
 )
