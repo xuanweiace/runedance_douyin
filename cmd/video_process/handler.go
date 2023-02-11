@@ -62,14 +62,13 @@ func (s *VideoProcessServiceImpl) UploadVideo(ctx context.Context, req *videopro
 			Message: "Cos Error",
 		}, err1
 	}
-	time.Sleep(10000)
+	time.Sleep(time.Second * 10)
 	sid, err2 := storageClient.UploadVideoToDB(context.TODO(), &videostorage.VideoStorageUploadRequest{VideoId: v.VideoId})
 	if err2 != nil {
 		return &videoprocess.VideoProcessUploadResponse{
 			Result_: false,
 			Message: "Storage Server Error",
 		}, err2
-		//TODO 讨论下错误信息如何处理
 	} else {
 		gormClient.Model(&Video{}).Where("video_id=?", v.VideoId).Update("storage_id", sid)
 		return &videoprocess.VideoProcessUploadResponse{
@@ -79,7 +78,6 @@ func (s *VideoProcessServiceImpl) UploadVideo(ctx context.Context, req *videopro
 	}
 }
 func (s *VideoProcessServiceImpl) GetVideoList(ctx context.Context, authorId int64) (resp *videoprocess.VideoListResponse, err error) {
-	// TODO: Your code here...
 	gormClient.Model(&Video{}).Select("video_id").Where("author_id = ?", authorId).Find(&resp.Published)
 	return resp, nil
 }

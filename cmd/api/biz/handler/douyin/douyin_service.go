@@ -216,18 +216,18 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 	//err = c.BindAndValidate(&req)
 	// check token there?
 	var id int64
-	id = 1234567 //TODO
+	id = c.GetInt64("user_id")
 	file, err1 := c.FormFile("data")
 	fileOpen, err2 := file.Open()
 	tt := c.FormValue("title")
 	if err1 != nil || len(tt) < 6 || err2 != nil || file.Size > 998244353 {
-		c.String(consts.StatusBadRequest, "bad")
+		c.String(consts.StatusBadRequest, "bad request")
 		return
 	}
 	fileData, _ := io.ReadAll(fileOpen)
 	resp := new(douyin.DouyinPublishActionResponse)
 	var msg string
-	resp.StatusCode, msg = rpc.PublishVideo(id, string(tt), fileData)
+	resp.StatusCode, msg = rpc.PublishVideo(id, &tt, &fileData)
 	resp.StatusMsg = &msg
 	c.JSON(200, resp)
 }
@@ -243,7 +243,17 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
+	list, msg, e := rpc.GetPublishList(c.GetInt64("user_id"), req.UserID)
+
 	resp := new(douyin.DouyinPublishListResponse)
+
+	resp.StatusMsg = &msg
+	if e != nil {
+		resp.StatusCode = 1
+	} else {
+		resp.StatusCode = 0
+		resp.VideoList = list
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
