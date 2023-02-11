@@ -57,15 +57,14 @@ func MyJWT() app.HandlerFunc {
 			c.Set("user_id", token.User_id)
 			c.Next(ctx)
 		}
-		//<<<<<<< HEAD
-		//=======
+
 		//不知道后续怎么用加了个tokenflag
 		c.Set("token_f", 1)
 		c.Set("username", token.Username)
 		c.Set("user_id", token.User_id)
 
 		c.Next(ctx)
-		//>>>>>>> main
+
 	}
 }
 func ParseToken(tokenString string) (*CustomClaims, error) {
