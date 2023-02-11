@@ -75,7 +75,7 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 	return nil
 }
 
-//事务操作，需要传递tx
+// 事务操作，需要传递tx
 func (a *ActionService) follow(tx *gorm.DB, fansId, userId int64) (err error) {
 	rela := &db_mysql.Relation{
 		FansID: fansId,
@@ -91,7 +91,7 @@ func (a *ActionService) unfollow(tx *gorm.DB, fansId, userId int64) (err error) 
 		UserID: userId,
 	}
 	if GetQueryServiceInstance(context.Background()).existRelation(fansId, userId) == false {
-		err = fmt.Errorf("relation(%v, %v)not exist", fansId, userId)
+		err = fmt.Errorf("rpc(%v, %v)not exist", fansId, userId)
 		return
 	}
 	err = db_mysql.DeleteRelation(tx, rela)

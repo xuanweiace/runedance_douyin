@@ -5,5 +5,5 @@ struct RecommendResponse {
 }
 
 service RecommendService {
-    RecommendResponse getRecommended()
+    RecommendResponse getRecommended(1: i64 user)
 }
