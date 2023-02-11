@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
+	constants "runedance_douyin/pkg/consts"
 	"time"
 )
 
@@ -24,8 +25,8 @@ func UploadFileToDB(db *mongo.Database, bucketName string, dataFile *[]byte, sid
 }
 func DownloadFromCos(id string) (*[]byte, *[]byte) {
 
-	vu := "_transcode_100030.mp4"
-	cu := "_snapshotByOffset_10_0.jpg"
+	vu := constants.VideoUrlSuffix
+	cu := constants.CoverUrlSuffix
 	pre := "dir02/" + id
 	resp1, err1 := cosClient.Object.Get(context.Background(), pre+vu, nil)
 	bs1, err2 := ioutil.ReadAll(resp1.Body)
