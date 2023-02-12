@@ -19,6 +19,7 @@ func InsertMessage(ctx context.Context, msgResordList []*MessageRecord, userId i
 	return err
 }
 
+
 func GetMessageChat(ctx context.Context, userId int64, toUserId int64, limit int) ([]*MessageRecord, error) {
 	var result []*MessageRecord
 	keyname := tools.GenerateKeyname(userId, toUserId)

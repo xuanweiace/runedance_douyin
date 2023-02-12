@@ -5,7 +5,6 @@ import (
 	constants "runedance_douyin/pkg/consts"
 )
 
-
 type MessageRecord struct {
 	gorm.Model
 	Timestamp     int64		   `json:"timestamp"`
@@ -18,5 +17,3 @@ func (u *MessageRecord) TableName() string {
 	return constants.MessageTableName
 }
 
-
-// mod(hash) 分表 

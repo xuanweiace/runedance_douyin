@@ -20,7 +20,7 @@ import (
 func SyncTaskHandler(ctx context.Context, task *asynq.Task) error {
 	var m TaskPlayload
 	err := json.Unmarshal(task.Payload(), &m)
-	log.Printf(string(task.Payload()))
+	log.Print(string(task.Payload()))
 	if(err != nil){
 		return err
 	}
@@ -68,7 +68,7 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 	}
 	
 	var newLatest int64
-	for _, val := range redis_msg{		// msg orders from old to new 
+	for _, val := range redis_msg{		    // msg orders from old to new 
 		var msg message.Message
 		err := json.Unmarshal([]byte(val), &msg)			// decode json into Message struct
 		if(err != nil){

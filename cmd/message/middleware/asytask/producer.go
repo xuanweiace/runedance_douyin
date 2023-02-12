@@ -3,61 +3,59 @@ package asytask
 import (
 	"context"
 	"encoding/json"
+	"hash/fnv"
 	"log"
 	"runedance_douyin/cmd/message/dal/db_redis"
 	"time"
+	"strconv"
 	"github.com/hibiken/asynq"
+	"runedance_douyin/pkg/tools"
 )
-var AsyClient *asynq.Client
+
 // add new sync tack into the queue
 func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
-
-	RdbConn := asynq.RedisClientOpt{
-		Addr:     "127.0.0.1:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	}
-	
-
-	AsyClient = asynq.NewClient(RdbConn)
-	defer AsyClient.Close()
-
+	curTime := time.Now()
 	m := TaskPlayload{
 		UserId: userId,
 		ToUserId: toUserId,
-		CreateTime: time.Now().String(),
+		CreateTime: curTime.String(),					
 	}
 
 	jsonStr, err := json.Marshal(m)
-	log.Printf(string(jsonStr))
+	log.Print(string(jsonStr))
 
 	if(err != nil){
 		panic(err)
 	}
+	keyname := tools.GenerateKeyname(userId, toUserId)
+	qname := getHashQueue(keyname)
+
 	newtask := asynq.NewTask("sync", jsonStr)
-	
-	taskInfo, err := AsyClient.Enqueue(newtask, asynq.ProcessAt(time.Now().Add(time.Minute)), asynq.MaxRetry(1))
+
+	// create asynqClient to push task
+	asynqClient := getClient()
+	defer asynqClient.Close()	
+	taskInfo, err := asynqClient.Enqueue(newtask, asynq.ProcessAt(curTime.Add(time.Minute)), asynq.MaxRetry(1))
 	if(err != nil){
 		log.Fatalf(string(taskInfo.Payload))
 		return err
 	}
 	log.Printf("add task to queue")
-	qname := taskInfo.Queue
-	// log.Printf("the current queue is: " + qname)
+	log.Printf("the current queue is: " + qname)
 	log.Printf("the current task is: " + taskInfo.ID)
 
 	// deal with repeated task 
-	inspector := asynq.NewInspector(RdbConn)
-
 	// // get all pending repeated task
 	pendingTaskList, err := db_redis.GetPendingTaskIDs(ctx, userId, toUserId)
 	if(err != nil){
 		return err
 	}
 
+	inspector := getInspector()
+	defer inspector.Close()
 	if(pendingTaskList != nil){
 		for _, val:= range pendingTaskList {
-			inspector.DeleteTask(qname, val)			// delete pending sync task
+			inspector.DeleteTask(qname, val)					// delete pending sync task
 			log.Printf("delete repeated task: " + val)
 		}
 		db_redis.ClearTaskList(ctx, m.UserId, m.ToUserId)
@@ -67,4 +65,11 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 		return err
 	}
 	return nil
+}
+
+func getHashQueue(key string) string {	
+	hash := fnv.New64()
+	hash.Write([]byte(key))
+	seq := hash.Sum64() % 29
+	return "queue" + strconv.FormatUint(seq , 10) 
 }

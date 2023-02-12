@@ -29,7 +29,7 @@ func InitMessage() {
 	c, err := messageservice.NewClient(constants.MessageServiceName,
 		client.WithMuxConnection(1),
 		client.WithRPCTimeout(3*time.Second),
-		client.WithConnectTimeout(500*time.Microsecond),
+		client.WithConnectTimeout(5000*time.Microsecond),
 		client.WithFailureRetry(retry.NewFailurePolicy()),
 		client.WithResolver(r),
 	)
