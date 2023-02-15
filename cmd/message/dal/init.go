@@ -7,5 +7,5 @@ import (
 
 func Init(){
 	db_mysql.Init()
-	db_redis.Init()
+	db_redis.InitCluster()
 }

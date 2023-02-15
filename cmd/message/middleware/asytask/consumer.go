@@ -45,7 +45,7 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 
 	// start new goroutine, need to init redis and mysql
 	db_mysql.Init()
-	db_redis.Init()
+	db_redis.InitCluster()
 	
 	redis_msg, err:= db_redis.GetMessageChatJson(ctx, userId, toUserId)
 	if(err != nil){
@@ -57,7 +57,8 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 	
 	var messageRecordList []*db_mysql.MessageRecord
 
-	if(len(redis_msg) == 0){								
+	if(len(redis_msg) == 0){						
+		log.Printf("no new message from redis")		
 		return nil
 	}
 

@@ -3,13 +3,11 @@ package asytask
 import (
 	"context"
 	"encoding/json"
-	"hash/fnv"
 	"log"
 	"runedance_douyin/cmd/message/dal/db_redis"
 	"time"
-	"strconv"
 	"github.com/hibiken/asynq"
-	"runedance_douyin/pkg/tools"
+
 )
 
 // add new sync tack into the queue
@@ -27,8 +25,6 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 	if(err != nil){
 		panic(err)
 	}
-	keyname := tools.GenerateKeyname(userId, toUserId)
-	qname := getHashQueue(keyname)
 
 	newtask := asynq.NewTask("sync", jsonStr)
 
@@ -41,11 +37,11 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 		return err
 	}
 	log.Printf("add task to queue")
-	log.Printf("the current queue is: " + qname)
 	log.Printf("the current task is: " + taskInfo.ID)
 
 	// deal with repeated task 
 	// // get all pending repeated task
+	db_redis.InitCluster()
 	pendingTaskList, err := db_redis.GetPendingTaskIDs(ctx, userId, toUserId)
 	if(err != nil){
 		return err
@@ -55,7 +51,7 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 	defer inspector.Close()
 	if(pendingTaskList != nil){
 		for _, val:= range pendingTaskList {
-			inspector.DeleteTask(qname, val)					// delete pending sync task
+			inspector.DeleteTask(taskInfo.Queue, val)					// delete pending sync task
 			log.Printf("delete repeated task: " + val)
 		}
 		db_redis.ClearTaskList(ctx, m.UserId, m.ToUserId)
@@ -65,11 +61,4 @@ func AddNewTask(ctx context.Context, userId int64, toUserId int64) error{
 		return err
 	}
 	return nil
-}
-
-func getHashQueue(key string) string {	
-	hash := fnv.New64()
-	hash.Write([]byte(key))
-	seq := hash.Sum64() % 29
-	return "queue" + strconv.FormatUint(seq , 10) 
 }

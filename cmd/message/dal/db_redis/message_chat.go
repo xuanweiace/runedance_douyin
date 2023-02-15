@@ -10,7 +10,7 @@ import (
 // get messageRecord json info by keyname in redis
 func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]string, error){
 	keyname := tools.GenerateKeyname(userId, toUserId)
-	jsonList, err:= Rdb.LRange(ctx, keyname, 0, Rdb.LLen(ctx, keyname).Val()).Result()
+	jsonList, err:= RdbCluster.LRange(ctx, keyname, 0, RdbCluster.LLen(ctx, keyname).Val()).Result()
 	return jsonList, err
 	// log.Printf(keyname)
 }
@@ -28,8 +28,8 @@ func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList 
 			continue
 		}
 		// add to the head of list
-		Err = Rdb.LPush(ctx, keyname, string(jsonStr)).Err()
-		Rdb.Expire(ctx, keyname, 3600)     	// refresh keyname expiration 
+		Err = RdbCluster.LPush(ctx, keyname, string(jsonStr)).Err()
+		RdbCluster.Expire(ctx, keyname, 3600)     	// refresh keyname expiration 
 	}
 	return Err
 }

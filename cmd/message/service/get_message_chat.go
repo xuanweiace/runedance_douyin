@@ -24,8 +24,8 @@ func NewGetMessageChatService(ctx context.Context) *GetMessageChatService {
 
 // return the latest 20 messages or more if in redis
 func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64, toUserId int64) ([]*message.Message, error){
+	db_redis.InitCluster()
 	var result_redis []*message.Message
-
 	recordList, err := db_redis.GetMessageChatJson(ctx, userId, toUserId)
 	if(err != nil){
 		return result_redis, err

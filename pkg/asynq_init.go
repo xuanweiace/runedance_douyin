@@ -21,7 +21,6 @@ func InitAsynq() {
 	srv = asynq.NewServer(asynqConn, asynq.Config{
 		Concurrency: 10,
 	})
-
 }
 
 func GetAsynqServer() *asynq.Server{
