@@ -15,3 +15,9 @@ services:
       - ALLOW_NONE_AUTHENTICATION=yes
     ports:
       - 2379:2379
+  redis:
+    image: "redis:latest"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
