@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/dal/db_redis"
 	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
 	"runedance_douyin/kitex_gen/user"
@@ -34,8 +35,8 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 	if _, err := rpc.GetUser(user_id); err != nil {
 		return nil, err
 	}
-
-	userids, err := db_mysql.ListFollowidsByUserid(user_id)
+	userids, err := db_redis.ListFollowidsByUserid(q.ctx, user_id)
+	// userids, err := db_mysql.ListFollowidsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +62,8 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	if _, err := rpc.GetUser(user_id); err != nil {
 		return nil, err
 	}
-	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
+	fansids, err := db_redis.ListFolloweridsByUserid(q.ctx, user_id)
+	// fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +89,11 @@ func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*rela
 	}
 
 	//先找到user的粉丝
-	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
+	fansids, err := db_redis.ListFolloweridsByUserid(q.ctx, user_id)
 	if err != nil {
 		return nil, err
 	}
-	followids, err := db_mysql.ListFollowidsByUserid(user_id)
+	followids, err := db_redis.ListFollowidsByUserid(q.ctx, user_id)
 	if err != nil {
 		return nil, err
 	}

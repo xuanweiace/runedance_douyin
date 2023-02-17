@@ -39,6 +39,8 @@ func initUser() {
 
 func GetUser(user_id int64) (*user.User, error) {
 
+	//todo 去掉这里 不做用户校验
+	return nil, nil
 	request := user.DouyinUserRequest{
 		UserId:   user_id,
 		MyUserId: user_id,

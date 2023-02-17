@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
+	"log"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/dal/db_redis"
 	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
 	constants "runedance_douyin/pkg/consts"
@@ -49,6 +50,7 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 	if err := db_mysql.ExecFuncInTransaction(func(tx *gorm.DB) error {
 		if req.ActionType == constants.ActionType_AddRelation {
 			if err := a.follow(tx, user_id, to_user_id); err != nil {
+				log.Println("[service.ExecuteAction] err:", err)
 				return err
 			}
 			if _, err := rpc.UpdateUser(user_id, 1, 0); err != nil {
@@ -59,7 +61,7 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 			}
 		} else if req.ActionType == constants.ActionType_RemoveRelation {
 			if err := a.unfollow(tx, user_id, to_user_id); err != nil {
-				fmt.Println("发现err:", err)
+				log.Println("[service.ExecuteAction] err:", err)
 				return err
 			}
 			if _, err := rpc.UpdateUser(user_id, -1, 0); err != nil {
@@ -78,23 +80,28 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 
 // 事务操作，需要传递tx
 func (a *ActionService) follow(tx *gorm.DB, fansId, userId int64) (err error) {
-	rela := &db_mysql.Relation{
-		FansID: fansId,
-		UserID: userId,
-	}
-	err = db_mysql.CreateRelation(tx, rela)
+	err = db_redis.CreateRelation(context.Background(), fansId, userId)
+
+	// rela := &db_mysql.Relation{
+	// 	FansID: fansId,
+	// 	UserID: userId,
+	// }
+	// err = db_mysql.CreateRelation(tx, rela)
 	return
 }
 
 func (a *ActionService) unfollow(tx *gorm.DB, fansId, userId int64) (err error) {
-	rela := &db_mysql.Relation{
-		FansID: fansId,
-		UserID: userId,
-	}
-	if GetQueryServiceInstance(context.Background()).existRelation(fansId, userId) == false {
-		err = fmt.Errorf("rpc(%v, %v)not exist", fansId, userId)
-		return
-	}
-	err = db_mysql.DeleteRelation(tx, rela)
+
+	err = db_redis.DeleteRelation(context.Background(), fansId, userId)
+
+	// rela := &db_mysql.Relation{
+	// 	FansID: fansId,
+	// 	UserID: userId,
+	// }
+	// if GetQueryServiceInstance(context.Background()).existRelation(fansId, userId) == false {
+	// 	err = fmt.Errorf("(%v, %v)not exist", fansId, userId)
+	// 	return
+	// }
+	// err = db_mysql.DeleteRelation(tx, rela)
 	return
 }
