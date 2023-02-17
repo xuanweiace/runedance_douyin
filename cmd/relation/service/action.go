@@ -42,9 +42,10 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 	}
 
 	// 校验用户是否存在
-	if _, err := rpc.GetUser(user_id); err != nil {
-		return err
-	}
+	// if _, err := rpc.GetUser(user_id); err != nil {
+	// 	return err
+	// }
+
 	if err := db_mysql.ExecFuncInTransaction(func(tx *gorm.DB) error {
 		if req.ActionType == constants.ActionType_AddRelation {
 			if err := a.follow(tx, user_id, to_user_id); err != nil {
