@@ -91,6 +91,7 @@ func (a *ActionService) follow(tx *gorm.DB, fansId, userId int64) (err error) {
 }
 
 func (a *ActionService) unfollow(tx *gorm.DB, fansId, userId int64) (err error) {
+<<<<<<< HEAD
 
 	err = db_redis.DeleteRelation(context.Background(), fansId, userId)
 
@@ -103,5 +104,16 @@ func (a *ActionService) unfollow(tx *gorm.DB, fansId, userId int64) (err error) 
 	// 	return
 	// }
 	// err = db_mysql.DeleteRelation(tx, rela)
+=======
+	rela := &db_mysql.Relation{
+		FansID: fansId,
+		UserID: userId,
+	}
+	if GetQueryServiceInstance(context.Background()).existRelation(fansId, userId) == false {
+		err = fmt.Errorf("relation(%v, %v)not exist", fansId, userId)
+		return
+	}
+	err = db_mysql.DeleteRelation(tx, rela)
+>>>>>>> main
 	return
 }
