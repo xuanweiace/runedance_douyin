@@ -75,7 +75,7 @@ func Register(r *server.Hertz) {
 			}
 		}
 		{
-			_relation := _douyin.Group("/rpc", _relationMw()...)
+			_relation := _douyin.Group("/relation", _relationMw()...)
 			{
 				_relation.Use(mw.MyJWT())
 				_action3 := _relation.Group("/action", _action3Mw()...)

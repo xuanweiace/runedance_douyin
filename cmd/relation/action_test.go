@@ -97,7 +97,7 @@ func TestRelationServiceImpl_RelationAction(t *testing.T) {
 func TestQueryService_GetFollowList(t *testing.T) {
 	InitEnv()
 	queryRelation, err := db_mysql.QueryRelation(1, 3)
-	fmt.Printf("rpc:%+v, err=%v\n", queryRelation, err)
+	fmt.Printf("relation:%+v, err=%v\n", queryRelation, err)
 }
 
 func TestRelationServiceImpl_GetFollowList(t *testing.T) {
