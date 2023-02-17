@@ -8,7 +8,9 @@ import (
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
 	"runedance_douyin/cmd/api/biz/rpc"
+	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/errnos"
+	"runedance_douyin/pkg/tools"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -156,7 +158,15 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.DouyinUserRegisterResponse)
-
+	getResp, err := rpc.UserRegister(ctx, &user.DouyinUserRegisterRequest{Username: req.Username, Password: req.Password})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.StatusMsg = getResp.StatusMsg
+	resp.UserID = getResp.UserId
+	resp.StatusCode = getResp.StatusCode
+	resp.Token = getResp.Token
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -170,9 +180,16 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.DouyinUserLoginResponse)
-
+	getResp, err := rpc.UserLogin(ctx, &user.DouyinUserLoginRequest{req.Username, req.Password})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.StatusMsg = getResp.StatusMsg
+	resp.UserID = getResp.UserId
+	resp.StatusCode = getResp.StatusCode
+	resp.Token = getResp.Token
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -186,8 +203,21 @@ func GetUser(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.DouyinUserResponse)
+	t, _ := tools.ParseToken(req.Token)
+	getResp, err := rpc.GetUserInfo(ctx, &user.DouyinUserRequest{UserId: req.UserID, MyUserId: t.User_id})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.User.FollowCount = getResp.User.FollowCount
+	resp.User.FollowerCount = getResp.User.FollowerCount
+	resp.User.IsFollow = getResp.User.IsFollow
+	resp.User.ID = getResp.User.UserId
+	resp.User.Name = getResp.User.Username
+
+	resp.StatusMsg = getResp.StatusMsg
+	resp.StatusCode = getResp.StatusCode
 
 	c.JSON(consts.StatusOK, resp)
 }

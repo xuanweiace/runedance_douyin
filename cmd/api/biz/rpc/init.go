@@ -4,4 +4,5 @@ func Init() {
 	initRelation()
 	initInteraction()
 	initVideo()
+	initUser()
 }
