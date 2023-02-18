@@ -4,16 +4,14 @@ package douyin
 
 import (
 	"context"
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"io"
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
 	"runedance_douyin/cmd/api/biz/rpc"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/errnos"
-	"runedance_douyin/pkg/tools"
-
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 // RelationAction .
@@ -204,8 +202,8 @@ func GetUser(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp := new(douyin.DouyinUserResponse)
-	t, _ := tools.ParseToken(req.Token)
-	getResp, err := rpc.GetUserInfo(ctx, &user.DouyinUserRequest{UserId: req.UserID, MyUserId: t.User_id})
+	t := c.GetInt64("user_id")
+	getResp, err := rpc.GetUserInfo(ctx, &user.DouyinUserRequest{UserId: req.UserID, MyUserId: t})
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
