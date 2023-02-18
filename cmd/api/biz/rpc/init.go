@@ -5,4 +5,5 @@ func Init() {
 	initInteraction()
 	initVideo()
 	InitMessage()
+	initUser()
 }
