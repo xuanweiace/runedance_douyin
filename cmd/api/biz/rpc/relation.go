@@ -18,7 +18,6 @@ import (
 var relationClient relationservice.Client
 
 func initRelation() {
-
 	r, err := etcd.NewEtcdResolver([]string{constants.EtcdAddress})
 	if err != nil {
 		panic(err)

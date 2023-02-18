@@ -26,7 +26,7 @@ func NewServiceInfo() *kitex.ServiceInfo {
 		"ExistRelation":   kitex.NewMethodInfo(existRelationHandler, newRelationServiceExistRelationArgs, newRelationServiceExistRelationResult, false),
 	}
 	extra := map[string]interface{}{
-		"PackageName": "rpc",
+		"PackageName": "relation",
 	}
 	svcInfo := &kitex.ServiceInfo{
 		ServiceName:     serviceName,
