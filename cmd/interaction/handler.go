@@ -6,6 +6,7 @@ import (
 	"runedance_douyin/cmd/interaction/dal/mysql"
 	"runedance_douyin/cmd/interaction/rpc"
 	"runedance_douyin/kitex_gen/interaction"
+	constants "runedance_douyin/pkg/consts"
 	"runedance_douyin/pkg/errnos"
 	"runedance_douyin/pkg/tools"
 	"strconv"
@@ -22,15 +23,9 @@ const (
 
 // FavoriteAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *interaction.FavoriteRequest) (resp *interaction.FavoriteResponse, err error) {
-	// TODO: Your code here...
-	//video表的FavoriteCount+1
-	//1 验证token登陆有效
 	resp = interaction.NewFavoriteResponse()
-
-	//2 查出记录 没有则插入记录
 	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
 	if err != nil {
-		//需插入数据
 		favorite = &mysql.Favorite{
 			Id:     tools.RandomStringUtil(),
 			Uid:    req.UserId,
@@ -42,6 +37,7 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 			resp.StatusCode = errnos.CodeServiceErr
 			er := err.Error()
 			resp.StatusMsg = &er
+			return resp, err
 		} else {
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
@@ -53,16 +49,33 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
 		resp.StatusMsg = &er
+		return resp, err
 	} else {
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
+	updateVideo, err := rpc.GetVideo(req.VideoId)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+		return resp, err
+	} else {
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+	}
+	var fc int32
+	if req.ActionType == 1 {
+		fc = updateVideo.FavoriteCount + 1
+	} else {
+		fc = updateVideo.FavoriteCount - 1
+	}
+	//TODO update video表
 	return resp, err
 }
 
 // GetFavoriteList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *interaction.GetFavoriteListRequest) (resp *interaction.GetFavoriteListResponse, err error) {
-	// TODO: Your code here...
 	//1 验证token登陆有效
 	resp = interaction.NewGetFavoriteListResponse()
 	//2 通过uid查出vidlist
@@ -81,8 +94,6 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 	//var vedioList []Ve
 	vedioList := []*interaction.Video{}
 	for _, vid := range vidLists {
-		//1 由vid查出video
-		//2 由AuthorId 查出user
 		userMeta, _ := rpc.GetUser(1)
 		var user *interaction.User
 		user = &interaction.User{
@@ -92,27 +103,41 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			FollowerCount: userMeta.FollowerCount,
 			IsFollow:      userMeta.IsFollow,
 		}
-		//由vid得到vedio list进行append !!!!!!!!!!RPC
-
+		video, err := rpc.GetVideo(vid)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+			return resp, err
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
+		favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, vid)
+		var flag bool
+		if favorite.Action != 1 {
+			flag = false
+		} else {
+			flag = true
+		}
 		vedioList = append(vedioList, &interaction.Video{
 			Id:            vid,
 			Author:        user,
-			PlayUrl:       "url",
-			CoverUrl:      "url",
-			FavoriteCount: 1,
-			CommentCount:  1,
-			IsFavorite:    true,
-			Title:         "视频" + strconv.Itoa(int(vid)),
+			PlayUrl:       constants.VideoUrlPrefix + video.StorageId,
+			CoverUrl:      constants.VideoUrlPrefix + video.StorageId,
+			FavoriteCount: int64(video.FavoriteCount),
+			CommentCount:  int64(video.CommentCount),
+			IsFavorite:    flag,
+			Title:         video.Title,
 		})
-		resp.VedioList = vedioList
-	}
 
+	}
+	resp.VedioList = vedioList
 	return resp, err
 }
 
 // CommentAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interaction.CommentRequest) (resp *interaction.CommentResponse, err error) {
-	// TODO: Your code here...
 	//video表的CommentCount+1
 	//1 验证token登陆有效
 	//var msg string
@@ -132,6 +157,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 			resp.StatusCode = errnos.CodeServiceErr
 			er := err.Error()
 			resp.StatusMsg = &er
+			return resp, err
 		} else {
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
@@ -157,18 +183,34 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 			resp.StatusCode = errnos.CodeServiceErr
 			er := err.Error()
 			resp.StatusMsg = &er
+			return resp, err
 		} else {
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
 		}
 	}
+	updateVideo, err := rpc.GetVideo(req.VideoId)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+		return resp, err
+	} else {
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+	}
+	var cc int32
+	if req.ActionType == 1 {
+		cc = updateVideo.CommentCount + 1
+	} else {
+		cc = updateVideo.CommentCount - 1
+	}
+	//TODO update video表
 	return resp, err
 }
 
 // GetCommentList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest) (resp *interaction.GetCommentListResponse, err error) {
-	// TODO: Your code here...
-
 	resp = interaction.NewGetCommentListResponse()
 
 	commentList, err := mysql.GetCommentDao().FindCommentListByVid(req.VideoId)
@@ -190,7 +232,6 @@ func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *intera
 			FollowerCount: userMeta.FollowerCount,
 			IsFollow:      userMeta.IsFollow,
 		}
-		//由vid得到vedio list进行append !!!!!!!!!!RPC
 		resp.CommentList = append(resp.CommentList, &interaction.Comment{
 			Id:         comment.Id,
 			User:       user,
@@ -198,5 +239,22 @@ func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *intera
 			CreateDate: time.Unix(comment.Content_date*1000, 0).Format(timeLayout),
 		})
 	}
+	return resp, err
+}
+
+// GetFavoriteStatus implements the InteractionServiceImpl interface.
+func (s *InteractionServiceImpl) GetFavoriteStatus(ctx context.Context, req *interaction.GetFavoriteStatusRequest) (resp *interaction.GetFavoriteStatusResponse, err error) {
+	resp = interaction.NewGetFavoriteStatusResponse()
+	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+		resp.ActionType = 2
+		return resp, err
+	}
+	resp.StatusCode = 0
+	resp.StatusMsg = nil
+	resp.ActionType = favorite.Action
 	return resp, err
 }
