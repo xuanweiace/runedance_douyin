@@ -25,6 +25,11 @@ const (
 	CoverUrlPrefix          = "http://127.0.0.1:8888/fileapi/cover/"
 	VideoUrlPrefix          = "http://127.0.0.1:8888/fileapi/video/"
 
+	//message
+	MessageTableName   = "message"
+	MessageServiceName = "message_service"
+	MessageServicePort = 9002
+
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
 
