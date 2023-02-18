@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"runedance_douyin/cmd/relation/dal/db_mysql"
 	"runedance_douyin/cmd/relation/dal/db_redis"
 	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
@@ -72,7 +71,7 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	for _, fansid := range fansids {
 		fans := fill_user_info(fansid)
 		//查看user是否关注了他的fans
-		existRelation := q.existRelation(fansid, user_id)
+		existRelation := q.existRelation(user_id, fansid)
 		fans.IsFollow = existRelation
 		fansList = append(fansList, fans)
 	}
@@ -112,7 +111,8 @@ func (q QueryService) ExistRelation(req *relation.ExistRelationRequest) (bool, e
 
 // todo 需要绑定在QueryService吗？
 func (q QueryService) existRelation(fans_id, user_id int64) bool {
-	queryRelation, _ := db_mysql.QueryRelation(fans_id, user_id)
+	queryRelation, _ := db_redis.QueryRelation(q.ctx, fans_id, user_id)
+	// queryRelation, _ := db_mysql.QueryRelation(fans_id, user_id)
 	if queryRelation != nil {
 		return true
 	}

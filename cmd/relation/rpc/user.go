@@ -30,7 +30,7 @@ func initUser() {
 		client.WithFailureRetry(retry.NewFailurePolicy()),
 		client.WithResolver(r),
 	)
-
+	fmt.Println("user 这个 rpc 服务 启动成功", c)
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ func initUser() {
 func GetUser(user_id int64) (*user.User, error) {
 
 	//todo 去掉这里 不做用户校验
-	return nil, nil
+	return &user.User{UserId: user_id, Username: "test_name"}, nil
 	request := user.DouyinUserRequest{
 		UserId:   user_id,
 		MyUserId: user_id,
@@ -57,6 +57,8 @@ func GetUser(user_id int64) (*user.User, error) {
 }
 
 func UpdateUser(user_id, follow_diff, follower_diff int64) (bool, error) {
+	//todo 去掉这里 不做用户校验
+	return true, nil
 	request := user.DouyinUserUpdateRequest{
 		UserId:       user_id,
 		Followdiff:   follow_diff,

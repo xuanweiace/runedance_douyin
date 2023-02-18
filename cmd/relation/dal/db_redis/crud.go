@@ -3,6 +3,7 @@ package db_redis
 import (
 	"context"
 	"fmt"
+	"runedance_douyin/cmd/relation/dal/db_mysql"
 	"strconv"
 )
 
@@ -46,6 +47,15 @@ func DeleteRelation(ctx context.Context, fansId, userId int64) error {
 		return fmt.Errorf("[db_redis.DeleteRelation] %d %d not exist", cnt1.Val(), cnt2.Val())
 	}
 	return nil
+}
+
+func QueryRelation(ctx context.Context, fans_id, user_id int64) (*db_mysql.Relation, error) {
+	bc := Rdb.SIsMember(ctx, gen_follow_key(fans_id), user_id)
+	//为了兼容mysql的写法 其实不太优雅
+	if bc.Val() == true {
+		return &db_mysql.Relation{FansID: fans_id, UserID: user_id}, nil
+	}
+	return nil, nil
 }
 
 // userId的关注列表

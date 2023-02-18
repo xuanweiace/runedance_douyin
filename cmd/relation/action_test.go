@@ -197,7 +197,7 @@ func Test_a(t *testing.T) {
 }
 
 func Test_jwt(t *testing.T) {
-	token, _ := tools.GenToken("zxz", 1)
+	token, _ := tools.GenToken("zxz", 2)
 	println(token)
 	//过期时间一秒，则 err=token is expired by 3m8.0721174s
 	s := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NDkxMjg2MH0.vpY2d_pt3hDJs2erO42z94DrizoswhotjWpwE0xk81c"
