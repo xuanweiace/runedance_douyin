@@ -59,10 +59,10 @@ struct ExistRelationResponse{
 }
 
 service RelationService{
-    RelationActionResponse   RelationAction(1:RelationActionRequest    req) (api.post="/douyin/relation/action/")
-    GetFollowListResponse  GetFollowList(1:GetFollowListRequest  req) (api.get="/douyin/relation/follow/list/")
-    GetFollowerListResponse  GetFollowerList(1:GetFollowerListRequest  req) (api.get="/douyin/relation/follower/list/")
-    GetFriendListResponse    GetFriendList(1:GetFriendListRequest req) (api.get="/douyin/relation/friend/list/")
+    RelationActionResponse   RelationAction(1:RelationActionRequest    req) (api.post="/douyin/rpc/action/")
+    GetFollowListResponse  GetFollowList(1:GetFollowListRequest  req) (api.get="/douyin/rpc/follow/list/")
+    GetFollowerListResponse  GetFollowerList(1:GetFollowerListRequest  req) (api.get="/douyin/rpc/follower/list/")
+    GetFriendListResponse    GetFriendList(1:GetFriendListRequest req) (api.get="/douyin/rpc/friend/list/")
     ExistRelationResponse   ExistRelation(1:ExistRelationRequest req)
 }
 

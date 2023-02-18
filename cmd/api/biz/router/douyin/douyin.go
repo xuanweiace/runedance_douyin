@@ -5,6 +5,7 @@ package Douyin
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	douyin "runedance_douyin/cmd/api/biz/handler/douyin"
+	mw "runedance_douyin/middleware/jwt"
 )
 
 /*
@@ -20,6 +21,7 @@ func Register(r *server.Hertz) {
 	{
 		_douyin := root.Group("/douyin", _douyinMw()...)
 		{
+			_douyin.Use(mw.MyJWT())
 			_comment := _douyin.Group("/comment", _commentMw()...)
 			{
 				_action := _comment.Group("/action", _actionMw()...)
@@ -33,6 +35,7 @@ func Register(r *server.Hertz) {
 		{
 			_favorite := _douyin.Group("/favorite", _favoriteMw()...)
 			{
+				_favorite.Use(mw.MyJWT())
 				_action0 := _favorite.Group("/action", _action0Mw()...)
 				_action0.POST("/", append(_favorite_ctionMw(), douyin.FavoriteAction)...)
 			}
@@ -43,11 +46,13 @@ func Register(r *server.Hertz) {
 		}
 		{
 			_feed := _douyin.Group("/feed", _feedMw()...)
+			_feed.Use(mw.MyJWT())
 			_feed.GET("/", append(_feed0Mw(), douyin.Feed)...)
 		}
 		{
 			_message := _douyin.Group("/message", _messageMw()...)
 			{
+				_message.Use(mw.MyJWT())
 				_action1 := _message.Group("/action", _action1Mw()...)
 				_action1.POST("/", append(_message_ctionMw(), douyin.MessageAction)...)
 			}
@@ -59,23 +64,27 @@ func Register(r *server.Hertz) {
 		{
 			_publish := _douyin.Group("/publish", _publishMw()...)
 			{
+				_publish.Use(mw.MyJWT())
 				_action2 := _publish.Group("/action", _action2Mw()...)
 				_action2.POST("/", append(_publish_ctionMw(), douyin.PublishAction)...)
 			}
 			{
 				_list1 := _publish.Group("/list", _list1Mw()...)
+				_list1.Use(mw.MyJWT())
 				_list1.GET("/", append(_publishlistMw(), douyin.PublishList)...)
 			}
 		}
 		{
-			_relation := _douyin.Group("/relation", _relationMw()...)
+			_relation := _douyin.Group("/rpc", _relationMw()...)
 			{
+				_relation.Use(mw.MyJWT())
 				_action3 := _relation.Group("/action", _action3Mw()...)
 				_action3.POST("/", append(_relation_ctionMw(), douyin.RelationAction)...)
 			}
 			{
 				_follow := _relation.Group("/follow", _followMw()...)
 				{
+					_follow.Use(mw.MyJWT())
 					_list2 := _follow.Group("/list", _list2Mw()...)
 					_list2.GET("/", append(_getfollowlistMw(), douyin.GetFollowList)...)
 				}

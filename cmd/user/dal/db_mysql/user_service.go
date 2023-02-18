@@ -2,6 +2,8 @@ package db_mysql
 
 import (
 	"errors"
+	"fmt"
+	"runedance_douyin/cmd/user/rpc"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/tools"
 	"sync"
@@ -84,7 +86,12 @@ func (u *UserServiceImpl) GetUserById(userId int64, MyUserid int64) (*user.User,
 		userResp.Username = userGet.Username
 		userResp.FollowCount = &userGet.FollowCount
 		userResp.FollowerCount = &userGet.FollowerCount
-		userResp.IsFollow = false //TODO MyUserid 是否关注了 userId 未实现查找对应数据库
+		if isFollow, err := rpc.ExistRelation(MyUserid, userId); err == nil {
+			userResp.IsFollow = isFollow
+		} else {
+			fmt.Println(err.Error())
+			userResp.IsFollow = false
+		}
 	}
 	return userResp, err
 }

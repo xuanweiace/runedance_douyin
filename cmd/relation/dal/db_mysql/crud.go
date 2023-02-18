@@ -14,14 +14,14 @@ func CreateRelation(tx *gorm.DB, relation *Relation) error {
 	// 		err = nil
 	// 	}
 	// }
-	log.Printf("[db_mysql.CreateRelation] relation=%+v, err=%#v", relation, err)
+	log.Printf("[db_mysql.CreateRelation] rpc=%+v, err=%#v", relation, err)
 	return err
 }
 
 func DeleteRelation(tx *gorm.DB, relation *Relation) error {
-	//err := db.Delete(relation).Error // 联合主键不能这么删除？
+	//err := db.Delete(rpc).Error // 联合主键不能这么删除？
 	err := tx.Where("fans_id = ? and user_id = ?", relation.FansID, relation.UserID).Delete(relation).Error
-	log.Printf("[db_mysql.DeleteRelation] relation=%+v, err=%#v", relation, err)
+	log.Printf("[db_mysql.DeleteRelation] rpc=%+v, err=%#v", relation, err)
 	return err
 }
 
