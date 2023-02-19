@@ -6,6 +6,7 @@ import (
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"runedance_douyin/cmd/api/biz/model/douyin"
+	"runedance_douyin/kitex_gen/interaction"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/kitex_gen/user/userservice"
 	videoprocess "runedance_douyin/kitex_gen/videoProcess"
@@ -72,6 +73,16 @@ func GetVideo(requesterID int64, videoID int64) (*douyin.Video, string, error) {
 		return nil, "获取用户详细信息失败:" + msg, err1
 	}
 	//TODO 是否点赞
+	f, err := interactionClient.GetFavoriteStatus(context.TODO(), &interaction.GetFavoriteStatusRequest{VideoId: videoID, UserId: requesterID})
+	if err != nil {
+		return nil, "获取点赞关系失败", err
+	}
+	var IsFavorite bool
+	if f.ActionType == 2 {
+		IsFavorite = true
+	} else {
+		IsFavorite = false
+	}
 	return &douyin.Video{
 		ID:            v.VideoId,
 		Author:        u,
@@ -79,7 +90,7 @@ func GetVideo(requesterID int64, videoID int64) (*douyin.Video, string, error) {
 		CoverURL:      constants.CoverUrlPrefix + v.StorageId,
 		FavoriteCount: int64(v.FavoriteCount),
 		CommentCount:  int64(v.CommentCount),
-		IsFavorite:    false,
+		IsFavorite:    IsFavorite,
 		Title:         v.Title,
 	}, "ok", nil
 }
