@@ -6,6 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	douyin "runedance_douyin/cmd/api/biz/handler/douyin"
 	mw "runedance_douyin/middleware/jwt"
+	requestid "runedance_douyin/middleware/RequestId "
 )
 
 /*
@@ -19,6 +20,7 @@ func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
 	{
+		root.Use(requestid.MyRequestid())
 		_douyin := root.Group("/douyin", _douyinMw()...)
 		{
 
