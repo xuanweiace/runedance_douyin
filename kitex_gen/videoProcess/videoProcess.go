@@ -1418,12 +1418,254 @@ func (p *VideoListResponse) Field1DeepEqual(src []int64) bool {
 	return true
 }
 
+type ChangeCountRequest struct {
+	VideoId     int64 `thrift:"video_id,1,required" frugal:"1,required,i64" json:"video_id"`
+	ChangeValue int32 `thrift:"change_value,2,required" frugal:"2,required,i32" json:"change_value"`
+}
+
+func NewChangeCountRequest() *ChangeCountRequest {
+	return &ChangeCountRequest{}
+}
+
+func (p *ChangeCountRequest) InitDefault() {
+	*p = ChangeCountRequest{}
+}
+
+func (p *ChangeCountRequest) GetVideoId() (v int64) {
+	return p.VideoId
+}
+
+func (p *ChangeCountRequest) GetChangeValue() (v int32) {
+	return p.ChangeValue
+}
+func (p *ChangeCountRequest) SetVideoId(val int64) {
+	p.VideoId = val
+}
+func (p *ChangeCountRequest) SetChangeValue(val int32) {
+	p.ChangeValue = val
+}
+
+var fieldIDToName_ChangeCountRequest = map[int16]string{
+	1: "video_id",
+	2: "change_value",
+}
+
+func (p *ChangeCountRequest) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetVideoId bool = false
+	var issetChangeValue bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetVideoId = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.I32 {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetChangeValue = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetVideoId {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetChangeValue {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_ChangeCountRequest[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_ChangeCountRequest[fieldId]))
+}
+
+func (p *ChangeCountRequest) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		p.VideoId = v
+	}
+	return nil
+}
+
+func (p *ChangeCountRequest) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return err
+	} else {
+		p.ChangeValue = v
+	}
+	return nil
+}
+
+func (p *ChangeCountRequest) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ChangeCountRequest"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *ChangeCountRequest) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("video_id", thrift.I64, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.VideoId); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *ChangeCountRequest) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("change_value", thrift.I32, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI32(p.ChangeValue); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *ChangeCountRequest) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ChangeCountRequest(%+v)", *p)
+}
+
+func (p *ChangeCountRequest) DeepEqual(ano *ChangeCountRequest) bool {
+	if p == ano {
+		return true
+	} else if p == nil || ano == nil {
+		return false
+	}
+	if !p.Field1DeepEqual(ano.VideoId) {
+		return false
+	}
+	if !p.Field2DeepEqual(ano.ChangeValue) {
+		return false
+	}
+	return true
+}
+
+func (p *ChangeCountRequest) Field1DeepEqual(src int64) bool {
+
+	if p.VideoId != src {
+		return false
+	}
+	return true
+}
+func (p *ChangeCountRequest) Field2DeepEqual(src int32) bool {
+
+	if p.ChangeValue != src {
+		return false
+	}
+	return true
+}
+
 type VideoProcessService interface {
 	GetVideoInfo(ctx context.Context, req *VideoInfoRequest) (r *VideoInfoResponse, err error)
 
 	UploadVideo(ctx context.Context, req *VideoProcessUploadRequest) (r *VideoProcessUploadResponse, err error)
 
 	GetVideoList(ctx context.Context, authorId int64) (r *VideoListResponse, err error)
+
+	ChangeFavCount(ctx context.Context, req *ChangeCountRequest) (err error)
+
+	ChangeComCount(ctx context.Context, req *ChangeCountRequest) (err error)
 }
 
 type VideoProcessServiceClient struct {
@@ -1479,6 +1721,24 @@ func (p *VideoProcessServiceClient) GetVideoList(ctx context.Context, authorId i
 	}
 	return _result.GetSuccess(), nil
 }
+func (p *VideoProcessServiceClient) ChangeFavCount(ctx context.Context, req *ChangeCountRequest) (err error) {
+	var _args VideoProcessServiceChangeFavCountArgs
+	_args.Req = req
+	var _result VideoProcessServiceChangeFavCountResult
+	if err = p.Client_().Call(ctx, "changeFavCount", &_args, &_result); err != nil {
+		return
+	}
+	return nil
+}
+func (p *VideoProcessServiceClient) ChangeComCount(ctx context.Context, req *ChangeCountRequest) (err error) {
+	var _args VideoProcessServiceChangeComCountArgs
+	_args.Req = req
+	var _result VideoProcessServiceChangeComCountResult
+	if err = p.Client_().Call(ctx, "ChangeComCount", &_args, &_result); err != nil {
+		return
+	}
+	return nil
+}
 
 type VideoProcessServiceProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
@@ -1503,6 +1763,8 @@ func NewVideoProcessServiceProcessor(handler VideoProcessService) *VideoProcessS
 	self.AddToProcessorMap("getVideoInfo", &videoProcessServiceProcessorGetVideoInfo{handler: handler})
 	self.AddToProcessorMap("uploadVideo", &videoProcessServiceProcessorUploadVideo{handler: handler})
 	self.AddToProcessorMap("getVideoList", &videoProcessServiceProcessorGetVideoList{handler: handler})
+	self.AddToProcessorMap("changeFavCount", &videoProcessServiceProcessorChangeFavCount{handler: handler})
+	self.AddToProcessorMap("ChangeComCount", &videoProcessServiceProcessorChangeComCount{handler: handler})
 	return self
 }
 func (p *VideoProcessServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1650,6 +1912,96 @@ func (p *videoProcessServiceProcessorGetVideoList) Process(ctx context.Context, 
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("getVideoList", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type videoProcessServiceProcessorChangeFavCount struct {
+	handler VideoProcessService
+}
+
+func (p *videoProcessServiceProcessorChangeFavCount) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := VideoProcessServiceChangeFavCountArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("changeFavCount", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	var err2 error
+	result := VideoProcessServiceChangeFavCountResult{}
+	if err2 = p.handler.ChangeFavCount(ctx, args.Req); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing changeFavCount: "+err2.Error())
+		oprot.WriteMessageBegin("changeFavCount", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("changeFavCount", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type videoProcessServiceProcessorChangeComCount struct {
+	handler VideoProcessService
+}
+
+func (p *videoProcessServiceProcessorChangeComCount) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := VideoProcessServiceChangeComCountArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("ChangeComCount", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	var err2 error
+	result := VideoProcessServiceChangeComCountResult{}
+	if err2 = p.handler.ChangeComCount(ctx, args.Req); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ChangeComCount: "+err2.Error())
+		oprot.WriteMessageBegin("ChangeComCount", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("ChangeComCount", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -2692,6 +3044,538 @@ func (p *VideoProcessServiceGetVideoListResult) DeepEqual(ano *VideoProcessServi
 func (p *VideoProcessServiceGetVideoListResult) Field0DeepEqual(src *VideoListResponse) bool {
 
 	if !p.Success.DeepEqual(src) {
+		return false
+	}
+	return true
+}
+
+type VideoProcessServiceChangeFavCountArgs struct {
+	Req *ChangeCountRequest `thrift:"req,1" frugal:"1,default,ChangeCountRequest" json:"req"`
+}
+
+func NewVideoProcessServiceChangeFavCountArgs() *VideoProcessServiceChangeFavCountArgs {
+	return &VideoProcessServiceChangeFavCountArgs{}
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) InitDefault() {
+	*p = VideoProcessServiceChangeFavCountArgs{}
+}
+
+var VideoProcessServiceChangeFavCountArgs_Req_DEFAULT *ChangeCountRequest
+
+func (p *VideoProcessServiceChangeFavCountArgs) GetReq() (v *ChangeCountRequest) {
+	if !p.IsSetReq() {
+		return VideoProcessServiceChangeFavCountArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *VideoProcessServiceChangeFavCountArgs) SetReq(val *ChangeCountRequest) {
+	p.Req = val
+}
+
+var fieldIDToName_VideoProcessServiceChangeFavCountArgs = map[int16]string{
+	1: "req",
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_VideoProcessServiceChangeFavCountArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Req = NewChangeCountRequest()
+	if err := p.Req.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("changeFavCount_args"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Req.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("VideoProcessServiceChangeFavCountArgs(%+v)", *p)
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) DeepEqual(ano *VideoProcessServiceChangeFavCountArgs) bool {
+	if p == ano {
+		return true
+	} else if p == nil || ano == nil {
+		return false
+	}
+	if !p.Field1DeepEqual(ano.Req) {
+		return false
+	}
+	return true
+}
+
+func (p *VideoProcessServiceChangeFavCountArgs) Field1DeepEqual(src *ChangeCountRequest) bool {
+
+	if !p.Req.DeepEqual(src) {
+		return false
+	}
+	return true
+}
+
+type VideoProcessServiceChangeFavCountResult struct {
+}
+
+func NewVideoProcessServiceChangeFavCountResult() *VideoProcessServiceChangeFavCountResult {
+	return &VideoProcessServiceChangeFavCountResult{}
+}
+
+func (p *VideoProcessServiceChangeFavCountResult) InitDefault() {
+	*p = VideoProcessServiceChangeFavCountResult{}
+}
+
+var fieldIDToName_VideoProcessServiceChangeFavCountResult = map[int16]string{}
+
+func (p *VideoProcessServiceChangeFavCountResult) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err = iprot.Skip(fieldTypeId); err != nil {
+			goto SkipFieldTypeError
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+SkipFieldTypeError:
+	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeFavCountResult) Write(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteStructBegin("changeFavCount_result"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeFavCountResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("VideoProcessServiceChangeFavCountResult(%+v)", *p)
+}
+
+func (p *VideoProcessServiceChangeFavCountResult) DeepEqual(ano *VideoProcessServiceChangeFavCountResult) bool {
+	if p == ano {
+		return true
+	} else if p == nil || ano == nil {
+		return false
+	}
+	return true
+}
+
+type VideoProcessServiceChangeComCountArgs struct {
+	Req *ChangeCountRequest `thrift:"req,1" frugal:"1,default,ChangeCountRequest" json:"req"`
+}
+
+func NewVideoProcessServiceChangeComCountArgs() *VideoProcessServiceChangeComCountArgs {
+	return &VideoProcessServiceChangeComCountArgs{}
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) InitDefault() {
+	*p = VideoProcessServiceChangeComCountArgs{}
+}
+
+var VideoProcessServiceChangeComCountArgs_Req_DEFAULT *ChangeCountRequest
+
+func (p *VideoProcessServiceChangeComCountArgs) GetReq() (v *ChangeCountRequest) {
+	if !p.IsSetReq() {
+		return VideoProcessServiceChangeComCountArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+func (p *VideoProcessServiceChangeComCountArgs) SetReq(val *ChangeCountRequest) {
+	p.Req = val
+}
+
+var fieldIDToName_VideoProcessServiceChangeComCountArgs = map[int16]string{
+	1: "req",
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_VideoProcessServiceChangeComCountArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Req = NewChangeCountRequest()
+	if err := p.Req.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ChangeComCount_args"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Req.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("VideoProcessServiceChangeComCountArgs(%+v)", *p)
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) DeepEqual(ano *VideoProcessServiceChangeComCountArgs) bool {
+	if p == ano {
+		return true
+	} else if p == nil || ano == nil {
+		return false
+	}
+	if !p.Field1DeepEqual(ano.Req) {
+		return false
+	}
+	return true
+}
+
+func (p *VideoProcessServiceChangeComCountArgs) Field1DeepEqual(src *ChangeCountRequest) bool {
+
+	if !p.Req.DeepEqual(src) {
+		return false
+	}
+	return true
+}
+
+type VideoProcessServiceChangeComCountResult struct {
+}
+
+func NewVideoProcessServiceChangeComCountResult() *VideoProcessServiceChangeComCountResult {
+	return &VideoProcessServiceChangeComCountResult{}
+}
+
+func (p *VideoProcessServiceChangeComCountResult) InitDefault() {
+	*p = VideoProcessServiceChangeComCountResult{}
+}
+
+var fieldIDToName_VideoProcessServiceChangeComCountResult = map[int16]string{}
+
+func (p *VideoProcessServiceChangeComCountResult) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err = iprot.Skip(fieldTypeId); err != nil {
+			goto SkipFieldTypeError
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+SkipFieldTypeError:
+	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeComCountResult) Write(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteStructBegin("ChangeComCount_result"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *VideoProcessServiceChangeComCountResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("VideoProcessServiceChangeComCountResult(%+v)", *p)
+}
+
+func (p *VideoProcessServiceChangeComCountResult) DeepEqual(ano *VideoProcessServiceChangeComCountResult) bool {
+	if p == ano {
+		return true
+	} else if p == nil || ano == nil {
 		return false
 	}
 	return true

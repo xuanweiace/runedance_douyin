@@ -14,6 +14,8 @@ type Client interface {
 	GetVideoInfo(ctx context.Context, req *videoprocess.VideoInfoRequest, callOptions ...callopt.Option) (r *videoprocess.VideoInfoResponse, err error)
 	UploadVideo(ctx context.Context, req *videoprocess.VideoProcessUploadRequest, callOptions ...callopt.Option) (r *videoprocess.VideoProcessUploadResponse, err error)
 	GetVideoList(ctx context.Context, authorId int64, callOptions ...callopt.Option) (r *videoprocess.VideoListResponse, err error)
+	ChangeFavCount(ctx context.Context, req *videoprocess.ChangeCountRequest, callOptions ...callopt.Option) (err error)
+	ChangeComCount(ctx context.Context, req *videoprocess.ChangeCountRequest, callOptions ...callopt.Option) (err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -58,4 +60,14 @@ func (p *kVideoProcessServiceClient) UploadVideo(ctx context.Context, req *video
 func (p *kVideoProcessServiceClient) GetVideoList(ctx context.Context, authorId int64, callOptions ...callopt.Option) (r *videoprocess.VideoListResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetVideoList(ctx, authorId)
+}
+
+func (p *kVideoProcessServiceClient) ChangeFavCount(ctx context.Context, req *videoprocess.ChangeCountRequest, callOptions ...callopt.Option) (err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ChangeFavCount(ctx, req)
+}
+
+func (p *kVideoProcessServiceClient) ChangeComCount(ctx context.Context, req *videoprocess.ChangeCountRequest, callOptions ...callopt.Option) (err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ChangeComCount(ctx, req)
 }
