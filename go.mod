@@ -17,8 +17,10 @@ require (
 	github.com/kitex-contrib/registry-etcd v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.0.2
+	github.com/sirupsen/logrus v1.8.1
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.41
 	go.mongodb.org/mongo-driver v1.11.1
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.4.4
 	gorm.io/gorm v1.24.3
 	gorm.io/plugin/opentelemetry v0.1.0
@@ -70,7 +72,6 @@ require (
 	github.com/oleiade/lane v1.0.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/tidwall/gjson v1.13.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

@@ -1,30 +1,46 @@
 package tools
 
 import (
-	"fmt"
-	log "github.com/sirupsen/logrus"
+	"bytes"
+	logrus "github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"io"
+	"os"
 	"path"
 	"runtime"
-	"strings"
 )
 
-func loggerInit() {
-	//初始化日志
-	log.SetReportCaller(true) //需要设置这个为true
-	log.SetFormatter(&log.TextFormatter{
+var logger = &lumberjack.Logger{
+	Filename:   "../../log/log.txt",
+	MaxSize:    10, // megabytes
+	MaxBackups: 3,
+	MaxAge:     28, //days
+}
+
+func LoggerInit() {
+	logrus.SetReportCaller(true)
+
+	logrus.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:03:04",
-		ForceColors:     true,
-		FullTimestamp:   true,
-		DisableQuote:    true,
+
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-			//处理函数名
-			fs := strings.Split(frame.Function, ".")
-			fun := ""
-			if len(fs) > 0 {
-				fun = fs[len(fs)-1]
-			}
+			//处理文件名
 			fileName := path.Base(frame.File)
-			return fmt.Sprintf("[\033[1;34m%s\033[0m]", fun), fmt.Sprintf("[%s:%d]", fileName, frame.Line)
+			return frame.Function, fileName
 		},
 	})
+	fileAndStdoutWriter := io.MultiWriter(os.Stdout, logger)
+	logrus.SetOutput(fileAndStdoutWriter)
+	//设置最低loglevel
+	logrus.SetLevel(logrus.InfoLevel)
+}
+
+type OutputSplitter struct{}
+
+func (splitter *OutputSplitter) Write(p []byte) (n int, err error) {
+	// your logs filter logic here. For ex:
+	if bytes.Contains(p, []byte("level=error")) {
+		return os.Stderr.Write(p)
+	}
+	return os.Stdout.Write(p)
 }
