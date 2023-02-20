@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"bytes"
 	logrus "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
@@ -32,15 +31,7 @@ func LoggerInit() {
 	fileAndStdoutWriter := io.MultiWriter(os.Stdout, logger)
 	logrus.SetOutput(fileAndStdoutWriter)
 	//设置最低loglevel
+
 	logrus.SetLevel(logrus.InfoLevel)
-}
 
-type OutputSplitter struct{}
-
-func (splitter *OutputSplitter) Write(p []byte) (n int, err error) {
-	// your logs filter logic here. For ex:
-	if bytes.Contains(p, []byte("level=error")) {
-		return os.Stderr.Write(p)
-	}
-	return os.Stdout.Write(p)
 }

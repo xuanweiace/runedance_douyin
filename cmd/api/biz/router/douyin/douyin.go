@@ -21,15 +21,17 @@ func Register(r *server.Hertz) {
 	{
 		_douyin := root.Group("/douyin", _douyinMw()...)
 		{
-			_douyin.Use(mw.MyJWT())
+
 			_comment := _douyin.Group("/comment", _commentMw()...)
 			{
+				_comment.Use(mw.MyJWT())
 				_action := _comment.Group("/action", _actionMw()...)
 				_action.POST("/", append(_comment_ctionMw(), douyin.CommentAction)...)
 			}
 			{
 				_list := _comment.Group("/list", _listMw()...)
 				_list.GET("/", append(_getcommentlistMw(), douyin.GetCommentList)...)
+				_list.Use(mw.MyJWT())
 			}
 		}
 		{
