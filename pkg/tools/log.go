@@ -24,8 +24,11 @@ func LoggerInit() {
 
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
 			//处理文件名
-			fileName := path.Base(frame.File)
-			return frame.Function, fileName
+			base := path.Base(frame.File)
+			pre := path.Dir(frame.File)
+			pre = path.Base(pre)
+			realfilename := pre + "/" + base
+			return frame.Function, realfilename
 		},
 	})
 	fileAndStdoutWriter := io.MultiWriter(os.Stdout, logger)

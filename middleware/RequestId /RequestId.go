@@ -13,5 +13,6 @@ func MyRequestid() app.HandlerFunc {
 		requestId := uuid.New()
 
 		c.Set("request_id", requestId.String())
+
 	}
 }
