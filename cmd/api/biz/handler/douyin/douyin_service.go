@@ -256,7 +256,17 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(douyin.DouyinFeedResponse)
+	list, msg, e := rpc.GetRecommendList(ctx, c.GetInt64("user_id"))
+
+	resp := new(douyin.DouyinPublishListResponse)
+
+	resp.StatusMsg = &msg
+	if e != nil {
+		resp.StatusCode = 1
+	} else {
+		resp.StatusCode = 0
+		resp.VideoList = list
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -277,10 +287,11 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, "bad request")
 		return
 	}
+	c.JSON(consts.StatusProcessing, "")
 	fileData, _ := io.ReadAll(fileOpen)
 	resp := new(douyin.DouyinPublishActionResponse)
 	var msg string
-	resp.StatusCode, msg = rpc.PublishVideo(id, &tt, &fileData)
+	resp.StatusCode, msg = rpc.PublishVideo(ctx, id, &tt, &fileData)
 	resp.StatusMsg = &msg
 	c.JSON(200, resp)
 }
@@ -296,7 +307,7 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	list, msg, e := rpc.GetPublishList(c.GetInt64("user_id"), req.UserID)
+	list, msg, e := rpc.GetPublishList(ctx, c.GetInt64("user_id"), req.UserID)
 
 	resp := new(douyin.DouyinPublishListResponse)
 
