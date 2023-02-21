@@ -15,6 +15,7 @@ type Client interface {
 	GetFavoriteList(ctx context.Context, req *interaction.GetFavoriteListRequest, callOptions ...callopt.Option) (r *interaction.GetFavoriteListResponse, err error)
 	CommentAction(ctx context.Context, req *interaction.CommentRequest, callOptions ...callopt.Option) (r *interaction.CommentResponse, err error)
 	GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest, callOptions ...callopt.Option) (r *interaction.GetCommentListResponse, err error)
+	GetFavoriteStatus(ctx context.Context, req *interaction.GetFavoriteStatusRequest, callOptions ...callopt.Option) (r *interaction.GetFavoriteStatusResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -64,4 +65,9 @@ func (p *kInteractionServiceClient) CommentAction(ctx context.Context, req *inte
 func (p *kInteractionServiceClient) GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest, callOptions ...callopt.Option) (r *interaction.GetCommentListResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetCommentList(ctx, req)
+}
+
+func (p *kInteractionServiceClient) GetFavoriteStatus(ctx context.Context, req *interaction.GetFavoriteStatusRequest, callOptions ...callopt.Option) (r *interaction.GetFavoriteStatusResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetFavoriteStatus(ctx, req)
 }

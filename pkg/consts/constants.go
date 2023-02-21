@@ -9,8 +9,8 @@ const (
 	UserServiceName = "user_service"
 	UserServicePort = 9001
 
-	//rpc
-	RelationTableName         = "rpc"
+	//relation
+	RelationTableName         = "relation"
 	RelationServiceName       = "relation_service"
 	RelationServicePort       = 9000
 	ActionType_AddRelation    = 1
@@ -24,7 +24,8 @@ const (
 	CoverUrlSuffix          = "_snapshotByOffset_10_0.jpg"
 	CoverUrlPrefix          = "http://127.0.0.1:8888/fileapi/cover/"
 	VideoUrlPrefix          = "http://127.0.0.1:8888/fileapi/video/"
-
+	VideoFeedSize           = 30
+	VideoPlayUrlPort        = 8888
 	//message
 	MessageTableName   = "message"
 	MessageServiceName = "message_service"

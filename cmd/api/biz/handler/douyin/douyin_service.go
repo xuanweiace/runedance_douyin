@@ -7,14 +7,15 @@ import (
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
 	"runedance_douyin/cmd/api/biz/rpc"
+	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/errnos"
-	
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 // RelationAction .
-// @router /douyin/rpc/action/ [POST]
+// @router /douyin/relation/action/ [POST]
 func RelationAction(ctx context.Context, c *app.RequestContext) {
 
 	var err error
@@ -35,7 +36,7 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFollowList .
-// @router /douyin/rpc/follow/list/ [GET]
+// @router /douyin/relation/follow/list/ [GET]
 func GetFollowList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFollowListRequest
@@ -60,7 +61,7 @@ func GetFollowList(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFollowerList .
-// @router /douyin/rpc/follower/list/ [GET]
+// @router /douyin/relation/follower/list/ [GET]
 func GetFollowerList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFollowerListRequest
@@ -86,7 +87,7 @@ func GetFollowerList(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetFriendList .
-// @router /douyin/rpc/friend/list/ [GET]
+// @router /douyin/relation/friend/list/ [GET]
 func GetFriendList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.GetFriendListRequest
@@ -147,23 +148,23 @@ func GetMessageChat(ctx context.Context, c *app.RequestContext) {
 	resp := new(douyin.GetMessageChatResponse)
 
 	msgList, err := rpc.GetMessageChat(ctx, c.GetInt64("user_id"), req.ToUserID)
-	if(err != nil){
+	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
 		resp.StatusMsg = &er
 	}
 
 	var result []*douyin.Message
-	
-	for _, val:= range msgList {
+
+	for _, val := range msgList {
 		msg := douyin.Message{
-			ID: val.Id,
-			Content: val.Content,
+			ID:         val.Id,
+			Content:    val.Content,
 			CreateTime: &val.CreateTime,
 		}
 		result = append(result, &msg)
-	} 
-	
+	}
+
 	resp.MsgList = result
 	c.JSON(consts.StatusOK, resp)
 }
@@ -180,7 +181,15 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.DouyinUserRegisterResponse)
-
+	getResp, err := rpc.UserRegister(ctx, &user.DouyinUserRegisterRequest{Username: req.Username, Password: req.Password})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.StatusMsg = getResp.StatusMsg
+	resp.UserID = getResp.UserId
+	resp.StatusCode = getResp.StatusCode
+	resp.Token = getResp.Token
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -194,9 +203,16 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.DouyinUserLoginResponse)
-
+	getResp, err := rpc.UserLogin(ctx, &user.DouyinUserLoginRequest{req.Username, req.Password})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.StatusMsg = getResp.StatusMsg
+	resp.UserID = getResp.UserId
+	resp.StatusCode = getResp.StatusCode
+	resp.Token = getResp.Token
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -210,8 +226,21 @@ func GetUser(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.DouyinUserResponse)
+	t := c.GetInt64("user_id")
+	getResp, err := rpc.GetUserInfo(ctx, &user.DouyinUserRequest{UserId: req.UserID, MyUserId: t})
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.User.FollowCount = getResp.User.FollowCount
+	resp.User.FollowerCount = getResp.User.FollowerCount
+	resp.User.IsFollow = getResp.User.IsFollow
+	resp.User.ID = getResp.User.UserId
+	resp.User.Name = getResp.User.Username
+
+	resp.StatusMsg = getResp.StatusMsg
+	resp.StatusCode = getResp.StatusCode
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -227,7 +256,17 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(douyin.DouyinFeedResponse)
+	list, msg, e := rpc.GetRecommendList(ctx, c.GetInt64("user_id"))
+
+	resp := new(douyin.DouyinPublishListResponse)
+
+	resp.StatusMsg = &msg
+	if e != nil {
+		resp.StatusCode = 1
+	} else {
+		resp.StatusCode = 0
+		resp.VideoList = list
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -248,10 +287,11 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, "bad request")
 		return
 	}
+	c.JSON(consts.StatusProcessing, "")
 	fileData, _ := io.ReadAll(fileOpen)
 	resp := new(douyin.DouyinPublishActionResponse)
 	var msg string
-	resp.StatusCode, msg = rpc.PublishVideo(id, &tt, &fileData)
+	resp.StatusCode, msg = rpc.PublishVideo(ctx, id, &tt, &fileData)
 	resp.StatusMsg = &msg
 	c.JSON(200, resp)
 }
@@ -267,7 +307,7 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	list, msg, e := rpc.GetPublishList(c.GetInt64("user_id"), req.UserID)
+	list, msg, e := rpc.GetPublishList(ctx, c.GetInt64("user_id"), req.UserID)
 
 	resp := new(douyin.DouyinPublishListResponse)
 

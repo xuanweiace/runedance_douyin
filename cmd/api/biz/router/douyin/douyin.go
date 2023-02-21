@@ -6,6 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	douyin "runedance_douyin/cmd/api/biz/handler/douyin"
 	mw "runedance_douyin/middleware/jwt"
+	requestid "runedance_douyin/middleware/RequestId "
 )
 
 /*
@@ -19,17 +20,20 @@ func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
 	{
+		root.Use(requestid.MyRequestid())
 		_douyin := root.Group("/douyin", _douyinMw()...)
 		{
-			_douyin.Use(mw.MyJWT())
+
 			_comment := _douyin.Group("/comment", _commentMw()...)
 			{
+				_comment.Use(mw.MyJWT())
 				_action := _comment.Group("/action", _actionMw()...)
 				_action.POST("/", append(_comment_ctionMw(), douyin.CommentAction)...)
 			}
 			{
 				_list := _comment.Group("/list", _listMw()...)
 				_list.GET("/", append(_getcommentlistMw(), douyin.GetCommentList)...)
+				_list.Use(mw.MyJWT())
 			}
 		}
 		{
@@ -75,7 +79,7 @@ func Register(r *server.Hertz) {
 			}
 		}
 		{
-			_relation := _douyin.Group("/rpc", _relationMw()...)
+			_relation := _douyin.Group("/relation", _relationMw()...)
 			{
 				_relation.Use(mw.MyJWT())
 				_action3 := _relation.Group("/action", _action3Mw()...)

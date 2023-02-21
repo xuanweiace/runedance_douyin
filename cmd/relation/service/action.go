@@ -91,7 +91,7 @@ func (a *ActionService) unfollow(tx *gorm.DB, fansId, userId int64) (err error) 
 		UserID: userId,
 	}
 	if GetQueryServiceInstance(context.Background()).existRelation(fansId, userId) == false {
-		err = fmt.Errorf("rpc(%v, %v)not exist", fansId, userId)
+		err = fmt.Errorf("relation(%v, %v)not exist", fansId, userId)
 		return
 	}
 	err = db_mysql.DeleteRelation(tx, rela)

@@ -23,9 +23,15 @@ struct VideoInfoRequest {
 struct VideoListResponse {
     1: required list<i64> published;
 }
+struct ChangeCountRequest {
+    1:required i64 video_id;
+    2:required i32 change_value;
+}
 service VideoProcessService {
     VideoInfoResponse getVideoInfo (1:VideoInfoRequest req)
     VideoProcessUploadResponse uploadVideo (1:VideoProcessUploadRequest req)
     VideoListResponse getVideoList (1:i64 author_id)
+    void changeFavCount(1:ChangeCountRequest req)
+    void ChangeComCount(1:ChangeCountRequest req)
 }
 
