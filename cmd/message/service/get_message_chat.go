@@ -11,6 +11,8 @@ import (
 	"runedance_douyin/cmd/message/dal/db_mysql"
 
 	"encoding/json"
+
+	"time"
 )
 
 type GetMessageChatService struct {
@@ -31,6 +33,7 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 		return result_redis, err
 	}
 	l_redis := len(recordList)												// keyname stores values in redis
+	
 	// 	decode json into Message struct
 	for _, val := range recordList {
 		var msg message.Message
@@ -55,18 +58,19 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	}
 
 	var result_mysql []*message.Message
+
 	// message ordered from old to new
 	for _, val := range recordListSQL {
 		msg := message.Message{
 			Id : val.Timestamp,
 			Content : val.Content,
-			CreateTime : val.CreateTime, 
+			CreateTime : time.Unix(val.Timestamp, 0).Format(time.UnixDate),   // convert to readable time string
 		}
 		result_mysql = append(result_mysql, &msg)
 	}
 
 	// store mysql message chat to redis
-	err3 := db_redis.LoadMessageChat(ctx, userId, toUserId, result_mysql)
+	err3 := db_redis.LoadMessageChat(ctx, userId, toUserId, recordListSQL)
 
 	// combine 
 	result_mysql = append(result_mysql, result_redis...)

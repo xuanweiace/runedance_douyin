@@ -3,8 +3,8 @@ package db_redis
 import (
 	"context"
 	"encoding/json"
-	"runedance_douyin/kitex_gen/message"
 	"runedance_douyin/pkg/tools"
+	"runedance_douyin/cmd/message/dal/db_mysql"
 )
 
 // get messageRecord json info by keyname in redis
@@ -17,7 +17,7 @@ func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]st
 
 
 // insert message chat into redis
-func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList []*message.Message) error{
+func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList []*db_mysql.MessageRecord) error{
 	keyname := tools.GenerateKeyname(userId, toUserId)
 	var Err error
 	for _, val := range msgList {

@@ -3,20 +3,21 @@ package db_redis
 import (
 	"context"
 	"encoding/json"
-	"runedance_douyin/kitex_gen/message"
 	"runedance_douyin/pkg/tools"
 	"strconv"
 	"time"
+	"runedance_douyin/cmd/message/dal/db_mysql"
 )
+
 
 func HandleMessageSend (ctx context.Context, userId int64, toUserId int64, actionType int32, content string)  error{
 	keyname := tools.GenerateKeyname(userId, toUserId)
 	// store message into a map
 	curTime := time.Now()
-	m := message.Message{
-		Id: curTime.Unix(),
+	m := db_mysql.MessageRecord{
+		Timestamp: curTime.Unix(),
+		Sender: userId,
 		Content: content,
-		CreateTime: curTime.String(),
 	}
 
 	// encode m to json

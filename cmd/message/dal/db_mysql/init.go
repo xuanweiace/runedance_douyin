@@ -5,8 +5,8 @@ import (
 
 	"log"
 	"runedance_douyin/pkg"
-	constants "runedance_douyin/pkg/consts"
-
+	// constants "runedance_douyin/pkg/consts"
+	
 	"gorm.io/gorm"
 )
 
@@ -14,7 +14,8 @@ var db *gorm.DB
 
 // Init init DB
 func Init() {
-	pkg.InitDB(constants.MySQLDefaultDSN)
+	// constants.MySQLDefaultDSN
+	pkg.InitDB("root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local")
 	db = pkg.GetDB()
 
 	isExist := db.Migrator().HasTable(&MessageRecord{})
