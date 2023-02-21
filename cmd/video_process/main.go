@@ -1,15 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	etcd "github.com/kitex-contrib/registry-etcd"
+	"github.com/redis/go-redis/v9"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -22,6 +23,7 @@ import (
 var cosClient *cos.Client
 var gormClient *gorm.DB
 var storageClient videostorageservice.Client
+var redisClient *redis.Client
 
 func getdsn() string {
 	return constants.MySQLDefaultDSN
@@ -38,12 +40,7 @@ func main() {
 
 	u, _ := url.Parse("https://bogo-1308981928.cos.ap-nanjing.myqcloud.com")
 	b := &cos.BaseURL{BucketURL: u}
-	cc := cos.NewClient(b, &http.Client{
-		Transport: &cos.AuthorizationTransport{
-			SecretID:  "AKIDBBxWq4D8oDTaT7UeieQ1TYTDj15wb5LP",
-			SecretKey: "ymOp6BmCPOAi291gJn6FD0azDF5jBRVO",
-		},
-	})
+	cc := cos.NewClient(b, &http.Client{})
 	if cc == nil {
 		panic("gg")
 		return
@@ -67,12 +64,12 @@ func main() {
 	}
 	storageClient = vsc
 
-	//vsc, e2 := videostorageservice.NewClient("VideoStorageService", client.WithHostPorts("0.0.0.0:8888"))
-	//if e2 != nil {
-	//	panic(e2)
-	//	return
-	//}
-	//storageClient = vsc
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	redisClient = rdb
 
 	r2, err3 := etcd.NewEtcdRegistry([]string{constants.EtcdAddress})
 	if err3 != nil {
@@ -94,6 +91,6 @@ func main() {
 	err := svr.Run()
 
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 	}
 }
