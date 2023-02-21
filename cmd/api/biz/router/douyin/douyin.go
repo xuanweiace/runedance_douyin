@@ -6,7 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	douyin "runedance_douyin/cmd/api/biz/handler/douyin"
 	mw "runedance_douyin/middleware/jwt"
-	requestid "runedance_douyin/middleware/RequestId "
+	requestid "runedance_douyin/middleware/RequestId"
 )
 
 /*
