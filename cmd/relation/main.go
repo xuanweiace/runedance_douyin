@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"runedance_douyin/cmd/relation/dal"
+	rmq "runedance_douyin/cmd/relation/middleware/rocketmq"
 	"runedance_douyin/cmd/relation/rpc"
 	relation "runedance_douyin/kitex_gen/relation/relationservice"
 	constants "runedance_douyin/pkg/consts"
@@ -17,6 +18,7 @@ import (
 func Init() {
 	rpc.Init()
 	dal.Init()
+	rmq.Init()
 }
 func main() {
 	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress})

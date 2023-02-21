@@ -6,6 +6,7 @@ import (
 	"log"
 	"runedance_douyin/cmd/relation/dal/db_mysql"
 	"runedance_douyin/cmd/relation/dal/db_redis"
+	rmq "runedance_douyin/cmd/relation/middleware/rocketmq"
 	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
 	constants "runedance_douyin/pkg/consts"
@@ -81,7 +82,7 @@ func (a *ActionService) ExecuteAction(req *relation.RelationActionRequest) error
 // 事务操作，需要传递tx
 func (a *ActionService) follow(tx *gorm.DB, fansId, userId int64) (err error) {
 	err = db_redis.CreateRelation(context.Background(), fansId, userId)
-
+	rmq.SendActionMsg(1, fansId, userId)
 	// rela := &db_mysql.Relation{
 	// 	FansID: fansId,
 	// 	UserID: userId,
