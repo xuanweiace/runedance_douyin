@@ -24,6 +24,8 @@ const (
 // FavoriteAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *interaction.FavoriteRequest) (resp *interaction.FavoriteResponse, err error) {
 	resp = interaction.NewFavoriteResponse()
+
+	//更新mysql
 	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
 	if err != nil {
 		favorite = &mysql.Favorite{
@@ -54,6 +56,7 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
+
 	updateVideo, err := rpc.GetVideo(req.VideoId)
 	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
@@ -64,13 +67,19 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
+	//TODO update video表
+	//1 放缓存
+	key := strconv.FormatInt(req.UserId, 10) + strconv.FormatInt(req.VideoId, 10)
+	updateFavoriteToRedis0(ctx, req.ActionType, key)
+	updateFavoriteToRedis1(ctx, req.ActionType, strconv.FormatInt(req.UserId, 10), strconv.FormatInt(req.VideoId, 10))
+	//2
 	var fc int32
 	if req.ActionType == 1 {
 		fc = updateVideo.FavoriteCount + 1
 	} else {
 		fc = updateVideo.FavoriteCount - 1
 	}
-	//TODO update video表
+
 	return resp, err
 }
 
