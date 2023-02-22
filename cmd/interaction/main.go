@@ -30,6 +30,7 @@ func main() {
 		server.WithMuxTransport(),
 		server.WithRegistry(r),
 	)
+
 	err = svr.Run()
 
 	if err != nil {
@@ -37,9 +38,9 @@ func main() {
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     "43.143.130.52:6379",
+		Password: "123456", // no password set
+		DB:       0,        // use default DB
 	})
 	redisClient = rdb
 }

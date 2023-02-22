@@ -14,8 +14,7 @@ import (
 )
 
 // InteractionServiceImpl implements the last service interface defined in the IDL.
-type InteractionServiceImpl struct {
-}
+type InteractionServiceImpl struct{}
 
 const (
 	timeLayout = "2006-01-02 15:04:05"
@@ -24,7 +23,6 @@ const (
 // FavoriteAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *interaction.FavoriteRequest) (resp *interaction.FavoriteResponse, err error) {
 	resp = interaction.NewFavoriteResponse()
-
 	//更新mysql
 	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
 	if err != nil {
@@ -67,28 +65,29 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
-	//TODO update video表
-	//1 放缓存
-	key := strconv.FormatInt(req.UserId, 10) + strconv.FormatInt(req.VideoId, 10)
-	updateFavoriteToRedis0(ctx, req.ActionType, key)
-	updateFavoriteToRedis1(ctx, req.ActionType, strconv.FormatInt(req.UserId, 10), strconv.FormatInt(req.VideoId, 10))
-	//2
+	//1 放缓存 favorite
+	key := "fav" + strconv.FormatInt(req.UserId, 10) + strconv.FormatInt(req.VideoId, 10)
+	updateFavoriteToRedis(ctx, req.ActionType, key)
 	var fc int32
 	if req.ActionType == 1 {
 		fc = updateVideo.FavoriteCount + 1
 	} else {
 		fc = updateVideo.FavoriteCount - 1
 	}
-
+	err = rpc.ChangeFavoriteCountToDB(req.VideoId, fc)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+		return resp, err
+	}
 	return resp, err
 }
 
 // GetFavoriteList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *interaction.GetFavoriteListRequest) (resp *interaction.GetFavoriteListResponse, err error) {
-	//1 验证token登陆有效
 	resp = interaction.NewGetFavoriteListResponse()
-	//2 通过uid查出vidlist
-	//var vidLists []int64
+	//1 从redis中查询fl
 	vidLists, err := mysql.GetFavoriteDao().GetFavoriteList(req.GetUserId())
 	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
@@ -208,13 +207,20 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
+
 	var cc int32
 	if req.ActionType == 1 {
 		cc = updateVideo.CommentCount + 1
 	} else {
 		cc = updateVideo.CommentCount - 1
 	}
-	//TODO update video表
+	err = rpc.ChangeCommentCountToDB(req.VideoId, cc)
+	if err != nil {
+		resp.StatusCode = errnos.CodeServiceErr
+		er := err.Error()
+		resp.StatusMsg = &er
+		return resp, err
+	}
 	return resp, err
 }
 
@@ -254,16 +260,24 @@ func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *intera
 // GetFavoriteStatus implements the InteractionServiceImpl interface.
 func (s *InteractionServiceImpl) GetFavoriteStatus(ctx context.Context, req *interaction.GetFavoriteStatusRequest) (resp *interaction.GetFavoriteStatusResponse, err error) {
 	resp = interaction.NewGetFavoriteStatusResponse()
-	favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
-	if err != nil {
-		resp.StatusCode = errnos.CodeServiceErr
-		er := err.Error()
-		resp.StatusMsg = &er
-		resp.ActionType = 2
-		return resp, err
+	key := "fav" + strconv.FormatInt(req.UserId, 10) + strconv.FormatInt(req.VideoId, 10)
+	status, _ := queryFavoriteFromRedis(ctx, key)
+	if status == 0 {
+		favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, req.VideoId)
+		if err != nil {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+			resp.ActionType = 2
+			return resp, nil
+		}
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+		resp.ActionType = favorite.Action
+		updateFavoriteToRedis(ctx, resp.ActionType, key)
+	} else {
+		resp.StatusCode = 0
+		resp.StatusMsg = nil
+		resp.ActionType = status
 	}
-	resp.StatusCode = 0
-	resp.StatusMsg = nil
-	resp.ActionType = favorite.Action
-	return resp, err
+	return resp, nil
 }

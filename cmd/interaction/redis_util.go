@@ -1,10 +1,24 @@
 package main
 
-import "context"
+import (
+	"context"
+	"strconv"
+)
 
-func updateFavoriteToRedis0[T any](ctx context.Context, action int32, key string) error {
-	res := redisClient.Set(ctx, key, action, 1000000*1000*60*30)
+func updateFavoriteToRedis(ctx context.Context, a int32, key string) error {
+	res := redisClient.Set(ctx, key, a, 1000000*1000*60*30)
 	return res.Err()
+}
+
+func queryFavoriteFromRedis(ctx context.Context, key string) (int32, error) {
+	res := redisClient.Get(ctx, key)
+	i, e := res.Result()
+	if e != nil {
+		return 0, e
+	} else {
+		i, _ := strconv.ParseInt(i, 10, 32)
+		return int32(i), nil
+	}
 }
 
 func updateFavoriteToRedis1[T any](ctx context.Context, action int32, uid string, vid string) error {

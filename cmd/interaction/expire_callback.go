@@ -90,7 +90,7 @@ import (
 	"fmt"
 	log "github.com/astaxie/beego/logs"
 	"github.com/gomodule/redigo/redis"
-	"time"
+	"strconv"
 )
 
 type PSubscribeCallback func(pattern, channel, message string)
@@ -101,8 +101,7 @@ type PSubscriber struct {
 }
 
 func (c *PSubscriber) PConnect(ip string, port uint16) {
-	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
-	//conn, err := redis.Dial("tcp", ip + ":" + strconv.Itoa(int(port)))
+	conn, err := redis.Dial("tcp", ip+":"+strconv.Itoa(int(port)))
 	if err != nil {
 		log.Critical("redis dial failed.")
 	}
@@ -118,7 +117,7 @@ func (c *PSubscriber) PConnect(ip string, port uint16) {
 				pattern := res.Pattern
 				channel := string(res.Channel)
 				message := string(res.Data)
-				if pattern == "__keyspace@0__:blog*" {
+				if pattern == "__keyspace@0__:cool" {
 					switch message {
 					case "set":
 						// do something
@@ -129,13 +128,21 @@ func (c *PSubscriber) PConnect(ip string, port uint16) {
 						fmt.Println("expire", channel)
 					case "expired":
 						fmt.Println("expired", channel)
+					default:
+						log.Info("123")
 					}
+				} else {
+					log.Info(pattern)
 				}
 			case redis.Subscription:
 				fmt.Printf("%s: %s %d\n", res.Channel, res.Kind, res.Count)
 			case error:
-				log.Error("error handle...")
-				continue
+				{
+					//log.Error("error handle...")
+					log.Debug(c.client.Receive())
+					continue
+				}
+
 			}
 		}
 	}()
@@ -152,16 +159,23 @@ func (c *PSubscriber) Psubscribe(channel interface{}, cb PSubscribeCallback) {
 
 func TestPubCallback(patter, chann, msg string) {
 	log.Debug("TestPubCallback patter : "+patter+" channel : ", chann, " message : ", msg)
+	if msg == "expire" {
+		//放入消息队列
+		log.Info("123")
+	}
 }
 
-func main() {
+/*func main() {
 
 	log.Info("===========main start============")
 
 	var psub PSubscriber
-	psub.PConnect("127.0.0.1", 6397)
-	psub.Psubscribe("__keyspace@0__:blog*", TestPubCallback)
+	psub.PConnect("43.143.130.52", 6379)
+	log.Info("connect完")
+	psub.Psubscribe("__keyspace@0__:cool", TestPubCallback)
+	log.Info("订阅完")
 	for {
 		time.Sleep(1 * time.Second)
 	}
-}
+
+}*/

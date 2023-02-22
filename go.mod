@@ -6,11 +6,13 @@ replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
 require (
 	github.com/apache/thrift v0.17.0
+	github.com/astaxie/beego v1.12.3
 	github.com/cloudwego/hertz v0.5.2
 	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20230204112917-78c8960383b4
 	github.com/cloudwego/kitex v0.4.4
+	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.3
-	github.com/gomodule/redigo v1.8.9
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/hibiken/asynq v0.24.0
 	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b
@@ -28,6 +30,7 @@ require (
 )
 
 require (
+	github.com/apache/rocketmq-client-go/v2 v2.1.1 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220531084716-665b4f21126f // indirect
 	github.com/bytedance/sonic v1.7.1 // indirect
@@ -43,12 +46,14 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-redis/redis/v8 v8.11.2 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
@@ -70,9 +75,13 @@ require (
 	github.com/mozillazg/go-httpheader v0.2.1 // indirect
 	github.com/nyaruka/phonenumbers v1.0.55 // indirect
 	github.com/oleiade/lane v1.0.1 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
+	github.com/stathat/consistent v1.0.0 // indirect
 	github.com/tidwall/gjson v1.13.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect

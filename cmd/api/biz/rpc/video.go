@@ -74,7 +74,7 @@ func GetVideo(ctx context.Context, requesterID int64, videoID int64) (*douyin.Vi
 		return nil, "获取点赞关系失败", err
 	}
 	var IsFavorite bool
-	if f.ActionType == 2 {
+	if f.ActionType == 1 {
 		IsFavorite = true
 	} else {
 		IsFavorite = false

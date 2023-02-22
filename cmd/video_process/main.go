@@ -65,9 +65,9 @@ func main() {
 	storageClient = vsc
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     "43.143.130.52:6379",
+		Password: "123456", // no password set
+		DB:       0,        // use default DB
 	})
 	redisClient = rdb
 
@@ -76,6 +76,7 @@ func main() {
 		panic(err3)
 		return
 	}
+	//VideoProcessServiceImpl
 	svr := videoprocess.NewServer(new(VideoProcessServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: constants.VideoProcessServiceName}),
 		server.WithServiceAddr(&net.TCPAddr{Port: constants.VideoProcessServicePort}),
