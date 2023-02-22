@@ -21,8 +21,7 @@ func GetMessageChatJson(ctx context.Context, userId int64, toUserId int64) ([]st
 func LoadMessageChat(ctx context.Context, userId int64, toUserId int64, msgList []*db_mysql.MessageRecord) error{
 	keyname := tools.GenerateKeyname(userId, toUserId)
 	var Err error
-	for i := len(msgList) - 1; i >= 0; i-- {
-		val := msgList[i]
+	for _, val := range msgList {
 		// encode message into json
 		jsonStr, err := json.Marshal(val)
 		if(err != nil){
