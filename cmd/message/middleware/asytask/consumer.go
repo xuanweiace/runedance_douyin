@@ -10,8 +10,6 @@ import (
 	"runedance_douyin/cmd/message/dal/db_mysql"
 	"runedance_douyin/cmd/message/dal/db_redis"
 
-	"runedance_douyin/pkg/tools"
-
 	"github.com/hibiken/asynq"
 )
 
@@ -77,13 +75,7 @@ func TransMsgFromRedisToDB(ctx context.Context, userId int64, toUserId int64) er
 		if(msg.Timestamp < latestTime){
 			continue
 		}
-		msgRecord := db_mysql.MessageRecord{			
-			Timestamp: msg.Timestamp,
-			UserToUser: tools.GenerateKeyname(userId, toUserId),
-			Sender: msg.Sender,
-			Content : msg.Content,
-		}
-		messageRecordList = append(messageRecordList, &msgRecord)
+		messageRecordList = append(messageRecordList, &msg)
 		newLatest = msg.Timestamp
 	}
 

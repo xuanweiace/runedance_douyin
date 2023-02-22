@@ -19,14 +19,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var userId int64
+	var toUserId int64
 
+	userId = 105
+	toUserId = 106
 	for{
 		// test MessageAction
 		// send message
 		log.Println("user100 send message to user101")
 		msgActionReq := &message.MessageActionRequest{
-			UserId: 100,
-			ToUserId: 101,
+			UserId: userId,
+			ToUserId: toUserId,
 			ActionType: 1,
 			Content: "send test message",
 		}
@@ -41,8 +45,8 @@ func main() {
 		// reply
 		log.Println("user101 reply to user100")
 		msgActionReq2 := &message.MessageActionRequest{
-			UserId: 101,
-			ToUserId: 100,
+			UserId: toUserId,
+			ToUserId: userId,
 			ActionType: 1,
 			Content: "reply test message",
 		}
@@ -58,8 +62,8 @@ func main() {
 		// test GetMessageChat
 		log.Println("get message chat between user100 and user101")
 		msgChatReq := &message.GetMessageChatRequest{
-			UserId: 100,
-			ToUserId: 101,
+			UserId: userId,
+			ToUserId: toUserId,
 		}
 		log.Println(msgChatReq)
 		resp2, err2 := client.GetMessageChat(context.Background(), msgChatReq)
