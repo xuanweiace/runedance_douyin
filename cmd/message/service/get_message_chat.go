@@ -76,7 +76,8 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 
 
 	// message ordered from old to new
-	for _, val := range recordListSQL {
+	for i := len(recordListSQL) - 1; i >= 0; i --{
+		val := recordListSQL[i]
 		timestamp := val.Timestamp
 		msg := message.Message{
 			Id : timestamp,
