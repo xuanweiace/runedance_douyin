@@ -9,8 +9,8 @@ type MessageRecord struct {
 	gorm.Model
 	Timestamp     int64		   `json:"timestamp"`
 	UserToUser    string	   `json:"user_to_user"`
+	Sender 		  int64	       `json:"sender"`
 	Content       string	   `json:"content"`
-	CreateTime    string	   `json:"create_time"`
 }
 
 func (u *MessageRecord) TableName() string {

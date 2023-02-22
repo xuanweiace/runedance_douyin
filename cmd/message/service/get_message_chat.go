@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log"
+	"math"
 
 	"runedance_douyin/kitex_gen/message"
 
@@ -11,6 +12,10 @@ import (
 	"runedance_douyin/cmd/message/dal/db_mysql"
 
 	"encoding/json"
+
+	"time"
+
+	"strconv"
 )
 
 type GetMessageChatService struct {
@@ -31,12 +36,19 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 		return result_redis, err
 	}
 	l_redis := len(recordList)												// keyname stores values in redis
+
 	// 	decode json into Message struct
 	for _, val := range recordList {
-		var msg message.Message
-		err := json.Unmarshal([]byte(val), &msg)
+		
+		var temp db_mysql.MessageRecord
+		err := json.Unmarshal([]byte(val), &temp)
 		if(err != nil){
 			continue
+		}
+		msg := message.Message{
+			Id: temp.Timestamp,
+			Content: temp.Content,
+			CreateTime: time.Unix(temp.Timestamp, 0).Format(time.UnixDate),
 		}
 		result_redis = append(result_redis, &msg)
 	}
@@ -44,29 +56,38 @@ func (s *GetMessageChatService) GetMessageChat(ctx context.Context, userId int64
 	if(l_redis >= 20){
 		return result_redis, nil
 	}
-
+	var earliest_redis int64
+	earliest_redis = math.MaxInt64
+	if(l_redis > 0){
+		earliest_redis = result_redis[0].Id			// the earlest message in redis
+		log.Print("the earlest is " + strconv.FormatInt(earliest_redis, 10))
+	}
+	
 	l_mysql := 20 - l_redis
 	
 	// if less than 20, access mysql db to get message chat
 	log.Print("retrieve message chat from mysql")
-	recordListSQL, err2 := db_mysql.GetMessageChat(ctx, userId, toUserId, l_mysql)
+	recordListSQL, err2 := db_mysql.GetMessageChat(ctx, userId, toUserId, l_mysql, earliest_redis)
 	if(err2 != nil){
 		return result_redis, err2
 	}
 
 	var result_mysql []*message.Message
+
+
 	// message ordered from old to new
 	for _, val := range recordListSQL {
+		timestamp := val.Timestamp
 		msg := message.Message{
-			Id : val.Timestamp,
+			Id : timestamp,
 			Content : val.Content,
-			CreateTime : val.CreateTime, 
+			CreateTime : time.Unix(timestamp, 0).Format(time.UnixDate),   // convert to readable time string
 		}
 		result_mysql = append(result_mysql, &msg)
 	}
 
 	// store mysql message chat to redis
-	err3 := db_redis.LoadMessageChat(ctx, userId, toUserId, result_mysql)
+	err3 := db_redis.LoadMessageChat(ctx, userId, toUserId, recordListSQL)
 
 	// combine 
 	result_mysql = append(result_mysql, result_redis...)
