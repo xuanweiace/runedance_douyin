@@ -13,25 +13,32 @@ import (
 )
 
 func consume(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+	var err error
 	for _, msg := range msgs {
 		fmt.Printf("msg: %+v \n", msg)
 		rel := db_mysql.Relation{}
 		action_type := decode_relation_msg(msg.Body, &rel)
 		if action_type == constants.ActionType_AddRelation {
-			db_
+			err = db_mysql.CreateRelation(nil, &rel)
+		} else {
+			err = db_mysql.DeleteRelation(nil, &rel)
 		}
 	}
-	// 消费成功，进行ack确认
-	return consumer.ConsumeSuccess, nil
+	if err == nil {
+		// 消费成功，进行ack确认
+		return consumer.ConsumeSuccess, nil
+	} else {
+		return consumer.ConsumeRetryLater, err
+	}
+
 }
 
 func decode_relation_msg(b []byte, rel *db_mysql.Relation) int {
 	s := string(b)
 	ss := strings.Split(s, " ")
-	action_type = strconv.ParseInt(ss[0], 10, 64)
+	action_type, _ := strconv.ParseInt(ss[0], 10, 64)
+	rel.FansID, _ = strconv.ParseInt(ss[1], 10, 64)
+	rel.UserID, _ = strconv.ParseInt(ss[2], 10, 64)
 
-	for i, s := range ss {
-		i64, _ :=
-			fmt.Println(i, i64)
-	}
+	return int(action_type)
 }

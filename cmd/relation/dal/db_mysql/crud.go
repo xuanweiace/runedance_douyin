@@ -7,6 +7,9 @@ import (
 )
 
 func CreateRelation(tx *gorm.DB, relation *Relation) error {
+	if tx == nil {
+		tx = db
+	}
 	err := tx.Create(relation).Error
 	//不进行错误修复，如果是Duplicate entry的err也需要抛出来
 	// if x, ok := err.(*mysql.MySQLError); ok {
@@ -19,6 +22,9 @@ func CreateRelation(tx *gorm.DB, relation *Relation) error {
 }
 
 func DeleteRelation(tx *gorm.DB, relation *Relation) error {
+	if tx == nil {
+		tx = db
+	}
 	//err := db.Delete(relation).Error // 联合主键不能这么删除？
 	err := tx.Where("fans_id = ? and user_id = ?", relation.FansID, relation.UserID).Delete(relation).Error
 	log.Printf("[db_mysql.DeleteRelation] relation=%+v, err=%#v", relation, err)
