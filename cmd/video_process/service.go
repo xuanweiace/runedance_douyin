@@ -94,7 +94,7 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 		}
 		return "上传cos失败", err1
 	}
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 20)
 	sid, err2 := storageClient.UploadVideoToDB(ctx, &videostorage.VideoStorageUploadRequest{
 		VideoId: video.VideoId,
 	})
