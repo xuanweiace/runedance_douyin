@@ -11,7 +11,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		token, err := tools.GenToken("qw", 1)
+
 		req := &interaction.FavoriteRequest{Token: token, VideoId: 1, ActionType: 1}
 		resp, err := client.FavoriteAction(context.Background(), req)
 		client.FavoriteAction(context.Background(), &interaction.FavoriteRequest{Token: token, VideoId: 2, ActionType: 1})
@@ -22,7 +22,6 @@ func main() {
 		log.Println(resp)*/
 	//req:=&interaction.
 	token, _ := tools.GenToken("qw", 1)
-
 	log.Println(token)
 
 }

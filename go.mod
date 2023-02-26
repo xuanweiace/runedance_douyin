@@ -7,9 +7,11 @@ replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 require (
 	github.com/apache/rocketmq-client-go/v2 v2.1.1
 	github.com/apache/thrift v0.17.0
+	github.com/astaxie/beego v1.12.3
 	github.com/cloudwego/hertz v0.5.2
 	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20230204112917-78c8960383b4
 	github.com/cloudwego/kitex v0.4.4
+	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/uuid v1.3.0
@@ -29,6 +31,7 @@ require (
 )
 
 require (
+	github.com/apache/rocketmq-client-go/v2 v2.1.1 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220531084716-665b4f21126f // indirect
 	github.com/bytedance/sonic v1.7.1 // indirect
