@@ -3,22 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/admin"
 	"github.com/apache/rocketmq-client-go/v2/consumer"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
-	"os"
 )
 
-func main() {
-	// 1. 创建主题，这一步可以省略，在send的时候如果没有topic，也会进行创建。
-	CreateTopic("testTopic01")
-	// 2.生产者向主题中发送消息
-	SendSyncMessage("hello world2022send test ，rocketmq go client!  too，是的")
-	// 3.消费者订阅主题并消费
-	SubcribeMessage()
-}
+// func main() {
+// 	// 1. 创建主题，这一步可以省略，在send的时候如果没有topic，也会进行创建。
+// 	CreateTopic("testTopic01")
+// 	// 2.生产者向主题中发送消息
+// 	SendSyncMessage("hello world2022send test ，rocketmq go client!  too，是的")
+// 	// 3.消费者订阅主题并消费
+// 	SubcribeMessage()
+// }
 
 func CreateTopic(topicName string) {
 	endPoint := []string{"127.0.0.1:9876"}
