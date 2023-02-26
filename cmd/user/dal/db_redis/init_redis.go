@@ -1,7 +1,6 @@
 package db_redis
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -15,7 +14,6 @@ func GetRec() redis.Conn {
 	// if err != nil {
 	// 	logrus.Errorln(err)
 	// }
-	fmt.Println("获取连接成功,conn", conn)
 	return conn
 }
 
