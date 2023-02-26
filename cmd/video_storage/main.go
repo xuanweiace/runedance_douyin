@@ -43,12 +43,7 @@ func main() {
 	}()
 	url2, _ := net_url.Parse("https://bogo-1308981928.cos.ap-nanjing.myqcloud.com")
 	b := &cos.BaseURL{BucketURL: url2}
-	cc := cos.NewClient(b, &http.Client{
-		Transport: &cos.AuthorizationTransport{
-			SecretID:  "AKIDBBxWq4D8oDTaT7UeieQ1TYTDj15wb5LP",
-			SecretKey: "ymOp6BmCPOAi291gJn6FD0azDF5jBRVO",
-		},
-	})
+	cc := cos.NewClient(b, &http.Client{})
 	if cc == nil {
 		panic("gg")
 		return

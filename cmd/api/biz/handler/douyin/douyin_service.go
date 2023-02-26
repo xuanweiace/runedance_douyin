@@ -3,6 +3,7 @@ package douyin
 
 import (
 	"context"
+	"fmt"
 	"io"
 	douyin "runedance_douyin/cmd/api/biz/model/douyin"
 	pack "runedance_douyin/cmd/api/biz/pack"
@@ -284,6 +285,7 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 	file, err1 := c.FormFile("data")
 	fileOpen, err2 := file.Open()
 	tt := c.FormValue("title")
+	fmt.Println(file.Size)
 	if err1 != nil || len(tt) < 6 || err2 != nil || file.Size > 998244353 {
 		c.String(consts.StatusBadRequest, "bad request")
 		return
@@ -293,6 +295,7 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 	resp := new(douyin.DouyinPublishActionResponse)
 	var msg string
 	resp.StatusCode, msg = rpc.PublishVideo(ctx, id, &tt, &fileData)
+	fmt.Println(msg)
 	resp.StatusMsg = &msg
 	c.JSON(200, resp)
 }
