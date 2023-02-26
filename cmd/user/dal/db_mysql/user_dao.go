@@ -55,7 +55,7 @@ func (u *UserDaoImpl) AddUser(user *User) error {
 // 参数 name string类型 用户名
 func (u *UserDaoImpl) FindByName(name string) (*User, error) {
 	var user User
-	if err := u.db.Model(&User{}).Where("name = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := u.db.Model(&User{}).Where("username = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	return &user, nil

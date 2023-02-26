@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	router "videoPlay/biz/router"
+	router "runedance_douyin/cmd/video_player/biz/router"
 )
 
 // register registers all routers.

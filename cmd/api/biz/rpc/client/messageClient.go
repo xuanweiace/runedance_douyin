@@ -11,8 +11,8 @@ import (
 func main(){
 	var userId int64
 	var toUserId int64
-	userId = 100
-	toUserId = 101
+	userId = 150
+	toUserId = 160
 
 	rpc.InitMessage()
 	token1, _ := tools.GenToken("test_user1", userId)

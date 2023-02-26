@@ -3,13 +3,14 @@ package rpc
 import (
 	"context"
 	"fmt"
-	"github.com/cloudwego/kitex/client"
-	"github.com/cloudwego/kitex/pkg/retry"
-	etcd "github.com/kitex-contrib/registry-etcd"
 	"runedance_douyin/kitex_gen/relation"
 	"runedance_douyin/kitex_gen/relation/relationservice"
 	constants "runedance_douyin/pkg/consts"
 	"time"
+
+	"github.com/cloudwego/kitex/client"
+	"github.com/cloudwego/kitex/pkg/retry"
+	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
 var relationClient relationservice.Client
@@ -32,6 +33,7 @@ func initRelation() {
 		panic(err)
 	}
 	relationClient = c
+	print("----------relationClient:", relationClient)
 	return
 }
 

@@ -3,8 +3,9 @@
 package main
 
 import (
+	handler "runedance_douyin/cmd/video_player/biz/handler"
+
 	"github.com/cloudwego/hertz/pkg/app/server"
-	handler "videoPlay/biz/handler"
 )
 
 // customizeRegister registers customize routers.
