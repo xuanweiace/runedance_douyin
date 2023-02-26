@@ -102,6 +102,7 @@ func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest
 	var msg string
 	var err error
 	var resp = user.NewDouyinUserResponse()
+	resp.User = &user.User{}
 	key := strconv.Itoa(int(req.UserId))
 	userReply, err := db_redis.RedisGetValue(key)
 

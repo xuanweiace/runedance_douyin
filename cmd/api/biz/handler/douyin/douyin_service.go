@@ -227,6 +227,7 @@ func GetUser(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp := new(douyin.DouyinUserResponse)
+	resp.User = douyin.NewUser()
 	t := c.GetInt64("user_id")
 	getResp, err := rpc.GetUserInfo(ctx, &user.DouyinUserRequest{UserId: req.UserID, MyUserId: t})
 	if err != nil {

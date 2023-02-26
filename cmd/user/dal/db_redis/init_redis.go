@@ -1,19 +1,21 @@
 package db_redis
 
 import (
-	"github.com/gomodule/redigo/redis"
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 var pool *redis.Pool
 
 func GetRec() redis.Conn {
 	conn := pool.Get()
-	_, err := conn.Do("AUTH", "douyin/123456")
-	if err != nil {
-		logrus.Errorln(err)
-	}
+	// _, err := conn.Do("AUTH", "douyin/123456")
+	// if err != nil {
+	// 	logrus.Errorln(err)
+	// }
+	fmt.Println("获取连接成功,conn", conn)
 	return conn
 }
 
