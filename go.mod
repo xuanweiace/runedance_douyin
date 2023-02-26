@@ -11,9 +11,8 @@ require (
 	github.com/cloudwego/hertz v0.5.2
 	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20230204112917-78c8960383b4
 	github.com/cloudwego/kitex v0.4.4
-	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.3
-	github.com/gomodule/redigo v1.8.9
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/hibiken/asynq v0.24.0
 	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b
@@ -31,7 +30,6 @@ require (
 )
 
 require (
-	github.com/apache/rocketmq-client-go/v2 v2.1.1 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220531084716-665b4f21126f // indirect
 	github.com/bytedance/sonic v1.7.1 // indirect
@@ -79,6 +77,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/stathat/consistent v1.0.0 // indirect
 	github.com/tidwall/gjson v1.13.0 // indirect
