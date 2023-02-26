@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	videostorage "runedance_douyin/kitex_gen/videoStorage"
-	constants "runedance_douyin/pkg/consts"
 	"time"
 )
 
@@ -29,56 +27,56 @@ func getVideoInfo(ctx context.Context, vid int64) (*Video, error) {
 	}
 }
 
-func pushIn(ctx context.Context, vid int64) error {
-	rst := redisClient.ZAdd(ctx, "newVideoSet", redis.Z{
-		Score:  float64(vid),
-		Member: vid,
-	})
-	return rst.Err()
-}
-func pushOut(ctx context.Context) error {
-	rst, err := redisClient.ZCount(ctx, "newVideoSet", "-inf", "+inf").Result()
-	if err != nil {
-		return err
-	}
-	if rst < constants.VideoFeedSize {
-		return nil
-	}
-
-	rst2, err2 := redisClient.ZPopMin(ctx, "newVideoSet").Result()
-	if err2 != nil {
-		return err2
-	}
-
-	v, e := queryVideoFromRedis(ctx, int64(rst2[0].Score))
-	if e != nil {
-		log.WithFields(log.Fields{
-			"request_id": ctx.Value("request_id"),
-		}).Error("推出缓存时redis查询失败")
-		return e
-	}
-
-	e1 := updateVideoInMysql(v.VideoId, "favorite_count", v.FavoriteCount)
-	e2 := updateVideoInMysql(v.VideoId, "comment_count", v.CommentCount)
-	if e1 != nil || e2 != nil {
-		log.WithFields(log.Fields{
-			"request_id": ctx.Value("request_id"),
-		}).Error("推出缓存时更新mysql失败")
-		if e1 != nil {
-			return e1
-		} else {
-			return e2
-		}
-	}
-
-	err = deleteVideoInRedis(ctx, v.VideoId)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"request_id": ctx.Value("request_id"),
-		}).Error("持久化到mysql后无法从redis中删除")
-	}
-	return nil
-}
+//func pushIn(ctx context.Context, vid int64) error {
+//	rst := redisClient.ZAdd(ctx, "newVideoSet", redis.Z{
+//		Score:  float64(vid),
+//		Member: vid,
+//	})
+//	return rst.Err()
+//}
+//func pushOut(ctx context.Context) error {
+//	rst, err := redisClient.ZCount(ctx, "newVideoSet", "-inf", "+inf").Result()
+//	if err != nil {
+//		return err
+//	}
+//	if rst < constants.VideoFeedSize {
+//		return nil
+//	}
+//
+//	rst2, err2 := redisClient.ZPopMin(ctx, "newVideoSet").Result()
+//	if err2 != nil {
+//		return err2
+//	}
+//
+//	v, e := queryVideoFromRedis(ctx, int64(rst2[0].Score))
+//	if e != nil {
+//		log.WithFields(log.Fields{
+//			"request_id": ctx.Value("request_id"),
+//		}).Error("推出缓存时redis查询失败")
+//		return e
+//	}
+//
+//	e1 := updateVideoInMysql(v.VideoId, "favorite_count", v.FavoriteCount)
+//	e2 := updateVideoInMysql(v.VideoId, "comment_count", v.CommentCount)
+//	if e1 != nil || e2 != nil {
+//		log.WithFields(log.Fields{
+//			"request_id": ctx.Value("request_id"),
+//		}).Error("推出缓存时更新mysql失败")
+//		if e1 != nil {
+//			return e1
+//		} else {
+//			return e2
+//		}
+//	}
+//
+//	err = deleteVideoInRedis(ctx, v.VideoId)
+//	if err != nil {
+//		log.WithFields(log.Fields{
+//			"request_id": ctx.Value("request_id"),
+//		}).Error("持久化到mysql后无法从redis中删除")
+//	}
+//	return nil
+//}
 
 func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, error) {
 	err1 := insertVideoToMysql(&video)
@@ -119,24 +117,24 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 		}).Error("上传mongodb失败后无法在mysql中更新storage_id")
 		return "视频文件上传成功; 存储编号转存失败", err4
 	}
-	err5 := pushOut(ctx)
-	if err5 != nil {
-		return "缓存队列满且推出失败", err5
-	}
-	err6 := insertVideoToRedis(ctx, video)
-	err7 := pushIn(ctx, video.VideoId)
-	if err6 != nil || err7 != nil {
-		info := "上传成功; 缓存写入失败"
-		log.WithFields(log.Fields{
-			"request_id": ctx.Value("request_id"),
-			"user_id":    video.AuthorId,
-		}).Error(info)
-		if err6 == nil {
-			return info, err7
-		} else {
-			return info, err6
-		}
-	}
+	//err5 := pushOut(ctx)
+	//if err5 != nil {
+	//	return "缓存队列满且推出失败", err5
+	//}
+	//err6 := insertVideoToRedis(ctx, video)
+	//err7 := pushIn(ctx, video.VideoId)
+	//if err6 != nil || err7 != nil {
+	//	info := "上传成功; 缓存写入失败"
+	//	log.WithFields(log.Fields{
+	//		"request_id": ctx.Value("request_id"),
+	//		"user_id":    video.AuthorId,
+	//	}).Error(info)
+	//	if err6 == nil {
+	//		return info, err7
+	//	} else {
+	//		return info, err6
+	//	}
+	//}
 	return "ok", nil
 }
 func getVideoList(ctx context.Context, aid int64) (*[]int64, error) {

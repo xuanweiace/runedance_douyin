@@ -24,7 +24,7 @@ func initVideo() {
 	}
 	c, err5 := videoprocessservice.NewClient(constants.VideoProcessServiceName,
 		client.WithMuxConnection(1),
-		client.WithRPCTimeout(3*time.Second),
+		client.WithRPCTimeout(15*time.Second),
 		client.WithConnectTimeout(time.Second),
 		client.WithResolver(r1),
 	)

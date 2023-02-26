@@ -6,7 +6,7 @@ cp script/* output/
 chmod +x output/bootstrap.sh
 
 if [ "$IS_SYSTEM_TEST_ENV" != "1" ]; then
-    go build -o output/bin/${RUN_NAME}
+    go1.18 build -o output/bin/${RUN_NAME}
 else
-    go test -c -covermode=set -o output/bin/${RUN_NAME} -coverpkg=./...
+    go1.18 test -c -covermode=set -o output/bin/${RUN_NAME} -coverpkg=./...
 fi
