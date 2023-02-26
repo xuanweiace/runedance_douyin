@@ -1,7 +1,9 @@
 package db_redis
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 )
@@ -13,6 +15,7 @@ const (
 func RedisCacheString(key string, value string, t int) error {
 	conn := GetRec()
 	defer CloseConn(conn)
+	logrus.Println("set redis: key:", key, "value:", value)
 	_, err := conn.Do("SET", key, value)
 	if err != nil {
 		return err
@@ -28,12 +31,13 @@ func RedisGetValue(key string) (string, error) {
 	conn := GetRec()
 	defer CloseConn(conn)
 	value, err := conn.Do("GET", key)
+	logrus.Println("查询redis value:", value, "err:", err)
 	if err != nil {
 		fmt.Println("redis get value err: ", err.Error())
 		return "", err
 	}
 	if value == nil {
-		return "", err
+		return "", errors.New("value为空")
 	}
 	return value.(string), err
 
