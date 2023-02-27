@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	log "github.com/sirupsen/logrus"
 	videostorage "runedance_douyin/kitex_gen/videoStorage"
-	"time"
+	"strconv"
+	"strings"
 )
 
 //	func getVideoInfo(ctx context.Context, vid int64) (*Video, error) {
@@ -80,6 +83,16 @@ func getVideoInfo(ctx context.Context, vid int64) (*Video, error) {
 //}
 
 func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, error) {
+
+	hhh := sha256.New()
+
+	var builder strings.Builder
+	builder.WriteString(strconv.FormatInt(video.VideoId, 10))
+	builder.WriteString("bogo's salty")
+	hhh.Write([]byte(builder.String()))
+	sid := hex.EncodeToString(hhh.Sum(nil))
+	video.StorageId = sid
+
 	err1 := insertVideoToMysql(&video)
 	if err1 != nil {
 		return "Mysql Error", err1
@@ -95,29 +108,32 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 		}
 		return "上传cos失败", err1
 	}
-	time.Sleep(time.Second * 20)
-	sid, err2 := storageClient.UploadVideoToDB(ctx, &videostorage.VideoStorageUploadRequest{
+	//time.Sleep(time.Second * 20)
+	_, _ = storageClient.UploadVideoToDB(ctx, &videostorage.VideoStorageUploadRequest{
 		VideoId: video.VideoId,
 	})
-	if err2 != nil {
-		e := deleteVideoInMysql(ctx, video.VideoId)
-		if e != nil {
+	return "ok", nil
+	/*
+		if err2 != nil {
+			e := deleteVideoInMysql(ctx, video.VideoId)
+			if e != nil {
+				log.WithFields(log.Fields{
+					"request_id": ctx.Value("request_id"),
+					"user_id":    video.AuthorId,
+				}).Error("上传mongodb失败后无法在mysql中删除")
+			}
+			return "StorageService Error", err2
+		}
+		video.StorageId = sid
+		err4 := updateVideoInMysql(video.VideoId, "storage_id", sid)
+		if err4 != nil {
 			log.WithFields(log.Fields{
 				"request_id": ctx.Value("request_id"),
 				"user_id":    video.AuthorId,
-			}).Error("上传mongodb失败后无法在mysql中删除")
+			}).Error("上传mongodb失败后无法在mysql中更新storage_id")
+			return "视频文件上传成功; 存储编号转存失败", err4
 		}
-		return "StorageService Error", err2
-	}
-	video.StorageId = sid
-	err4 := updateVideoInMysql(video.VideoId, "storage_id", sid)
-	if err4 != nil {
-		log.WithFields(log.Fields{
-			"request_id": ctx.Value("request_id"),
-			"user_id":    video.AuthorId,
-		}).Error("上传mongodb失败后无法在mysql中更新storage_id")
-		return "视频文件上传成功; 存储编号转存失败", err4
-	}
+	*/
 	//err5 := pushOut(ctx)
 	//if err5 != nil {
 	//	return "缓存队列满且推出失败", err5
@@ -136,7 +152,7 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 	//		return info, err6
 	//	}
 	//}
-	return "ok", nil
+	//return "ok", nil
 }
 func getVideoList(ctx context.Context, aid int64) (*[]int64, error) {
 	if aid == 0 {
