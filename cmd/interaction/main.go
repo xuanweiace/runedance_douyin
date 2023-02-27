@@ -31,16 +31,16 @@ func main() {
 		server.WithRegistry(r),
 	)
 
-	err = svr.Run()
-
-	if err != nil {
-		log.Println(err.Error())
-	}
-
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "43.143.130.52:6379",
 		Password: "123456", // no password set
 		DB:       0,        // use default DB
 	})
 	redisClient = rdb
+	err = svr.Run()
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
 }
