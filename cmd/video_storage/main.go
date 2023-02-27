@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/sha256"
 	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
@@ -10,7 +9,6 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"hash"
 	"log"
 	"net"
 	"net/http"
@@ -26,10 +24,9 @@ func getVideoDB() (string, error) {
 
 var mongoClient *mongo.Client
 var cosClient *cos.Client
-var hhh hash.Hash
 
 func main() {
-	hhh = sha256.New()
+
 	url, err1 := getVideoDB()
 	c, err2 := mongo.Connect(context.TODO(), options.Client().ApplyURI(url))
 	if err1 != nil || err2 != nil {
