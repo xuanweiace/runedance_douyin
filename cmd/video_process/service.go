@@ -23,6 +23,7 @@ func getVideoInfo(ctx context.Context, vid int64) (*Video, error) {
 	if e == nil && i == 1 {
 		return queryVideoFromRedis(ctx, vid)
 	} else {
+		//fmt.Println("qvfm")
 		return queryVideoFromMysql(vid)
 	}
 }
@@ -139,7 +140,8 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 }
 func getVideoList(ctx context.Context, aid int64) (*[]int64, error) {
 	if aid == 0 {
-		return queryListFromRedis(ctx)
+		return queryRecommendList(ctx)
+		//return queryListFromRedis(ctx)
 	} else {
 		return queryListFromMysql(ctx, aid)
 	}

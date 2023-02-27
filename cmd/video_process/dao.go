@@ -65,11 +65,12 @@ func queryListFromRedis(ctx context.Context) (*[]int64, error) {
 //	}
 func queryVideoFromMysql(vid int64) (*Video, error) {
 	var v Video
-	result := gormClient.First(&v, vid)
+	v.VideoId = vid
+	result := gormClient.First(&v)
 	if result.Error != nil {
-		return &v, nil
-	} else {
 		return nil, result.Error
+	} else {
+		return &v, nil
 	}
 }
 func insertVideoToRedis(ctx context.Context, video Video) error {
@@ -102,6 +103,15 @@ func deleteVideoInMysql(ctx context.Context, vid int64) error {
 func queryListFromMysql(ctx context.Context, aid int64) (*[]int64, error) {
 	var published []int64
 	rst := gormClient.Model(&Video{}).Limit(constants.VideoFeedSize).Where("author_id = ?", aid).Select("video_id").Find(&published)
+	if rst.Error != nil {
+		return nil, rst.Error
+	} else {
+		return &published, nil
+	}
+}
+func queryRecommendList(ctx context.Context) (*[]int64, error) {
+	var published []int64
+	rst := gormClient.Model(&Video{}).Limit(constants.VideoFeedSize).Order("created_at desc").Select("video_id").Find(&published)
 	if rst.Error != nil {
 		return nil, rst.Error
 	} else {

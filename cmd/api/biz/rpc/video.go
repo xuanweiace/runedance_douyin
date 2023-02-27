@@ -50,7 +50,10 @@ func GetUser(ctx context.Context, requesterID int64, userID int64) (*douyin.User
 	//uc, _ := userservice.NewClient("127.0.0.1:1234")
 	u, err1 := userClient.GetUser(context.TODO(), &user.DouyinUserRequest{UserId: userID, MyUserId: requesterID})
 	if err1 != nil {
-		return nil, *u.StatusMsg, err1
+		if u != nil {
+			return nil, *u.StatusMsg, err1
+		}
+		return nil, "can not get user", err1
 	}
 	return &douyin.User{
 		ID:            u.User.UserId,
@@ -79,6 +82,7 @@ func GetVideo(ctx context.Context, requesterID int64, videoID int64) (*douyin.Vi
 	} else {
 		IsFavorite = false
 	}
+	//IsFavorite := false
 	return &douyin.Video{
 		ID:            v.VideoId,
 		Author:        u,
