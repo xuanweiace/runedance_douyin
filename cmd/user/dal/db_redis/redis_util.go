@@ -39,7 +39,7 @@ func RedisGetValue(key string) (string, error) {
 	if value == nil {
 		return "", errors.New("value为空")
 	}
-	return value.(string), err
+	return string(value.([]uint8)), err
 
 }
 

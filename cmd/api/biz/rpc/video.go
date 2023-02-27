@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	log "github.com/sirupsen/logrus"
@@ -137,6 +138,8 @@ func GetRecommendList(ctx context.Context, requesterID int64) ([]*douyin.Video, 
 			}).Warning("信息获取失败，跳过该条视频:" + msg)
 			continue
 		} else {
+			fmt.Println(v.CoverURL)
+			fmt.Println(v.PlayURL)
 			resp = append(resp, v)
 		}
 	}
