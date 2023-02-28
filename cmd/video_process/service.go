@@ -84,6 +84,11 @@ func getVideoInfo(ctx context.Context, vid int64) (*Video, error) {
 
 func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, error) {
 
+	err1 := insertVideoToMysql(&video)
+	if err1 != nil {
+		return "Mysql Error", err1
+	}
+
 	hhh := sha256.New()
 
 	var builder strings.Builder
@@ -92,11 +97,7 @@ func uploadVideo(ctx context.Context, video Video, nativeData []byte) (string, e
 	hhh.Write([]byte(builder.String()))
 	sid := hex.EncodeToString(hhh.Sum(nil))
 	video.StorageId = sid
-
-	err1 := insertVideoToMysql(&video)
-	if err1 != nil {
-		return "Mysql Error", err1
-	}
+	_ = updateVideoInMysql(video.VideoId, "storage_id", sid)
 	err1 = upToCos(video.VideoId, nativeData)
 	if err1 != nil {
 		e := deleteVideoInMysql(ctx, video.VideoId)
@@ -164,6 +165,10 @@ func getVideoList(ctx context.Context, aid int64) (*[]int64, error) {
 }
 func updateVideo[T any](ctx context.Context, vid int64, which string, what T) error {
 	r, e := existInRedis(ctx, vid)
+	log.Println("update video")
+	log.Println(vid, which, what)
+	log.Println(r)
+	log.Println(e)
 	if e == nil && r == 1 {
 		return updateVideoInRedis(ctx, vid, which, what)
 	} else {

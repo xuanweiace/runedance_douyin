@@ -364,7 +364,7 @@ func GetFavoriteList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(douyin.GetFavoriteListResponse)
-	if videoList, err := rpc.GetFavoriteList(ctx, c.GetInt64("user_id")); err != nil {
+	if videoList, err := rpc.GetFavoriteList(ctx, req.UserID); err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
 		resp.StatusMsg = &er

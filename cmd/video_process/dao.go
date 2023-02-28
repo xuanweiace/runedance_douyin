@@ -15,8 +15,8 @@ func upToCos(id int64, file []byte) error {
 }
 
 func existInRedis(ctx context.Context, vid int64) (int64, error) {
-	rst := redisClient.Exists(ctx, strconv.FormatInt(vid, 10))
-	return rst.Result()
+	//rst := redisClient.Exists(ctx, strconv.FormatInt(vid, 10))
+	return 0, nil
 }
 func queryVideoFromRedis(ctx context.Context, vid int64) (*Video, error) {
 	var v Video
