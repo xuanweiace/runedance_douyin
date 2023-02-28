@@ -17,6 +17,12 @@ import (
 var redisClient *redis.Client
 
 func main() {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "43.143.130.52:6379",
+		Password: "123456", // no password set
+		DB:       0,        // use default DB
+	})
+	redisClient = rdb
 	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress})
 	if err != nil {
 		panic(err)
@@ -31,12 +37,6 @@ func main() {
 		server.WithRegistry(r),
 	)
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "43.143.130.52:6379",
-		Password: "123456", // no password set
-		DB:       0,        // use default DB
-	})
-	redisClient = rdb
 	err = svr.Run()
 
 	if err != nil {
