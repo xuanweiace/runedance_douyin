@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 	"runedance_douyin/cmd/user/dal/db_mysql"
 	"runedance_douyin/cmd/user/dal/db_redis"
@@ -99,6 +100,7 @@ type userCache struct {
 
 // GetUser implements the UserServiceImpl interface.
 func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest) (*user.DouyinUserResponse, error) {
+	log.Println("get user")
 	var msg string
 	var err error
 	var resp = user.NewDouyinUserResponse()

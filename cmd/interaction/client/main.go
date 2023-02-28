@@ -21,7 +21,7 @@ func main() {
 		}
 		log.Println(resp)*/
 	//req:=&interaction.
-	token, _ := tools.GenToken("qw", 1)
+	token, _ := tools.GenToken("123", 2)
 	log.Println(token)
 
 }

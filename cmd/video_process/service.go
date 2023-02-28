@@ -165,6 +165,10 @@ func getVideoList(ctx context.Context, aid int64) (*[]int64, error) {
 }
 func updateVideo[T any](ctx context.Context, vid int64, which string, what T) error {
 	r, e := existInRedis(ctx, vid)
+	log.Println("update video")
+	log.Println(vid, which, what)
+	log.Println(r)
+	log.Println(e)
 	if e == nil && r == 1 {
 		return updateVideoInRedis(ctx, vid, which, what)
 	} else {

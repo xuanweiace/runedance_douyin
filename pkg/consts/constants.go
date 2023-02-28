@@ -2,7 +2,7 @@ package constants
 
 const (
 	//db_mysql
-	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+	MySQLDefaultDSN = "root:mysqlmm200107@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 	//user
 	JWTSecketKey    = "runedance"

@@ -9,5 +9,5 @@ import (
 func Init() {
 	rpc.Init()
 	db_mysql.MySQLInit()
-	db_redis.InitRedis("redis://127.0.0.1:6379", "")
+	db_redis.InitRedis("redis://43.143.130.52:6379", "123456")
 }

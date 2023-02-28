@@ -43,18 +43,18 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 			resp.StatusMsg = nil
 		}
 		return resp, err
-	}
-	err = mysql.GetFavoriteDao().UpdateFavorite(favorite.Id, req.ActionType)
-	if err != nil {
-		resp.StatusCode = errnos.CodeServiceErr
-		er := err.Error()
-		resp.StatusMsg = &er
-		return resp, err
 	} else {
-		resp.StatusCode = 0
-		resp.StatusMsg = nil
+		err = mysql.GetFavoriteDao().UpdateFavorite(favorite.Id, req.ActionType)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+			return resp, err
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
 	}
-
 	updateVideo, err := rpc.GetVideo(req.VideoId)
 	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
@@ -88,7 +88,7 @@ func (s *InteractionServiceImpl) FavoriteAction(ctx context.Context, req *intera
 func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *interaction.GetFavoriteListRequest) (resp *interaction.GetFavoriteListResponse, err error) {
 	resp = interaction.NewGetFavoriteListResponse()
 	//1 从redis中查询fl
-	vidLists, err := mysql.GetFavoriteDao().GetFavoriteList(req.GetUserId())
+	vidLists, err := mysql.GetFavoriteDao().GetFavoriteList(req.UserId)
 	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
@@ -98,19 +98,8 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 		resp.StatusMsg = nil
 	}
 	log.Println(vidLists)
-	//3 通过vid查出vediolist
-	//var vedioList []Ve
-	vedioList := []*interaction.Video{}
 	for _, vid := range vidLists {
-		userMeta, _ := rpc.GetUser(1)
-		var user *interaction.User
-		user = &interaction.User{
-			UserId:        userMeta.UserId,
-			Username:      userMeta.Username,
-			FollowCount:   userMeta.FollowCount,
-			FollowerCount: userMeta.FollowerCount,
-			IsFollow:      userMeta.IsFollow,
-		}
+		log.Println(vid)
 		video, err := rpc.GetVideo(vid)
 		if err != nil {
 			resp.StatusCode = errnos.CodeServiceErr
@@ -121,6 +110,34 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
 		}
+		log.Println("----------")
+		log.Println(video)
+		userMeta, err := rpc.GetUser(video.AuthorId)
+		log.Println(userMeta)
+		if err != nil {
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+			return resp, err
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
+		var user *interaction.User
+		user = &interaction.User{
+			UserId:        userMeta.UserId,
+			Username:      userMeta.Username,
+			FollowCount:   userMeta.FollowCount,
+			FollowerCount: userMeta.FollowerCount,
+			IsFollow:      userMeta.IsFollow,
+		}
+		/*user := &interaction.User{
+			UserId:        1,
+			Username:      "Username",
+			FollowCount:   nil,
+			FollowerCount: nil,
+			IsFollow:      true,
+		}*/
 		favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, vid)
 		var flag bool
 		if favorite.Action != 1 {
@@ -128,7 +145,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 		} else {
 			flag = true
 		}
-		vedioList = append(vedioList, &interaction.Video{
+		resp.VedioList = append(resp.VedioList, &interaction.Video{
 			Id:            vid,
 			Author:        user,
 			PlayUrl:       constants.VideoUrlPrefix + video.StorageId,
@@ -140,7 +157,6 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 		})
 
 	}
-	resp.VedioList = vedioList
 	return resp, err
 }
 
@@ -162,6 +178,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 		}
 		err = mysql.GetCommentDao().AddComment(comment)
 		if err != nil {
+			log.Println("add fail")
 			resp.StatusCode = errnos.CodeServiceErr
 			er := err.Error()
 			resp.StatusMsg = &er
@@ -170,7 +187,17 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
 		}
-		userMeta, _ := rpc.GetUser(comment.Uid)
+		userMeta, err := rpc.GetUser(comment.Uid)
+		if err != nil {
+			log.Println("getUser fail")
+			resp.StatusCode = errnos.CodeServiceErr
+			er := err.Error()
+			resp.StatusMsg = &er
+			return resp, err
+		} else {
+			resp.StatusCode = 0
+			resp.StatusMsg = nil
+		}
 		resp.Comment = &interaction.Comment{
 			Id: comment.Id,
 			User: &interaction.User{
@@ -199,6 +226,8 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 	}
 	updateVideo, err := rpc.GetVideo(req.VideoId)
 	if err != nil {
+		log.Println("getVideo fail")
+		log.Println(req.VideoId)
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()
 		resp.StatusMsg = &er

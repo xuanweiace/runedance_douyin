@@ -19,6 +19,19 @@ func GetRec() redis.Conn {
 
 func InitRedis(url string, pass string) {
 	redisPool := &redis.Pool{
+
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.DialURL(url)
+			if err != nil {
+				return nil, err
+			}
+			if _, err := c.Do("AUTH", pass); err != nil {
+				c.Close()
+				return nil, err
+			}
+
+			return c, nil
+		},
 		//最大活跃连接数，0代表无限
 		MaxActive: 888,
 		//最大闲置连接数
@@ -26,9 +39,9 @@ func InitRedis(url string, pass string) {
 		//闲置连接的超时时间
 		IdleTimeout: time.Second * 100,
 		//定义拨号获得连接的函数
-		Dial: func() (redis.Conn, error) {
+		/*Dial: func() (redis.Conn, error) {
 			return redis.DialURL(url)
-		},
+		},*/
 	}
 	pool = redisPool
 }
