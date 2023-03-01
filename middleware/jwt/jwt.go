@@ -25,6 +25,7 @@ var CustomSecret = []byte("runedance")
 
 func MyJWT() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
+		fmt.Println("c.URI:", c.URI())
 		fmt.Println("进入token鉴权")
 		auth, ok := c.GetQuery("token")
 		if ok == false {

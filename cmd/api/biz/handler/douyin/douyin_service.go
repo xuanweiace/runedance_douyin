@@ -13,6 +13,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/sirupsen/logrus"
 )
 
 // RelationAction .
@@ -276,6 +277,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 // PublishAction .
 // @router /douyin/publish/action/ [POST]
 func PublishAction(ctx context.Context, c *app.RequestContext) {
+	logrus.Info(c)
 	//var err error
 	//var req douyin.DouyinPublishActionRequest
 	//err = c.BindAndValidate(&req)
