@@ -19,9 +19,11 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "VideoProcessService"
 	handlerType := (*videoprocess.VideoProcessService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"getVideoInfo": kitex.NewMethodInfo(getVideoInfoHandler, newVideoProcessServiceGetVideoInfoArgs, newVideoProcessServiceGetVideoInfoResult, false),
-		"uploadVideo":  kitex.NewMethodInfo(uploadVideoHandler, newVideoProcessServiceUploadVideoArgs, newVideoProcessServiceUploadVideoResult, false),
-		"getVideoList": kitex.NewMethodInfo(getVideoListHandler, newVideoProcessServiceGetVideoListArgs, newVideoProcessServiceGetVideoListResult, false),
+		"getVideoInfo":   kitex.NewMethodInfo(getVideoInfoHandler, newVideoProcessServiceGetVideoInfoArgs, newVideoProcessServiceGetVideoInfoResult, false),
+		"uploadVideo":    kitex.NewMethodInfo(uploadVideoHandler, newVideoProcessServiceUploadVideoArgs, newVideoProcessServiceUploadVideoResult, false),
+		"getVideoList":   kitex.NewMethodInfo(getVideoListHandler, newVideoProcessServiceGetVideoListArgs, newVideoProcessServiceGetVideoListResult, false),
+		"changeFavCount": kitex.NewMethodInfo(changeFavCountHandler, newVideoProcessServiceChangeFavCountArgs, newVideoProcessServiceChangeFavCountResult, false),
+		"ChangeComCount": kitex.NewMethodInfo(changeComCountHandler, newVideoProcessServiceChangeComCountArgs, newVideoProcessServiceChangeComCountResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "videoprocess",
@@ -91,6 +93,42 @@ func newVideoProcessServiceGetVideoListResult() interface{} {
 	return videoprocess.NewVideoProcessServiceGetVideoListResult()
 }
 
+func changeFavCountHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*videoprocess.VideoProcessServiceChangeFavCountArgs)
+
+	err := handler.(videoprocess.VideoProcessService).ChangeFavCount(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func newVideoProcessServiceChangeFavCountArgs() interface{} {
+	return videoprocess.NewVideoProcessServiceChangeFavCountArgs()
+}
+
+func newVideoProcessServiceChangeFavCountResult() interface{} {
+	return videoprocess.NewVideoProcessServiceChangeFavCountResult()
+}
+
+func changeComCountHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*videoprocess.VideoProcessServiceChangeComCountArgs)
+
+	err := handler.(videoprocess.VideoProcessService).ChangeComCount(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func newVideoProcessServiceChangeComCountArgs() interface{} {
+	return videoprocess.NewVideoProcessServiceChangeComCountArgs()
+}
+
+func newVideoProcessServiceChangeComCountResult() interface{} {
+	return videoprocess.NewVideoProcessServiceChangeComCountResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -129,4 +167,24 @@ func (p *kClient) GetVideoList(ctx context.Context, authorId int64) (r *videopro
 		return
 	}
 	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ChangeFavCount(ctx context.Context, req *videoprocess.ChangeCountRequest) (err error) {
+	var _args videoprocess.VideoProcessServiceChangeFavCountArgs
+	_args.Req = req
+	var _result videoprocess.VideoProcessServiceChangeFavCountResult
+	if err = p.c.Call(ctx, "changeFavCount", &_args, &_result); err != nil {
+		return
+	}
+	return nil
+}
+
+func (p *kClient) ChangeComCount(ctx context.Context, req *videoprocess.ChangeCountRequest) (err error) {
+	var _args videoprocess.VideoProcessServiceChangeComCountArgs
+	_args.Req = req
+	var _result videoprocess.VideoProcessServiceChangeComCountResult
+	if err = p.c.Call(ctx, "ChangeComCount", &_args, &_result); err != nil {
+		return
+	}
+	return nil
 }

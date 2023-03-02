@@ -70,9 +70,22 @@ struct GetCommentListResponse{
     3: list<Comment> comment_list;
 }
 
+struct GetFavoriteStatusRequest{
+    1:required  i64 video_id (api.query="video_id")
+    2:required  i64 user_id (api.query="user_id")
+}
+
+struct GetFavoriteStatusResponse{
+     1: required i32 status_code;
+     2: optional string status_msg;
+     3: required i32 action_type;
+}
+
+
 service InteractionService {
     FavoriteResponse FavoriteAction(1: FavoriteRequest req)
     GetFavoriteListResponse GetFavoriteList(1: GetFavoriteListRequest req)
     CommentResponse CommentAction(1: CommentRequest req)
     GetCommentListResponse GetCommentList(1: GetCommentListRequest req)
+    GetFavoriteStatusResponse GetFavoriteStatus(1: GetFavoriteStatusRequest req)
 }

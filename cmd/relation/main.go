@@ -8,6 +8,7 @@ import (
 	"runedance_douyin/cmd/relation/rpc"
 	relation "runedance_douyin/kitex_gen/relation/relationservice"
 	constants "runedance_douyin/pkg/consts"
+	"runedance_douyin/pkg/tools"
 
 	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -18,7 +19,11 @@ import (
 func Init() {
 	rpc.Init()
 	dal.Init()
+<<<<<<< HEAD
 	rmq.Init()
+=======
+	tools.LoggerInit()
+>>>>>>> main
 }
 func main() {
 	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress})
@@ -39,5 +44,4 @@ func main() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-
 }

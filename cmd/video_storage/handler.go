@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,6 +11,7 @@ import (
 	"runedance_douyin/kitex_gen/videoStorage"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // VideoStorageServiceImpl implements the last service interface defined in the IDL.
@@ -17,7 +19,8 @@ type VideoStorageServiceImpl struct{}
 
 // UploadVideoToDB implements the VideoStorageServiceImpl interface.
 func (s *VideoStorageServiceImpl) UploadVideoToDB(ctx context.Context, req *videostorage.VideoStorageUploadRequest) (string, error) {
-
+	time.Sleep(time.Second * 16)
+	hhh := sha256.New()
 	var builder strings.Builder
 	builder.WriteString(strconv.FormatInt(req.VideoId, 10))
 	builder.WriteString("bogo's salty")

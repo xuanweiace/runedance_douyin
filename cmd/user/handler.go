@@ -2,11 +2,18 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"reflect"
 	"runedance_douyin/cmd/user/dal/db_mysql"
+	"runedance_douyin/cmd/user/dal/db_redis"
+	"runedance_douyin/cmd/user/rpc"
 	"runedance_douyin/kitex_gen/user"
 	"runedance_douyin/pkg/tools"
+	"strconv"
 	"sync/atomic"
+	"unsafe"
 )
 
 const (
@@ -84,12 +91,45 @@ func (s *UserServiceImpl) UserLogin(_ context.Context, req *user.DouyinUserLogin
 	return resp, err
 }
 
+type userCache struct {
+	UserId        int64  `thrift:"user_id,1,required" frugal:"1,required,i64" json:"user_id"`
+	Username      string `thrift:"username,2,required" frugal:"2,required,string" json:"username"`
+	FollowCount   *int64 `thrift:"follow_count,3,optional" frugal:"3,optional,i64" json:"follow_count,omitempty"`
+	FollowerCount *int64 `thrift:"follower_count,4,optional" frugal:"4,optional,i64" json:"follower_count,omitempty"`
+}
+
 // GetUser implements the UserServiceImpl interface.
 func (s *UserServiceImpl) GetUser(_ context.Context, req *user.DouyinUserRequest) (*user.DouyinUserResponse, error) {
+	log.Println("get user")
 	var msg string
-	var resp = user.NewDouyinUserResponse()
 	var err error
-	resp.User, err = db_mysql.GetUserService().GetUserById(req.UserId, req.MyUserId)
+	var resp = user.NewDouyinUserResponse()
+	resp.User = &user.User{}
+	key := strconv.Itoa(int(req.UserId))
+	userReply, err := db_redis.RedisGetValue(key)
+
+	var usercache = &userCache{}
+	if err == nil {
+		json.Unmarshal(S2B(userReply), usercache)
+		resp.User.UserId = usercache.UserId
+		resp.User.Username = usercache.Username
+		resp.User.FollowerCount = usercache.FollowerCount
+		resp.User.FollowCount = usercache.FollowCount
+		resp.User.IsFollow, _ = rpc.ExistRelation(req.MyUserId, req.UserId)
+	} else {
+		resp.User, err = db_mysql.GetUserService().GetUserById(req.UserId, req.MyUserId)
+		go func() {
+			usercache.UserId = resp.User.UserId
+			usercache.Username = resp.User.Username
+			usercache.FollowCount = resp.User.FollowCount
+			usercache.FollowerCount = resp.User.FollowerCount
+			value, err := json.Marshal(usercache)
+			if err == nil {
+				db_redis.RedisCacheString(key, B2S(value), db_redis.DefaultExpirationTime)
+			}
+		}()
+
+	}
 	if err == nil {
 		resp.StatusCode = success
 		msg = "GetUser success"
@@ -110,6 +150,11 @@ func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpda
 	resp := user.NewDouyinUserUpdateResponse()
 	var err error
 	fmt.Println("req.Fo:", req.Followdiff, req.Followerdiff)
+
+	// 删除redis缓存
+	key := strconv.Itoa(int(req.UserId))
+	go db_redis.RedisDo("del", key)
+
 	if req.Followdiff != 0 {
 		err = db_mysql.GetUserService().UpdateUserFollow(req.UserId, req.Followdiff)
 		if err != nil {
@@ -132,4 +177,18 @@ func (s *UserServiceImpl) UpdateUser(_ context.Context, req *user.DouyinUserUpda
 	msg := "update done"
 	resp.StatusMsg = &msg
 	return resp, nil
+}
+func B2S(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+func S2B(s string) (b []byte) {
+	/* #nosec G103 */
+	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	/* #nosec G103 */
+	sh := *(*reflect.StringHeader)(unsafe.Pointer(&s))
+	bh.Data = sh.Data
+	bh.Len = sh.Len
+	bh.Cap = sh.Len
+	return b
 }

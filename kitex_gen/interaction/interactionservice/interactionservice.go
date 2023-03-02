@@ -19,10 +19,11 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "InteractionService"
 	handlerType := (*interaction.InteractionService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"FavoriteAction":  kitex.NewMethodInfo(favoriteActionHandler, newInteractionServiceFavoriteActionArgs, newInteractionServiceFavoriteActionResult, false),
-		"GetFavoriteList": kitex.NewMethodInfo(getFavoriteListHandler, newInteractionServiceGetFavoriteListArgs, newInteractionServiceGetFavoriteListResult, false),
-		"CommentAction":   kitex.NewMethodInfo(commentActionHandler, newInteractionServiceCommentActionArgs, newInteractionServiceCommentActionResult, false),
-		"GetCommentList":  kitex.NewMethodInfo(getCommentListHandler, newInteractionServiceGetCommentListArgs, newInteractionServiceGetCommentListResult, false),
+		"FavoriteAction":    kitex.NewMethodInfo(favoriteActionHandler, newInteractionServiceFavoriteActionArgs, newInteractionServiceFavoriteActionResult, false),
+		"GetFavoriteList":   kitex.NewMethodInfo(getFavoriteListHandler, newInteractionServiceGetFavoriteListArgs, newInteractionServiceGetFavoriteListResult, false),
+		"CommentAction":     kitex.NewMethodInfo(commentActionHandler, newInteractionServiceCommentActionArgs, newInteractionServiceCommentActionResult, false),
+		"GetCommentList":    kitex.NewMethodInfo(getCommentListHandler, newInteractionServiceGetCommentListArgs, newInteractionServiceGetCommentListResult, false),
+		"GetFavoriteStatus": kitex.NewMethodInfo(getFavoriteStatusHandler, newInteractionServiceGetFavoriteStatusArgs, newInteractionServiceGetFavoriteStatusResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "interaction",
@@ -110,6 +111,24 @@ func newInteractionServiceGetCommentListResult() interface{} {
 	return interaction.NewInteractionServiceGetCommentListResult()
 }
 
+func getFavoriteStatusHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*interaction.InteractionServiceGetFavoriteStatusArgs)
+	realResult := result.(*interaction.InteractionServiceGetFavoriteStatusResult)
+	success, err := handler.(interaction.InteractionService).GetFavoriteStatus(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newInteractionServiceGetFavoriteStatusArgs() interface{} {
+	return interaction.NewInteractionServiceGetFavoriteStatusArgs()
+}
+
+func newInteractionServiceGetFavoriteStatusResult() interface{} {
+	return interaction.NewInteractionServiceGetFavoriteStatusResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -155,6 +174,16 @@ func (p *kClient) GetCommentList(ctx context.Context, req *interaction.GetCommen
 	_args.Req = req
 	var _result interaction.InteractionServiceGetCommentListResult
 	if err = p.c.Call(ctx, "GetCommentList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetFavoriteStatus(ctx context.Context, req *interaction.GetFavoriteStatusRequest) (r *interaction.GetFavoriteStatusResponse, err error) {
+	var _args interaction.InteractionServiceGetFavoriteStatusArgs
+	_args.Req = req
+	var _result interaction.InteractionServiceGetFavoriteStatusResult
+	if err = p.c.Call(ctx, "GetFavoriteStatus", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

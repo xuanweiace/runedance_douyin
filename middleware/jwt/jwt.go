@@ -25,9 +25,13 @@ var CustomSecret = []byte("runedance")
 
 func MyJWT() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
+		fmt.Println("c.URI:", c.URI())
 		fmt.Println("进入token鉴权")
-		auth := c.Query("token")
-		if len(auth) == 0 {
+		auth, ok := c.GetQuery("token")
+		if ok == false {
+			auth, ok = c.GetPostForm("token")
+		}
+		if ok == false {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "无token字段")
 			return
 		}

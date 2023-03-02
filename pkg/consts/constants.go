@@ -3,10 +3,13 @@ package constants
 const (
 	//db_mysql
 	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+<<<<<<< HEAD
 	//db_redis
 	RedisAddr = "localhost:6379"
 	//rocketmq
 	NameServerAddr = "127.0.0.1:9876"
+=======
+>>>>>>> main
 
 	//user
 	JWTSecketKey    = "runedance"
@@ -23,11 +26,17 @@ const (
 	VideoStorageServiceName = "video_storage_service"
 	VideoProcessServiceName = "video_process_service"
 	VideoStorageServicePort = 9003
-	VideoProcessServicePort = 9002
+	VideoProcessServicePort = 9004
 	VideoUrlSuffix          = "_transcode_100030.mp4"
 	CoverUrlSuffix          = "_snapshotByOffset_10_0.jpg"
-	CoverUrlPrefix          = "http://127.0.0.1:8888/fileapi/cover/"
-	VideoUrlPrefix          = "http://127.0.0.1:8888/fileapi/video/"
+	CoverUrlPrefix          = "http://111.113.75.6:28888/fileapi/cover/"
+	VideoUrlPrefix          = "http://111.113.75.6:28888/fileapi/video/"
+	VideoFeedSize           = 30
+	VideoPlayUrlPort        = 8888
+	//message
+	MessageTableName   = "message"
+	MessageServiceName = "message_service"
+	MessageServicePort = 9002
 
 	//etcd
 	EtcdAddress = "127.0.0.1:2379"
