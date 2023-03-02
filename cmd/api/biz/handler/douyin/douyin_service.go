@@ -383,13 +383,23 @@ func GetFavoriteList(ctx context.Context, c *app.RequestContext) {
 func CommentAction(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req douyin.CommentRequest
+	//fmt.Println(c)
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(douyin.CommentResponse)
+	if req.ActionType == 1 {
+		cid := "0"
+		req.CommentID = &cid
+	} else if req.ActionType == 2 {
+		ct := "0"
+		req.CommentText = &ct
+	} else {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
 	if comment, err := rpc.CommentAction(ctx, c.GetInt64("user_id"), req.VideoID, req.ActionType, *req.CommentText, *req.CommentID); err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
 		er := err.Error()

@@ -2,7 +2,7 @@ package constants
 
 const (
 	//db_mysql
-	MySQLDefaultDSN = "root:mysqlmm200107@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 	//user
 	JWTSecketKey    = "runedance"
@@ -22,8 +22,8 @@ const (
 	VideoProcessServicePort = 9004
 	VideoUrlSuffix          = "_transcode_100030.mp4"
 	CoverUrlSuffix          = "_snapshotByOffset_10_0.jpg"
-	CoverUrlPrefix          = "http://192.168.68.201:8888/fileapi/cover/"
-	VideoUrlPrefix          = "http://192.168.68.201:8888/fileapi/video/"
+	CoverUrlPrefix          = "http://111.113.75.6:28888/fileapi/cover/"
+	VideoUrlPrefix          = "http://111.113.75.6:28888/fileapi/video/"
 	VideoFeedSize           = 30
 	VideoPlayUrlPort        = 8888
 	//message
