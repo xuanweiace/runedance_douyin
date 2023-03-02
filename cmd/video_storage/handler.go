@@ -19,7 +19,7 @@ type VideoStorageServiceImpl struct{}
 
 // UploadVideoToDB implements the VideoStorageServiceImpl interface.
 func (s *VideoStorageServiceImpl) UploadVideoToDB(ctx context.Context, req *videostorage.VideoStorageUploadRequest) (string, error) {
-	time.Sleep(time.Second * 15)
+	time.Sleep(time.Second * 16)
 	hhh := sha256.New()
 	var builder strings.Builder
 	builder.WriteString(strconv.FormatInt(req.VideoId, 10))

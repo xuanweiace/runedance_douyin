@@ -68,6 +68,7 @@ func GetFavoriteList(ctx context.Context, user_id int64) ([]*interaction.Video, 
 }
 
 func CommentAction(ctx context.Context, user_id, video_id int64, action_type int32, comment_text string, comment_id string) (*interaction.Comment, error) {
+
 	req := interaction.CommentRequest{
 		UserId:      user_id,
 		VideoId:     video_id,

@@ -161,6 +161,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 }
 
 // CommentAction implements the MessageServiceImpl interface.
+// func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest) (resp *interaction.GetCommentListResponse, err error) {
 func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interaction.CommentRequest) (resp *interaction.CommentResponse, err error) {
 	//video表的CommentCount+1
 	//1 验证token登陆有效
@@ -256,7 +257,6 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 // GetCommentList implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) GetCommentList(ctx context.Context, req *interaction.GetCommentListRequest) (resp *interaction.GetCommentListResponse, err error) {
 	resp = interaction.NewGetCommentListResponse()
-
 	commentList, err := mysql.GetCommentDao().FindCommentListByVid(req.VideoId)
 	if err != nil {
 		resp.StatusCode = errnos.CodeServiceErr
