@@ -12,6 +12,7 @@ import (
 	"runedance_douyin/cmd/interaction/rpc"
 	interaction "runedance_douyin/kitex_gen/interaction/interactionservice"
 	constants "runedance_douyin/pkg/consts"
+	"runedance_douyin/pkg/tools"
 )
 
 var redisClient *redis.Client
@@ -29,6 +30,7 @@ func main() {
 	}
 	dal.Init()
 	rpc.Init()
+	tools.InitFilter()
 	svr := interaction.NewServer(new(InteractionServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: constants.InteractionServiceName}),
 		server.WithServiceAddr(&net.TCPAddr{Port: constants.InteractionServicePort}),

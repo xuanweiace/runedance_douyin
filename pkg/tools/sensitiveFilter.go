@@ -2,14 +2,16 @@ package tools
 
 import (
 	"github.com/importcjj/sensitive"
+	"log"
 	"runedance_douyin/pkg/errnos"
 )
 
 var Filter *sensitive.Filter
 
-const WordDictPath = "sensitiveDict.txt"
+const WordDictPath = "SensitiveDic.txt"
 
 func InitFilter() {
+	log.Println("init filter")
 	Filter = sensitive.New()
 	err := Filter.LoadWordDict(WordDictPath)
 	if err != nil {
@@ -17,5 +19,6 @@ func InitFilter() {
 	}
 }
 func FilterSensitive(str string) string {
-	return Filter.Replace(str, 42)
+	log.Println("replace")
+	return Filter.Replace(str, '#')
 }

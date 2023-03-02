@@ -97,9 +97,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 		resp.StatusCode = 0
 		resp.StatusMsg = nil
 	}
-	log.Println(vidLists)
 	for _, vid := range vidLists {
-		log.Println(vid)
 		video, err := rpc.GetVideo(vid)
 		if err != nil {
 			resp.StatusCode = errnos.CodeServiceErr
@@ -110,10 +108,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			resp.StatusCode = 0
 			resp.StatusMsg = nil
 		}
-		log.Println("----------")
-		log.Println(video)
 		userMeta, err := rpc.GetUser(video.AuthorId)
-		log.Println(userMeta)
 		if err != nil {
 			resp.StatusCode = errnos.CodeServiceErr
 			er := err.Error()
@@ -131,20 +126,6 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			FollowerCount: userMeta.FollowerCount,
 			IsFollow:      userMeta.IsFollow,
 		}
-		/*user := &interaction.User{
-			UserId:        1,
-			Username:      "Username",
-			FollowCount:   nil,
-			FollowerCount: nil,
-			IsFollow:      true,
-		}*/
-		favorite, err := mysql.GetFavoriteDao().FindFavorite(req.UserId, vid)
-		var flag bool
-		if favorite.Action != 1 {
-			flag = false
-		} else {
-			flag = true
-		}
 		resp.VedioList = append(resp.VedioList, &interaction.Video{
 			Id:            vid,
 			Author:        user,
@@ -152,7 +133,7 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 			CoverUrl:      constants.VideoUrlPrefix + video.StorageId,
 			FavoriteCount: int64(video.FavoriteCount),
 			CommentCount:  int64(video.CommentCount),
-			IsFavorite:    flag,
+			IsFavorite:    true,
 			Title:         video.Title,
 		})
 
@@ -162,18 +143,16 @@ func (s *InteractionServiceImpl) GetFavoriteList(ctx context.Context, req *inter
 
 // CommentAction implements the MessageServiceImpl interface.
 func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interaction.CommentRequest) (resp *interaction.CommentResponse, err error) {
-	//video表的CommentCount+1
-	//1 验证token登陆有效
-	//var msg string
 	resp = interaction.NewCommentResponse()
 
 	now := time.Now()
 	if req.ActionType == 1 {
+		log.Println(tools.FilterSensitive(req.GetCommentText()))
 		comment := &mysql.Comment{
 			Id:           time.Now().UnixNano() / 1000000,
 			Uid:          req.UserId,
 			Vid:          req.VideoId,
-			Content:      req.GetCommentText(),
+			Content:      tools.FilterSensitive(req.GetCommentText()),
 			Content_date: now.Unix() / 1000,
 		}
 		err = mysql.GetCommentDao().AddComment(comment)
@@ -207,7 +186,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 				FollowerCount: userMeta.FollowerCount,
 				IsFollow:      userMeta.IsFollow,
 			},
-			Content:    req.GetCommentText(),
+			Content:    tools.FilterSensitive(req.GetCommentText()),
 			CreateDate: time.Unix(now.Unix(), 0).Format(timeLayout),
 		}
 	} else if req.ActionType == 2 {
