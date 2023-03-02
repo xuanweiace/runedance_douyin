@@ -8,17 +8,17 @@ import (
 
 var Filter *sensitive.Filter
 
-const WordDictPath = "SensitiveDic.txt"
+const WordDictPath = "pkg/tools/SensitiveDic.txt"
 
 func InitFilter() {
 	log.Println("init filter")
 	Filter = sensitive.New()
 	err := Filter.LoadWordDict(WordDictPath)
+	Filter.AddWord("党国")
 	if err != nil {
 		errnos.Wrap(err, "初始化过滤器失败")
 	}
 }
 func FilterSensitive(str string) string {
-	log.Println("replace")
 	return Filter.Replace(str, '#')
 }

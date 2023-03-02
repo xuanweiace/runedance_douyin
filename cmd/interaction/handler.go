@@ -147,12 +147,12 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 
 	now := time.Now()
 	if req.ActionType == 1 {
-		log.Println(tools.FilterSensitive(req.GetCommentText()))
+		ct := tools.FilterSensitive(req.GetCommentText())
 		comment := &mysql.Comment{
 			Id:           time.Now().UnixNano() / 1000000,
 			Uid:          req.UserId,
 			Vid:          req.VideoId,
-			Content:      tools.FilterSensitive(req.GetCommentText()),
+			Content:      ct,
 			Content_date: now.Unix() / 1000,
 		}
 		err = mysql.GetCommentDao().AddComment(comment)
@@ -186,7 +186,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 				FollowerCount: userMeta.FollowerCount,
 				IsFollow:      userMeta.IsFollow,
 			},
-			Content:    tools.FilterSensitive(req.GetCommentText()),
+			Content:    ct,
 			CreateDate: time.Unix(now.Unix(), 0).Format(timeLayout),
 		}
 	} else if req.ActionType == 2 {
