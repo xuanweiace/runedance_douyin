@@ -9,6 +9,8 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 	"net"
 	"net/http"
@@ -24,6 +26,7 @@ func getVideoDB() (string, error) {
 
 var mongoClient *mongo.Client
 var cosClient *cos.Client
+var gormClient *gorm.DB
 
 func main() {
 
@@ -52,6 +55,14 @@ func main() {
 		panic(err3)
 		return
 	}
+
+	db, err1 := gorm.Open(mysql.Open(constants.MySQLDefaultDSN), &gorm.Config{})
+	if err1 != nil {
+		panic(err1)
+		return
+	}
+	gormClient = db
+
 	svr := videostorage.NewServer(new(VideoStorageServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: constants.VideoStorageServiceName}),
 		server.WithServiceAddr(&net.TCPAddr{Port: constants.VideoStorageServicePort}),

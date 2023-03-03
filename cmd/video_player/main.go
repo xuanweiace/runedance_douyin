@@ -4,11 +4,16 @@ package main
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"runedance_douyin/cmd/video_player/biz/cache"
 	constants "runedance_douyin/pkg/consts"
 	"strconv"
 )
 
 func main() {
+	err := cache.Init()
+	if err != nil {
+		return
+	}
 	server.WithHostPorts("0.0.0.0:" + strconv.Itoa(constants.VideoPlayUrlPort))
 	h := server.Default()
 	register(h)

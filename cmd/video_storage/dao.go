@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,6 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
 	constants "runedance_douyin/pkg/consts"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -23,7 +27,7 @@ func UploadFileToDB(db *mongo.Database, bucketName string, dataFile *[]byte, sid
 	err3 = bucket.UploadFromStreamWithID(sid, *fileName, bytes.NewReader(*dataFile), uploadOpts)
 	return err3
 }
-func DownloadFromCos(id string) (*[]byte, *[]byte) {
+func DownloadFromCos(id string) (*[]byte, *[]byte, error) {
 
 	vu := constants.VideoUrlSuffix
 	cu := constants.CoverUrlSuffix
@@ -34,7 +38,7 @@ func DownloadFromCos(id string) (*[]byte, *[]byte) {
 		fmt.Println(err1)
 		fmt.Println(err2)
 		// log
-		return nil, nil
+		return nil, nil, err1
 	}
 	resp2, err3 := cosClient.Object.Get(context.TODO(), pre+cu, nil)
 	bs2, err4 := ioutil.ReadAll(resp2.Body)
@@ -42,7 +46,20 @@ func DownloadFromCos(id string) (*[]byte, *[]byte) {
 		//TODO: 统一日志持久化格式与方式
 		fmt.Println(err3)
 		fmt.Println(err4)
-		return nil, nil
+		return nil, nil, err3
 	}
-	return &bs1, &bs2 //video&cover;
+	return &bs1, &bs2, nil //video&cover;
+}
+func generateSID(vid int64) string {
+	hhh := sha256.New()
+	var builder strings.Builder
+	builder.WriteString(strconv.FormatInt(vid, 10))
+	builder.WriteString("bogo's salty")
+	hhh.Write([]byte(builder.String()))
+	sid := hex.EncodeToString(hhh.Sum(nil))
+	return sid
+}
+func updateVideoInMysql[T any](vid int64, columnName string, newValue T) error {
+	result := gormClient.Table("videos").Where("video_id=?", vid).Update(columnName, newValue)
+	return result.Error
 }

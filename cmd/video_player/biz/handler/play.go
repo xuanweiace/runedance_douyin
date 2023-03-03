@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"runedance_douyin/cmd/video_player/biz/cache"
 	"strings"
 )
 
@@ -66,19 +68,32 @@ func Play(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	//sid = strings.ReplaceAll(sid, ".mp4", "")
+	var contentType string
 	if strings.EqualFold(fileType, "video") {
-		c.SetContentType("video/mp4")
+		contentType = "video/mp4"
+	} else {
+		contentType = "image/jpg"
 	}
-	downloader := newDownloader(getURI(), "fs_"+fileType)
-	defer disDownloader(downloader)
+	cc, r := cache.GetFile(fileType, sid)
+	if r == 2 {
+		c.Data(200, contentType, *cc)
+		return
+	}
 	buff := bytes.NewBuffer(nil)
 	c.SetBodyStream(buff, -1)
+	c.SetContentType(contentType)
+	downloader := newDownloader(getURI(), "fs_"+fileType)
+	defer disDownloader(downloader)
 	var err error
 	err = downloader.downToStream(&sid, buff)
 	fmt.Println(buff.Len())
+	err2 := cache.SetFile(fileType, sid, buff.Bytes())
+	if err2 != nil {
+		log.Error("缓存文件数据失败")
+	}
 	if err != nil {
 		fmt.Println(err)
-		c.String(consts.StatusGatewayTimeout, "can't connect to database")
+		c.String(consts.StatusGatewayTimeout, "can't get file")
 		//return
 	} else {
 		c.Finished()

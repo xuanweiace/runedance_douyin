@@ -3,9 +3,9 @@ package main
 import (
 	"bytes"
 	"context"
-	"github.com/gomodule/redigo/redis"
 	constants "runedance_douyin/pkg/consts"
 	"strconv"
+	"time"
 )
 
 func upToCos(id int64, file []byte) error {
@@ -15,39 +15,38 @@ func upToCos(id int64, file []byte) error {
 }
 
 func existInRedis(ctx context.Context, vid int64) (int64, error) {
-	//rst := redisClient.Exists(ctx, strconv.FormatInt(vid, 10))
-	return 0, nil
+	rst := redisClient.Exists(ctx, strconv.FormatInt(vid, 10))
+	return rst.Val(), rst.Err()
 }
 func queryVideoFromRedis(ctx context.Context, vid int64) (*Video, error) {
 	var v Video
-	tmp := redisClient.HGetAll(ctx, strconv.FormatInt(vid, 10))
-	values, err1 := redis.Values(tmp.Result())
+	res := redisClient.HGetAll(context.TODO(), strconv.FormatInt(vid, 10))
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+	err1 := res.Scan(&v)
 	if err1 != nil {
 		return nil, err1
-	}
-	err2 := redis.ScanStruct(values, &v)
-	if err2 != nil {
-		return nil, err2
 	} else {
 		return &v, nil
 	}
 }
 
-func queryListFromRedis(ctx context.Context) (*[]int64, error) {
-	rst := redisClient.Keys(ctx, "*")
-	if rst.Err() != nil {
-		return nil, rst.Err()
-	}
-	var vids []int64
-	for _, v := range rst.Val() {
-		i, e := strconv.ParseInt(v, 10, 64)
-		if e != nil {
-			return nil, e
-		}
-		vids = append(vids, i)
-	}
-	return &vids, nil
-}
+//func queryListFromRedis(ctx context.Context) (*[]int64, error) {
+//	rst := redisClient.Keys(ctx, "*")
+//	if rst.Err() != nil {
+//		return nil, rst.Err()
+//	}
+//	var vids []int64
+//	for _, v := range rst.Val() {
+//		i, e := strconv.ParseInt(v, 10, 64)
+//		if e != nil {
+//			return nil, e
+//		}
+//		vids = append(vids, i)
+//	}
+//	return &vids, nil
+//}
 
 //	func pop(ctx context.Context) (int64, error) {
 //		rst, err := redisClient.ZCount(ctx, "newVideoSet", "-inf", "+inf").Result()
@@ -63,10 +62,10 @@ func queryListFromRedis(ctx context.Context) (*[]int64, error) {
 //		}
 //		return int64(rst2[0].Score), nil
 //	}
-func queryVideoFromMysql(vid int64) (*Video, error) {
+func queryVideoFromMysql(ctx context.Context, vid int64) (*Video, error) {
 	var v Video
 	v.VideoId = vid
-	result := gormClient.First(&v)
+	result := gormClient.WithContext(ctx).First(&v)
 	if result.Error != nil {
 		return nil, result.Error
 	} else {
@@ -74,18 +73,17 @@ func queryVideoFromMysql(vid int64) (*Video, error) {
 	}
 }
 func insertVideoToRedis(ctx context.Context, video Video) error {
-	//redisClient.Do(context.Background(), "hmset", redis.Args{"Video"}.AddFlat(video))
-	//rst := redisClient.Do(ctx, redis.Args{video.VideoId}.AddFlat(video)...)
-	//return rst.Err()
-	_, err := redisClient.HMSet(ctx, strconv.FormatInt(video.VideoId, 10), video).Result()
+	key := strconv.FormatInt(video.VideoId, 10)
+	_, err := redisClient.HMSet(ctx, key, video).Result()
+	redisClient.PExpire(ctx, key, time.Minute*10)
 	return err
 }
-func insertVideoToMysql(video *Video) error {
-	result := gormClient.Create(video)
+func insertVideoToMysql(ctx context.Context, video *Video) error {
+	result := gormClient.WithContext(ctx).Create(video)
 	return result.Error
 }
-func updateVideoInMysql[T any](vid int64, columnName string, newValue T) error {
-	result := gormClient.Model(&Video{}).Where("video_id=?", vid).Update(columnName, newValue)
+func updateVideoInMysql[T any](ctx context.Context, vid int64, columnName string, newValue T) error {
+	result := gormClient.WithContext(ctx).Model(&Video{}).Where("video_id=?", vid).Update(columnName, newValue)
 	return result.Error
 }
 func updateVideoInRedis[T any](ctx context.Context, vid int64, propertyName string, newValue T) error {
@@ -97,24 +95,36 @@ func deleteVideoInRedis(ctx context.Context, vid int64) error {
 	return rst.Err()
 }
 func deleteVideoInMysql(ctx context.Context, vid int64) error {
-	rst := gormClient.Delete(&Video{}, vid)
+	rst := gormClient.WithContext(ctx).Delete(&Video{}, vid)
 	return rst.Error
 }
 func queryListFromMysql(ctx context.Context, aid int64) (*[]int64, error) {
 	var published []int64
-	rst := gormClient.Model(&Video{}).Limit(constants.VideoFeedSize).Where("author_id = ?", aid).Select("video_id").Find(&published)
+	rst := gormClient.WithContext(ctx).Model(&Video{}).Limit(constants.VideoFeedSize).Where("author_id = ? AND storage_id <> ?", aid, "0").Select("video_id").Find(&published)
 	if rst.Error != nil {
 		return nil, rst.Error
 	} else {
 		return &published, nil
 	}
 }
+
+var cacheList []int64
+var lastQuery time.Time
+
 func queryRecommendList(ctx context.Context) (*[]int64, error) {
-	var published []int64
-	rst := gormClient.Model(&Video{}).Limit(constants.VideoFeedSize).Order("created_at desc").Select("video_id").Find(&published)
-	if rst.Error != nil {
-		return nil, rst.Error
+
+	current := time.Now()
+	if cacheList == nil || current.Sub(lastQuery).Minutes() >= 1 {
+		var published []int64
+		rst := gormClient.WithContext(ctx).Model(&Video{}).Limit(constants.VideoFeedSize).Where("storage_id <> ?", "0").Order("created_at desc").Select("video_id").Find(&published)
+		if rst.Error != nil {
+			return nil, rst.Error
+		} else {
+			lastQuery = current
+			cacheList = published
+			return &published, nil
+		}
 	} else {
-		return &published, nil
+		return &cacheList, nil
 	}
 }

@@ -31,6 +31,8 @@ func getdsn() string {
 }
 func main() {
 
+	lastQuery = time.Now()
+
 	db, err1 := gorm.Open(mysql.Open(getdsn()), &gorm.Config{})
 	if err1 != nil {
 		panic(err1)
@@ -54,7 +56,7 @@ func main() {
 	}
 	vsc, err5 := videostorageservice.NewClient(constants.VideoStorageServiceName,
 		client.WithMuxConnection(1),
-		client.WithRPCTimeout(3*time.Second),
+		client.WithRPCTimeout(1*time.Second),
 		client.WithConnectTimeout(time.Second),
 		client.WithResolver(r1),
 	)

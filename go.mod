@@ -5,6 +5,7 @@ go 1.18
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
 require (
+	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/apache/rocketmq-client-go/v2 v2.1.1
 	github.com/apache/thrift v0.17.0
 	github.com/astaxie/beego v1.12.3
