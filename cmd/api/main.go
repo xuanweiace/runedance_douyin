@@ -13,13 +13,9 @@ func Init() {
 }
 func main() {
 	Init()
-<<<<<<< HEAD
-	h := server.Default(server.WithHostPorts("127.0.0.1:8080"), server.)
-=======
 	// 127.0.0.1
 
 	h := server.Default(server.WithHostPorts("0.0.0.0:8080"), server.WithMaxRequestBodySize(233333333))
->>>>>>> main
 	//h.Use(mw.MyJWT())
 
 	register(h)

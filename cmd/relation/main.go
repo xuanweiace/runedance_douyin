@@ -19,11 +19,8 @@ import (
 func Init() {
 	rpc.Init()
 	dal.Init()
-<<<<<<< HEAD
 	rmq.Init()
-=======
 	tools.LoggerInit()
->>>>>>> main
 }
 func main() {
 	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress})

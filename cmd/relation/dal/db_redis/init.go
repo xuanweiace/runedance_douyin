@@ -1,8 +1,6 @@
 package db_redis
 
 import (
-	constants "runedance_douyin/pkg/consts"
-
 	"github.com/redis/go-redis/v9"
 )
 
@@ -10,7 +8,7 @@ var Rdb *redis.Client
 
 func Init() {
 	Rdb = redis.NewClient(&redis.Options{
-		Addr:     constants.RedisAddr,
+		Addr:     "127.0.0.1:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

@@ -20,10 +20,7 @@ require (
 	github.com/kitex-contrib/registry-etcd v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.0.2
-<<<<<<< HEAD
-=======
 	github.com/sirupsen/logrus v1.8.1
->>>>>>> main
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.41
 	go.mongodb.org/mongo-driver v1.11.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -52,10 +49,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-<<<<<<< HEAD
-=======
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
->>>>>>> main
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -72,10 +66,6 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
-<<<<<<< HEAD
-	github.com/kr/pretty v0.3.0 // indirect
-=======
->>>>>>> main
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -84,17 +74,11 @@ require (
 	github.com/nyaruka/phonenumbers v1.0.55 // indirect
 	github.com/oleiade/lane v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
-<<<<<<< HEAD
-	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	github.com/satori/go.uuid v1.2.0 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
-=======
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
->>>>>>> main
 	github.com/stathat/consistent v1.0.0 // indirect
 	github.com/tidwall/gjson v1.13.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -123,9 +107,5 @@ require (
 	google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1 // indirect
 	google.golang.org/grpc v1.46.2 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-<<<<<<< HEAD
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-=======
->>>>>>> main
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

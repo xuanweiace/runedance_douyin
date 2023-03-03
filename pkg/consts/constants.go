@@ -3,13 +3,6 @@ package constants
 const (
 	//db_mysql
 	MySQLDefaultDSN = "root:123456@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
-<<<<<<< HEAD
-	//db_redis
-	RedisAddr = "localhost:6379"
-	//rocketmq
-	NameServerAddr = "127.0.0.1:9876"
-=======
->>>>>>> main
 
 	//user
 	JWTSecketKey    = "runedance"

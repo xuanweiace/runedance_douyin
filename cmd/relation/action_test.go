@@ -18,6 +18,7 @@ func InitEnv() {
 	dal.Init()
 	rpc.Init()
 }
+
 func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	InitEnv()
 	/*	test_token
@@ -229,5 +230,21 @@ func Test_ExistRelation(t *testing.T) {
 			ToUserId:   2000,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+}
+
+func TestBatchInsertDelete(t *testing.T) {
+	// relation := []*db_mysql.Relation{{5, 6}, {7, 8}, {5, 10}}
+	db_mysql.Init()
+	// err := db_mysql.BatchInsertIgnore(relation)
+	// if err != nil {
+	// 	fmt.Println("err1:", err)
+	// 	t.Fail()
+	// }
+	relation2 := []*db_mysql.Relation{{5, 6}, {7, 8}, {5, 10}, {100, 100}}
+	err := db_mysql.BatchDelete(relation2)
+	if err != nil {
+		fmt.Println("err2:", err)
+		t.Fail()
 	}
 }
