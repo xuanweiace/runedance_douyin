@@ -38,9 +38,7 @@ func initUser() {
 }
 
 func GetUser(user_id int64) (*user.User, error) {
-
-	//todo 去掉这里 不做用户校验
-	return &user.User{UserId: user_id, Username: "test_name"}, nil
+	// return &user.User{UserId: user_id, Username: "test_name"}, nil
 	request := user.DouyinUserRequest{
 		UserId:   user_id,
 		MyUserId: user_id,
@@ -57,8 +55,7 @@ func GetUser(user_id int64) (*user.User, error) {
 }
 
 func UpdateUser(user_id, follow_diff, follower_diff int64) (bool, error) {
-	//todo 去掉这里 不做用户校验
-	return true, nil
+	// return true, nil
 	request := user.DouyinUserUpdateRequest{
 		UserId:       user_id,
 		Followdiff:   follow_diff,
