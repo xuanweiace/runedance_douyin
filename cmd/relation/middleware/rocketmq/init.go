@@ -15,8 +15,8 @@ import (
 var TOPIC_NAME string
 
 const (
-	GAP_TIME = 2 // 每两秒拉取一次
-	MSG_NUM  = 5 // 每次拉取5个
+	GAP_TIME = 10 // 每两秒拉取一次
+	MSG_NUM  = 5  // 每次拉取5个
 )
 
 var prod rocketmq.Producer

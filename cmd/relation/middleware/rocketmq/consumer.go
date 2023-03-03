@@ -24,7 +24,7 @@ func consume_batch_msg(ctx context.Context, msgs ...*primitive.MessageExt) (cons
 		if action_type == constants.ActionType_AddRelation {
 			do_map[gen_key(&rel)] = struct{}{}
 			delete(undo_map, gen_key(&rel))
-		} else {
+		} else if action_type == constants.ActionType_RemoveRelation {
 			undo_map[gen_key(&rel)] = struct{}{}
 			delete(do_map, gen_key(&rel))
 		}
@@ -60,6 +60,9 @@ func consume_batch_msg(ctx context.Context, msgs ...*primitive.MessageExt) (cons
 func decode_relation_msg(b []byte, rel *db_mysql.Relation) int {
 	s := string(b)
 	ss := strings.Split(s, " ")
+	if len(ss) != 3 {
+		return -1
+	}
 	action_type, _ := strconv.ParseInt(ss[0], 10, 64)
 	rel.FansID, _ = strconv.ParseInt(ss[1], 10, 64)
 	rel.UserID, _ = strconv.ParseInt(ss[2], 10, 64)
