@@ -1,0 +1,67 @@
+version: "3"
+services:
+    rocketmqNameServer:
+        image: rocketmqinc/rocketmq
+        container_name: rocketmqNameServer
+        platform: "linux/amd64"
+        #restart: always
+        volumes:
+            #挂载路径，冒号左边为服务器本地路径，冒号右边为容器内部路径
+            - /usr/local/docker/rocketmq/data/namesrv/logs:/root/logs
+            - /usr/local/docker/rocketmq/data/namesrv/store:/root/store
+        environment:
+            MAX_POSSIBLE_HEAP: 100000000
+        command:
+            # 服务启动
+            sh mqnamesrv 
+        #network_mode: host
+        ports: 
+            - "9876:9876"
+        
+ 
+    rocketmqBroker:
+        image: rocketmqinc/rocketmq
+        container_name: rocketmqBroker
+        platform: "linux/amd64"
+        #restart: always
+        volumes:
+            #挂载路径，冒号左边为服务器本地路径，冒号右边为容器内部路径
+            - /usr/local/docker/rocketmq/data/broker/logs:/root/logs
+            - /usr/local/docker/rocketmq/data/broker/store:/root/store
+            # - /usr/local/docker/rocketmq/conf/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+            - ~/mydata/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+
+        links:
+            - rocketmqNameServer:namesrv
+        
+        environment:
+            NAMESRV_ADDR: namesrv:9876
+            MAX_POSSIBLE_HEAP: 200000000
+        command:
+            # 服务启动
+            sh mqbroker -c /opt/rocketmq-4.4.0/conf/broker.conf
+        #network_mode: host
+        ports: 
+            - "10911:10911"
+            - "10909:10909"
+
+    # rocketmqConsole:
+    #     image: pangliang/rocketmq-console-ng
+    #     container_name: rocketmqConsole
+    #     links:
+    #         - rocketmqNameServer:namesrv
+    #     environment:
+    #         JAVA_OPTS: "-Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    #     #network_mode: host
+    #     ports: 
+    #         - "19999:8080"
+
+    rocketmqConsole:
+      image: styletang/rocketmq-console-ng
+      container_name: rocketmqConsole
+      ports:
+        - 19999:8080
+      links:
+            - rocketmqNameServer:namesrv
+      environment:
+          JAVA_OPTS: "-Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"

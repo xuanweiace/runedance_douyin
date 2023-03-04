@@ -18,6 +18,7 @@ func InitEnv() {
 	dal.Init()
 	rpc.Init()
 }
+
 func TestRelationServiceImpl_RelationAction(t *testing.T) {
 	InitEnv()
 	/*	test_token
@@ -197,7 +198,7 @@ func Test_a(t *testing.T) {
 }
 
 func Test_jwt(t *testing.T) {
-	token, _ := tools.GenToken("zxz", 1)
+	token, _ := tools.GenToken("zxz", 2)
 	println(token)
 	//过期时间一秒，则 err=token is expired by 3m8.0721174s
 	s := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inp4eiIsInVzZXJfaWQiOjEsImlzcyI6IndlY2hhbiIsImV4cCI6MTY3NDkxMjg2MH0.vpY2d_pt3hDJs2erO42z94DrizoswhotjWpwE0xk81c"
@@ -229,5 +230,21 @@ func Test_ExistRelation(t *testing.T) {
 			ToUserId:   2000,
 		})
 		fmt.Printf("resp:%+v, err:%+v\n", resp, err)
+	}
+}
+
+func TestBatchInsertDelete(t *testing.T) {
+	// relation := []*db_mysql.Relation{{5, 6}, {7, 8}, {5, 10}}
+	db_mysql.Init()
+	// err := db_mysql.BatchInsertIgnore(relation)
+	// if err != nil {
+	// 	fmt.Println("err1:", err)
+	// 	t.Fail()
+	// }
+	relation2 := []*db_mysql.Relation{{5, 6}, {7, 8}, {5, 10}, {100, 100}}
+	err := db_mysql.BatchDelete(relation2)
+	if err != nil {
+		fmt.Println("err2:", err)
+		t.Fail()
 	}
 }

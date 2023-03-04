@@ -23,8 +23,8 @@ func Register(r *server.Hertz) {
 		root.Use(requestid.MyRequestid())
 		_douyin := root.Group("/douyin", _douyinMw()...)
 		{
-
 			_comment := _douyin.Group("/comment", _commentMw()...)
+			_comment.Use(mw.MyJWT())
 			{
 				_comment.Use(mw.MyJWT())
 				_action := _comment.Group("/action", _actionMw()...)

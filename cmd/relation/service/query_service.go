@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"runedance_douyin/cmd/relation/dal/db_mysql"
+	"runedance_douyin/cmd/relation/dal/db_redis"
 	"runedance_douyin/cmd/relation/rpc"
 	"runedance_douyin/kitex_gen/relation"
 	"runedance_douyin/kitex_gen/user"
@@ -34,8 +34,8 @@ func (q QueryService) GetFollowList(req *relation.GetFollowListRequest) ([]*rela
 	if _, err := rpc.GetUser(user_id); err != nil {
 		return nil, err
 	}
-
-	userids, err := db_mysql.ListFollowidsByUserid(user_id)
+	userids, err := db_redis.ListFollowidsByUserid(q.ctx, user_id)
+	// userids, err := db_mysql.ListFollowidsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,8 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	if _, err := rpc.GetUser(user_id); err != nil {
 		return nil, err
 	}
-	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
+	fansids, err := db_redis.ListFolloweridsByUserid(q.ctx, user_id)
+	// fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +71,7 @@ func (q QueryService) GetFollowerList(req *relation.GetFollowerListRequest) ([]*
 	for _, fansid := range fansids {
 		fans := fill_user_info(fansid)
 		//查看user是否关注了他的fans
-		existRelation := q.existRelation(fansid, user_id)
+		existRelation := q.existRelation(user_id, fansid)
 		fans.IsFollow = existRelation
 		fansList = append(fansList, fans)
 	}
@@ -87,11 +88,11 @@ func (q QueryService) GetFriendList(req *relation.GetFriendListRequest) ([]*rela
 	}
 
 	//先找到user的粉丝
-	fansids, err := db_mysql.ListFolloweridsByUserid(user_id)
+	fansids, err := db_redis.ListFolloweridsByUserid(q.ctx, user_id)
 	if err != nil {
 		return nil, err
 	}
-	followids, err := db_mysql.ListFollowidsByUserid(user_id)
+	followids, err := db_redis.ListFollowidsByUserid(q.ctx, user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,8 @@ func (q QueryService) ExistRelation(req *relation.ExistRelationRequest) (bool, e
 
 // todo 需要绑定在QueryService吗？
 func (q QueryService) existRelation(fans_id, user_id int64) bool {
-	queryRelation, _ := db_mysql.QueryRelation(fans_id, user_id)
+	queryRelation, _ := db_redis.QueryRelation(q.ctx, fans_id, user_id)
+	// queryRelation, _ := db_mysql.QueryRelation(fans_id, user_id)
 	if queryRelation != nil {
 		return true
 	}
